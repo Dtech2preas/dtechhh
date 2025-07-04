@@ -3,58 +3,373 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>D-TECh Telegram Channel</title>
+  <meta name="description" content="Join the official D-TECh Telegram channel for tools, apps, updates and tutorials">
+  <meta property="og:title" content="D-TECh Telegram Channel">
+  <meta property="og:description" content="Get all D-TECh tools and updates directly from the founder Preasx24">
+  <meta property="og:image" content="https://i.imgur.com/J9mQZQy.png">
+  <title>D-TECh Telegram Channel - Official Updates & Tools</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
+    :root {
+      --primary: #0088cc;
+      --primary-dark: #006699;
+      --secondary: #00a884;
+      --text: #2d3436;
+      --light: #f5f6fa;
+      --white: #ffffff;
+      --shadow: 0 10px 30px rgba(0, 136, 204, 0.2);
+      --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #f0f8ff;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #f0f8ff 0%, #e6f7ff 100%);
+      min-height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
-      margin: 0;
+      padding: 20px;
+      color: var(--text);
+      line-height: 1.6;
     }
-    .telegram-card {
-      background: #ffffff;
-      border: 2px solid #0088cc;
-      padding: 30px;
-      max-width: 400px;
+    
+    .telegram-container {
+      display: flex;
+      max-width: 1200px;
+      width: 100%;
+      background: var(--white);
+      border-radius: 24px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      position: relative;
+      animation: fadeIn 0.8s ease-out;
+    }
+    
+    .telegram-illustration {
+      flex: 1;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .telegram-illustration::before {
+      content: '';
+      position: absolute;
+      width: 300px;
+      height: 300px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 50%;
+      top: -100px;
+      right: -100px;
+    }
+    
+    .telegram-illustration::after {
+      content: '';
+      position: absolute;
+      width: 200px;
+      height: 200px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 50%;
+      bottom: -50px;
+      left: -50px;
+    }
+    
+    .illustration-content {
       text-align: center;
-      border-radius: 20px;
-      box-shadow: 0 8px 25px rgba(0, 136, 204, 0.15);
+      color: var(--white);
+      z-index: 1;
     }
-    .telegram-card h1 {
-      color: #0088cc;
-      font-size: 24px;
+    
+    .illustration-content i {
+      font-size: 120px;
+      margin-bottom: 30px;
+      animation: float 3s ease-in-out infinite;
+    }
+    
+    .illustration-content h2 {
+      font-size: 28px;
       margin-bottom: 15px;
+      font-weight: 700;
     }
-    .telegram-card p {
-      color: #444;
-      font-size: 16px;
+    
+    .illustration-content p {
+      opacity: 0.9;
+      font-weight: 300;
+    }
+    
+    .telegram-card {
+      flex: 1;
+      padding: 60px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    
+    .telegram-card h1 {
+      color: var(--primary);
+      font-size: 32px;
       margin-bottom: 20px;
-    }
-    .telegram-btn {
-      background-color: #0088cc;
-      color: white;
-      text-decoration: none;
-      padding: 12px 24px;
-      border-radius: 10px;
-      font-size: 16px;
-      font-weight: bold;
-      transition: background 0.3s ease;
+      position: relative;
       display: inline-block;
     }
+    
+    .telegram-card h1::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 0;
+      width: 60px;
+      height: 4px;
+      background: var(--primary);
+      border-radius: 2px;
+    }
+    
+    .telegram-card p {
+      color: var(--text);
+      font-size: 16px;
+      margin-bottom: 20px;
+      opacity: 0.9;
+    }
+    
+    .features-list {
+      margin: 25px 0;
+    }
+    
+    .feature-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+    
+    .feature-icon {
+      width: 36px;
+      height: 36px;
+      background: rgba(0, 136, 204, 0.1);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 15px;
+      color: var(--primary);
+    }
+    
+    .telegram-btn {
+      background-color: var(--primary);
+      color: var(--white);
+      text-decoration: none;
+      padding: 16px 32px;
+      border-radius: 12px;
+      font-size: 18px;
+      font-weight: 600;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 20px;
+      box-shadow: 0 5px 15px rgba(0, 136, 204, 0.3);
+      border: none;
+      cursor: pointer;
+      width: fit-content;
+    }
+    
     .telegram-btn:hover {
-      background-color: #006699;
+      background-color: var(--primary-dark);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(0, 136, 204, 0.4);
+    }
+    
+    .telegram-btn i {
+      margin-right: 10px;
+      font-size: 20px;
+    }
+    
+    .counter-container {
+      display: flex;
+      align-items: center;
+      margin-top: 30px;
+      padding-top: 30px;
+      border-top: 1px dashed rgba(0, 0, 0, 0.1);
+    }
+    
+    .counter {
+      margin-right: 30px;
+    }
+    
+    .counter-number {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+    
+    .counter-label {
+      font-size: 14px;
+      opacity: 0.7;
+    }
+    
+    .social-links {
+      display: flex;
+      margin-top: 30px;
+    }
+    
+    .social-link {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 15px;
+      color: var(--primary);
+      transition: var(--transition);
+      text-decoration: none;
+    }
+    
+    .social-link:hover {
+      background: var(--primary);
+      color: var(--white);
+      transform: translateY(-3px);
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    @keyframes float {
+      0% { transform: translateY(0px); }
+      50% { transform: translateY(-15px); }
+      100% { transform: translateY(0px); }
+    }
+    
+    @media (max-width: 900px) {
+      .telegram-container {
+        flex-direction: column;
+      }
+      
+      .telegram-illustration {
+        padding: 40px 20px;
+      }
+      
+      .telegram-card {
+        padding: 40px 30px;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .telegram-card h1 {
+        font-size: 26px;
+      }
+      
+      .counter-container {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      
+      .counter {
+        margin-bottom: 15px;
+        margin-right: 0;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="telegram-card">
-    <h1>📢 Join the Official D-TECh Channel</h1>
-    <p>Get access to all D-TECh tools, apps, updates, tutorials, and special announcements directly from the founder, <strong>Preasx24</strong>.</p>
-    <p>Everything DTECH is posted there first — don’t miss out!</p>
-    <a href="https://t.me/DTECHX24" target="_blank" class="telegram-btn">Join Now on Telegram</a>
+  <div class="telegram-container">
+    <div class="telegram-illustration">
+      <div class="illustration-content">
+        <i class="fab fa-telegram"></i>
+        <h2>Join Our Community</h2>
+        <p>Connect with like-minded tech enthusiasts</p>
+      </div>
+    </div>
+    
+    <div class="telegram-card">
+      <h1>📢 Official D-TECh Channel</h1>
+      <p>Get exclusive access to all D-TECh tools, apps, updates, and premium content directly from the founder, <strong>Preasx24</strong>.</p>
+      
+      <div class="features-list">
+        <div class="feature-item">
+          <div class="feature-icon">
+            <i class="fas fa-rocket"></i>
+          </div>
+          <span>First access to all new releases</span>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon">
+            <i class="fas fa-graduation-cap"></i>
+          </div>
+          <span>Exclusive tutorials and guides</span>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon">
+            <i class="fas fa-headset"></i>
+          </div>
+          <span>Priority support from the team</span>
+        </div>
+      </div>
+      
+      <a href="https://t.me/DTECHX24" target="_blank" class="telegram-btn">
+        <i class="fab fa-telegram"></i> Join Now
+      </a>
+      
+      <div class="counter-container">
+        <div class="counter">
+          <div class="counter-number" id="memberCount">5,000+</div>
+          <div class="counter-label">Members</div>
+        </div>
+        <div class="counter">
+          <div class="counter-number">24/7</div>
+          <div class="counter-label">Active Support</div>
+        </div>
+      </div>
+      
+      <div class="social-links">
+        <a href="#" class="social-link" aria-label="Twitter">
+          <i class="fab fa-twitter"></i>
+        </a>
+        <a href="#" class="social-link" aria-label="GitHub">
+          <i class="fab fa-github"></i>
+        </a>
+        <a href="#" class="social-link" aria-label="YouTube">
+          <i class="fab fa-youtube"></i>
+        </a>
+      </div>
+    </div>
   </div>
+
+  <script>
+    // Animated counter (simulated for demo)
+    document.addEventListener('DOMContentLoaded', function() {
+      const counter = document.getElementById('memberCount');
+      let current = 4800;
+      const target = 5000;
+      const increment = target / 50;
+      
+      const updateCounter = () => {
+        current += increment;
+        if (current < target) {
+          counter.textContent = Math.floor(current).toLocaleString() + '+';
+          setTimeout(updateCounter, 30);
+        } else {
+          counter.textContent = target.toLocaleString() + '+';
+        }
+      };
+      
+      setTimeout(updateCounter, 500);
+    });
+  </script>
 </body>
 </html>
