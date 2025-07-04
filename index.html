@@ -1,9 +1,326 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta http-equiv="refresh" content="0;url=https://host1.dtech24.co.za">
-  <title>Redirecting...</title>
+    <title>Preasx24 | DTECH Founder | Tech Entrepreneur</title>
+    <meta name="description" content="South African tech entrepreneur building digital solutions through DTECH ecosystem">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1e40af;
+            --dark: #1e293b;
+            --light: #f8fafc;
+            --gray: #94a3b8;
+            --border: #e2e8f0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--light);
+            color: var(--dark);
+            line-height: 1.6;
+        }
+
+        header {
+            background-color: var(--dark);
+            color: white;
+            padding: 2rem 5%;
+            text-align: center;
+            position: relative;
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            padding: 1rem;
+        }
+
+        .logo img {
+            width: 100%;
+            filter: brightness(0) invert(1);
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin: 1rem 0;
+            font-weight: 600;
+        }
+
+        .subtitle {
+            color: var(--gray);
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .menu-icon {
+            position: absolute;
+            top: 2rem;
+            left: 1.5rem;
+            cursor: pointer;
+            z-index: 100;
+            width: 24px;
+            height: 24px;
+        }
+
+        .menu-icon span {
+            display: block;
+            width: 100%;
+            height: 2px;
+            background: white;
+            margin: 5px 0;
+            transition: all 0.3s ease;
+        }
+
+        .side-menu {
+            position: fixed;
+            top: 0;
+            left: -300px;
+            width: 300px;
+            height: 100%;
+            background: white;
+            box-shadow: 2px 0 15px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            z-index: 99;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .side-menu.open {
+            left: 0;
+        }
+
+        .menu-header {
+            background: var(--dark);
+            color: white;
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .menu-header img {
+            width: 40px;
+        }
+
+        .menu-items {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem 0;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            color: var(--dark);
+            text-decoration: none;
+            transition: all 0.2s ease;
+            border-left: 3px solid transparent;
+        }
+
+        .menu-item:hover {
+            background: #f1f5f9;
+            border-left: 3px solid var(--primary);
+        }
+
+        .menu-item i {
+            margin-right: 1rem;
+            color: var(--gray);
+            width: 20px;
+            text-align: center;
+        }
+
+        .menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 98;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .menu-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .content {
+            padding: 2rem 5%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        footer {
+            background: var(--dark);
+            color: white;
+            padding: 2rem 5%;
+            text-align: center;
+            margin-top: 2rem;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin: 1rem 0;
+        }
+
+        .footer-links a {
+            color: var(--gray);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .footer-links a:hover {
+            color: white;
+        }
+
+        .slideshow img {
+            width: 100%;
+            max-width: 600px;
+            border-radius: 1rem;
+        }
+
+        .download-button {
+            display: inline-block;
+            margin-top: 1rem;
+            background-color: var(--primary);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            text-decoration: none;
+        }
+
+        section {
+            margin-bottom: 4rem;
+        }
+
+        @media (min-width: 768px) {
+            .side-menu {
+                left: -300px;
+            }
+
+            .content {
+                padding: 3rem 5%;
+            }
+        }
+    </style>
 </head>
 <body>
+    <header>
+        <div class="menu-icon" onclick="toggleMenu()">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+        <div class="logo">
+            <img src="dtech-logo.png" alt="DTECH Logo">
+        </div>
+        <h1>DTECH Headquarters</h1>
+        <p class="subtitle">Empowering digital innovation through cutting-edge solutions and resources</p>
+    </header>
+
+    <!-- Side Menu -->
+    <div class="side-menu" id="sideMenu">
+        <div class="menu-header">
+            <img src="dtech-logo.png" alt="DTECH Logo">
+            <h3>DTECH Menu</h3>
+        </div>
+        <div class="menu-items">
+            <a href="about.html" class="menu-item"><i>🏢</i> ABOUT US</a>
+            <a href="app.html" class="menu-item"><i>📱</i> APP</a>
+            <a href="dtech-app.html" class="menu-item"><i>🚀</i> DTECH APP</a>
+            <a href="youtube.html" class="menu-item"><i>▶️</i> YOUTUBE</a>
+            <a href="telegram.html" class="menu-item"><i>📨</i> TELEGRAM</a>
+            <a href="faqs.html" class="menu-item"><i>❓</i> FAQs</a>
+            <a href="etc.html" class="menu-item"><i>🛠️</i> TOOLS & SERVICES</a>
+            <a href="tutorials.html" class="menu-item"><i>📚</i> TUTORIALS</a>
+        </div>
+    </div>
+
+    <div class="menu-overlay" id="menuOverlay" onclick="toggleMenu()"></div>
+
+    <div class="content">
+        <p>Welcome to DTECH Headquarters. Explore our digital resources, tools, and community platforms designed to empower your technological journey.</p>
+
+        <!-- DTECH TOOLS -->
+        <section>
+            <h2>DTECH TOOLS</h2>
+            <div class="slideshow" id="toolsSlideshow">
+                <img src="tool1.png" alt="DTECH TOOLS Preview">
+            </div>
+            <a href="DTECH TOOLS.apk" download class="download-button">Download DTECH TOOLS</a>
+        </section>
+
+        <!-- DTECH ANIME -->
+        <section>
+            <h2>DTECH ANIME</h2>
+            <div class="slideshow" id="animeSlideshow">
+                <img src="anime1.png" alt="DTECH ANIME Preview">
+            </div>
+            <a href="DTECH ANIME.apk" download class="download-button">Download DTECH ANIME</a>
+        </section>
+    </div>
+
+    <footer>
+        <div class="footer-links">
+            <a href="terms.html">Terms</a>
+            <a href="privacy.html">Privacy</a>
+            <a href="contact.html">Contact</a>
+        </div>
+        <div class="copyright">
+            &copy; 2025 DTECH Headquarters. All rights reserved.
+        </div>
+    </footer>
+
+    <script>
+        function toggleMenu() {
+            const menu = document.getElementById('sideMenu');
+            const overlay = document.getElementById('menuOverlay');
+            const icon = document.querySelector('.menu-icon');
+            menu.classList.toggle('open');
+            overlay.classList.toggle('active');
+            icon.innerHTML = menu.classList.contains('open') ?
+                '<span style="transform: rotate(45deg) translate(5px, 5px);"></span><span style="opacity: 0;"></span><span style="transform: rotate(-45deg) translate(5px, -5px);"></span>' :
+                '<span></span><span></span><span></span>';
+        }
+
+        function startSlideshow(id, prefix) {
+            const container = document.getElementById(id);
+            const img = container.querySelector("img");
+            let index = 1;
+            setInterval(() => {
+                index = (index % 5) + 1;
+                img.src = `${prefix}${index}.png`;
+            }, 2500);
+        }
+
+        // Start both slideshows
+        startSlideshow("toolsSlideshow", "tool");
+        startSlideshow("animeSlideshow", "anime");
+    </script>
 </body>
-</html>
+      </html>
