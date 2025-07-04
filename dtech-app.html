@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>D-TECh APK Downloads</title>
+  <title>D-TECh APK Hub</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -28,127 +28,147 @@
     
     body {
       font-family: 'Poppins', sans-serif;
-      background-color: #f5f7ff;
+      background-color: #f8faff;
       color: var(--text);
       line-height: 1.6;
-      padding: 40px 20px;
+      padding: 0;
     }
     
     .container {
       max-width: 1200px;
       margin: 0 auto;
+      padding: 40px 20px;
     }
     
-    header {
+    /* New Header Design */
+    .hero {
+      background: linear-gradient(135deg, #4361ee 0%, #7209b7 100%);
+      color: white;
+      padding: 60px 20px;
       text-align: center;
+      border-radius: 0 0 20px 20px;
       margin-bottom: 50px;
+      box-shadow: 0 10px 30px rgba(67, 97, 238, 0.2);
     }
     
-    h1 {
-      color: var(--dark);
-      font-size: 2.8rem;
+    .hero h1 {
+      font-size: 3rem;
       margin-bottom: 15px;
       font-weight: 700;
-      background: linear-gradient(90deg, var(--primary), var(--accent));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      text-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
     
-    .subtitle {
+    .hero p {
       font-size: 1.2rem;
-      color: #6c757d;
       max-width: 700px;
       margin: 0 auto;
-      font-weight: 400;
+      opacity: 0.9;
     }
     
-    .apk-grid {
+    /* New Card Grid */
+    .app-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
       gap: 30px;
+      margin-top: 30px;
     }
     
-    .apk-card {
+    /* Completely Redesigned App Card */
+    .app-card {
       background: var(--white);
-      border-radius: 18px;
+      border-radius: 16px;
       overflow: hidden;
-      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
       transition: var(--transition);
-      border: none;
       display: flex;
       flex-direction: column;
-      height: 100%;
-      position: relative;
       border: 1px solid rgba(0,0,0,0.05);
     }
     
-    .apk-card:hover {
-      transform: translateY(-10px);
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    .app-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
     }
     
-    .apk-header {
+    .app-header {
       padding: 25px 25px 15px;
-      background: linear-gradient(135deg, #f5f7ff 0%, #e6e9ff 100%);
-      border-bottom: 1px solid rgba(0,0,0,0.05);
+      background: var(--white);
+      position: relative;
     }
     
-    .apk-title {
-      font-size: 1.5rem;
+    .app-title {
+      font-size: 1.6rem;
       margin-bottom: 5px;
       color: var(--dark);
       font-weight: 700;
       display: flex;
       align-items: center;
-      justify-content: center;
-      text-align: center;
     }
     
-    .apk-title i {
+    .app-title i {
       margin-right: 12px;
       color: var(--primary);
-      font-size: 1.3rem;
+      font-size: 1.4rem;
+      width: 40px;
+      height: 40px;
+      background: rgba(67, 97, 238, 0.1);
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
     }
     
-    .preview-container {
-      position: relative;
-      padding: 0 25px 25px;
-      background: linear-gradient(135deg, #f5f7ff 0%, #e6e9ff 100%);
-      flex: 1;
+    .app-version {
+      font-size: 0.85rem;
+      color: var(--primary);
+      font-weight: 600;
+    }
+    
+    /* New Preview Section */
+    .app-preview {
+      height: 400px;
+      background: #f5f7ff;
       display: flex;
-      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      position: relative;
+      border-top: 1px solid rgba(0,0,0,0.05);
+      border-bottom: 1px solid rgba(0,0,0,0.05);
     }
     
-    .phone-mockup {
+    .phone-frame {
       width: 100%;
-      height: 450px;
+      max-width: 220px;
+      height: 100%;
+      max-height: 450px;
       background: #111;
       border-radius: 30px;
-      margin: 0 auto;
       position: relative;
       overflow: hidden;
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
       border: 10px solid #222;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
     
-    .preview-gallery {
-      width: 100%;
-      height: 100%;
+    .phone-screen {
+      width: calc(100% - 4px);
+      height: calc(100% - 4px);
+      overflow: hidden;
       position: relative;
     }
     
-    .preview-gallery img {
+    .phone-screen img {
       width: 100%;
       height: 100%;
       object-fit: contain;
-      background-color: #000;
-      transition: opacity 0.5s ease;
+      background: #000;
     }
     
-    .preview-nav {
+    .preview-controls {
       position: absolute;
-      bottom: 25px;
+      bottom: 20px;
       left: 0;
       right: 0;
       display: flex;
@@ -158,8 +178,8 @@
     }
     
     .preview-dot {
-      width: 12px;
-      height: 12px;
+      width: 10px;
+      height: 10px;
       border-radius: 50%;
       background: rgba(255,255,255,0.5);
       cursor: pointer;
@@ -171,20 +191,20 @@
       transform: scale(1.3);
     }
     
-    .apk-info {
-      padding: 20px 25px 25px;
+    /* App Info Section */
+    .app-info {
+      padding: 20px 25px;
       background: var(--white);
     }
     
-    .apk-desc {
+    .app-description {
       color: #6c757d;
       margin-bottom: 25px;
       font-size: 0.95rem;
-      text-align: center;
       line-height: 1.7;
     }
     
-    .apk-actions {
+    .app-actions {
       display: flex;
       gap: 15px;
     }
@@ -202,25 +222,25 @@
       font-size: 0.95rem;
     }
     
-    .btn-download {
+    .btn-primary {
       background-color: var(--primary);
       color: var(--white);
       box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
     }
     
-    .btn-download:hover {
+    .btn-primary:hover {
       background-color: var(--primary-dark);
       transform: translateY(-3px);
       box-shadow: 0 8px 20px rgba(67, 97, 238, 0.4);
     }
     
-    .btn-learn {
+    .btn-secondary {
       background-color: var(--white);
       color: var(--primary);
       border: 2px solid var(--primary);
     }
     
-    .btn-learn:hover {
+    .btn-secondary:hover {
       background-color: rgba(67, 97, 238, 0.1);
       transform: translateY(-3px);
     }
@@ -230,17 +250,10 @@
       font-size: 1rem;
     }
     
-    footer {
-      text-align: center;
-      margin-top: 70px;
-      padding: 20px;
-      color: #adb5bd;
-      font-size: 0.9rem;
-    }
-    
-    .badge {
+    /* Badge */
+    .featured-badge {
       position: absolute;
-      top: 20px;
+      top: -10px;
       right: 20px;
       background: var(--accent);
       color: white;
@@ -249,77 +262,82 @@
       font-size: 0.8rem;
       font-weight: 600;
       box-shadow: 0 3px 10px rgba(114, 9, 183, 0.3);
-      z-index: 3;
+      z-index: 2;
     }
     
-    .version {
-      font-size: 0.8rem;
-      color: var(--primary);
+    /* Footer */
+    footer {
       text-align: center;
-      font-weight: 600;
-      margin-top: 5px;
+      margin-top: 70px;
+      padding: 30px;
+      color: #adb5bd;
+      font-size: 0.9rem;
+      border-top: 1px solid rgba(0,0,0,0.05);
     }
     
+    /* Responsive Adjustments */
     @media (max-width: 768px) {
-      h1 {
+      .hero h1 {
         font-size: 2.2rem;
       }
       
-      .subtitle {
+      .hero p {
         font-size: 1rem;
       }
       
-      .apk-grid {
+      .app-grid {
         grid-template-columns: 1fr;
       }
       
-      .phone-mockup {
-        height: 400px;
-        border-radius: 25px;
+      .app-preview {
+        height: 350px;
       }
       
-      .apk-title {
-        font-size: 1.4rem;
+      .phone-frame {
+        max-width: 200px;
+        max-height: 400px;
       }
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <header>
+  <div class="hero">
+    <div class="container">
       <h1>D-TECh Applications</h1>
-      <p class="subtitle">Download our premium apps directly to your Android device. Safe, fast, and ad-free.</p>
-    </header>
-    
-    <main class="apk-grid">
+      <p>Premium Android apps designed for performance and elegance</p>
+    </div>
+  </div>
+  
+  <div class="container">
+    <main class="app-grid">
       <!-- DTECH SERVICE -->
-      <div class="apk-card">
-        <div class="badge">Popular</div>
-        <div class="apk-header">
-          <h2 class="apk-title"><i class="fas fa-cog"></i> DTECH SERVICE</h2>
-          <div class="version">v2.5.1</div>
+      <div class="app-card">
+        <div class="featured-badge">Featured</div>
+        <div class="app-header">
+          <h2 class="app-title"><i class="fas fa-cog"></i> DTECH SERVICE</h2>
+          <div class="app-version">v2.5.1</div>
         </div>
-        <div class="preview-container">
-          <div class="phone-mockup">
-            <div class="preview-gallery">
-              <img src="service1.png" alt="DTECH SERVICE preview 1" class="active">
-              <img src="service2.png" alt="DTECH SERVICE preview 2" style="display:none">
-              <img src="service3.png" alt="DTECH SERVICE preview 3" style="display:none">
-              <div class="preview-nav">
-                <div class="preview-dot active" onclick="showPreview(this, 'service')"></div>
-                <div class="preview-dot" onclick="showPreview(this, 'service')"></div>
-                <div class="preview-dot" onclick="showPreview(this, 'service')"></div>
-              </div>
+        
+        <div class="app-preview">
+          <div class="phone-frame">
+            <div class="phone-screen">
+              <img src="service1.png" alt="DTECH SERVICE preview" class="active">
             </div>
           </div>
+          <div class="preview-controls">
+            <div class="preview-dot active" onclick="showPreview(this, 'service')"></div>
+            <div class="preview-dot" onclick="showPreview(this, 'service')"></div>
+            <div class="preview-dot" onclick="showPreview(this, 'service')"></div>
+          </div>
         </div>
-        <div class="apk-info">
-          <p class="apk-desc">All-in-one service app with essential utilities for your device. Optimized performance with premium features.</p>
-          <div class="apk-actions">
-            <a href="DTECH SERVICE.apk" class="btn btn-download" download>
+        
+        <div class="app-info">
+          <p class="app-description">All-in-one service app with essential utilities for your device. Optimized performance with premium features.</p>
+          <div class="app-actions">
+            <a href="DTECH SERVICE.apk" class="btn btn-primary" download>
               <i class="fas fa-download"></i> Download
             </a>
-            <a href="service.html" class="btn btn-learn">
+            <a href="service.html" class="btn btn-secondary">
               <i class="fas fa-info-circle"></i> Details
             </a>
           </div>
@@ -327,32 +345,32 @@
       </div>
       
       <!-- DTECH TOOLS -->
-      <div class="apk-card">
-        <div class="apk-header">
-          <h2 class="apk-title"><i class="fas fa-tools"></i> DTECH TOOLS</h2>
-          <div class="version">v1.8.3</div>
+      <div class="app-card">
+        <div class="app-header">
+          <h2 class="app-title"><i class="fas fa-tools"></i> DTECH TOOLS</h2>
+          <div class="app-version">v1.8.3</div>
         </div>
-        <div class="preview-container">
-          <div class="phone-mockup">
-            <div class="preview-gallery">
-              <img src="tool1.png" alt="DTECH TOOLS preview 1" class="active">
-              <img src="tool2.png" alt="DTECH TOOLS preview 2" style="display:none">
-              <img src="tool3.png" alt="DTECH TOOLS preview 3" style="display:none">
-              <div class="preview-nav">
-                <div class="preview-dot active" onclick="showPreview(this, 'tool')"></div>
-                <div class="preview-dot" onclick="showPreview(this, 'tool')"></div>
-                <div class="preview-dot" onclick="showPreview(this, 'tool')"></div>
-              </div>
+        
+        <div class="app-preview">
+          <div class="phone-frame">
+            <div class="phone-screen">
+              <img src="tool1.png" alt="DTECH TOOLS preview" class="active">
             </div>
           </div>
+          <div class="preview-controls">
+            <div class="preview-dot active" onclick="showPreview(this, 'tool')"></div>
+            <div class="preview-dot" onclick="showPreview(this, 'tool')"></div>
+            <div class="preview-dot" onclick="showPreview(this, 'tool')"></div>
+          </div>
         </div>
-        <div class="apk-info">
-          <p class="apk-desc">Advanced toolkit for power users. Includes specialized utilities and customization options.</p>
-          <div class="apk-actions">
-            <a href="DTECH TOOLS.apk" class="btn btn-download" download>
+        
+        <div class="app-info">
+          <p class="app-description">Advanced toolkit for power users. Includes specialized utilities and customization options.</p>
+          <div class="app-actions">
+            <a href="DTECH TOOLS.apk" class="btn btn-primary" download>
               <i class="fas fa-download"></i> Download
             </a>
-            <a href="tool.html" class="btn btn-learn">
+            <a href="tool.html" class="btn btn-secondary">
               <i class="fas fa-info-circle"></i> Details
             </a>
           </div>
@@ -360,32 +378,32 @@
       </div>
       
       <!-- DTECH ANIME -->
-      <div class="apk-card">
-        <div class="apk-header">
-          <h2 class="apk-title"><i class="fas fa-film"></i> DTECH ANIME</h2>
-          <div class="version">v3.2.0</div>
+      <div class="app-card">
+        <div class="app-header">
+          <h2 class="app-title"><i class="fas fa-film"></i> DTECH ANIME</h2>
+          <div class="app-version">v3.2.0</div>
         </div>
-        <div class="preview-container">
-          <div class="phone-mockup">
-            <div class="preview-gallery">
-              <img src="anime1.png" alt="DTECH ANIME preview 1" class="active">
-              <img src="anime2.png" alt="DTECH ANIME preview 2" style="display:none">
-              <img src="anime3.png" alt="DTECH ANIME preview 3" style="display:none">
-              <div class="preview-nav">
-                <div class="preview-dot active" onclick="showPreview(this, 'anime')"></div>
-                <div class="preview-dot" onclick="showPreview(this, 'anime')"></div>
-                <div class="preview-dot" onclick="showPreview(this, 'anime')"></div>
-              </div>
+        
+        <div class="app-preview">
+          <div class="phone-frame">
+            <div class="phone-screen">
+              <img src="anime1.png" alt="DTECH ANIME preview" class="active">
             </div>
           </div>
+          <div class="preview-controls">
+            <div class="preview-dot active" onclick="showPreview(this, 'anime')"></div>
+            <div class="preview-dot" onclick="showPreview(this, 'anime')"></div>
+            <div class="preview-dot" onclick="showPreview(this, 'anime')"></div>
+          </div>
         </div>
-        <div class="apk-info">
-          <p class="apk-desc">Ultimate anime experience with curated content, high-quality streaming, and exclusive features.</p>
-          <div class="apk-actions">
-            <a href="DTECH ANIME.apk" class="btn btn-download" download>
+        
+        <div class="app-info">
+          <p class="app-description">Ultimate anime experience with curated content, high-quality streaming, and exclusive features.</p>
+          <div class="app-actions">
+            <a href="DTECH ANIME.apk" class="btn btn-primary" download>
               <i class="fas fa-download"></i> Download
             </a>
-            <a href="anime.html" class="btn btn-learn">
+            <a href="anime.html" class="btn btn-secondary">
               <i class="fas fa-info-circle"></i> Details
             </a>
           </div>
@@ -400,48 +418,36 @@
   
   <script>
     function showPreview(dot, app) {
-      // Get all preview images and dots for this app
-      const gallery = dot.closest('.preview-gallery');
-      const images = gallery.querySelectorAll('img');
-      const dots = gallery.querySelectorAll('.preview-dot');
+      const card = dot.closest('.app-card');
+      const images = card.querySelectorAll('.phone-screen img');
+      const dots = card.querySelectorAll('.preview-dot');
       
-      // Remove active class from all dots
       dots.forEach(d => d.classList.remove('active'));
-      
-      // Add active class to clicked dot
       dot.classList.add('active');
       
-      // Get index of clicked dot
       const index = Array.from(dots).indexOf(dot);
-      
-      // Hide all images and show the selected one
       images.forEach(img => img.style.display = 'none');
       images[index].style.display = 'block';
     }
     
-    // Auto-rotate previews
     function autoRotatePreviews() {
-      document.querySelectorAll('.preview-gallery').forEach(gallery => {
-        const images = gallery.querySelectorAll('img');
-        const dots = gallery.querySelectorAll('.preview-dot');
+      document.querySelectorAll('.app-card').forEach(card => {
+        const images = card.querySelectorAll('.phone-screen img');
+        const dots = card.querySelectorAll('.preview-dot');
         let currentIndex = 0;
         
         setInterval(() => {
-          // Hide current image
           images[currentIndex].style.display = 'none';
           dots[currentIndex].classList.remove('active');
           
-          // Move to next image
           currentIndex = (currentIndex + 1) % images.length;
           
-          // Show next image
           images[currentIndex].style.display = 'block';
           dots[currentIndex].classList.add('active');
         }, 3000);
       });
     }
     
-    // Start auto-rotation after page loads
     window.addEventListener('load', autoRotatePreviews);
   </script>
 </body>
