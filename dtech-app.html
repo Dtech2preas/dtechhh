@@ -47,63 +47,24 @@
     
     /* Header */
     .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
       padding: 30px 0;
-      margin-bottom: 40px;
-      position: relative;
+      margin-bottom: 20px;
     }
     
     .logo {
-      font-size: 2rem;
+      font-size: 2.5rem;
       font-weight: 700;
       background: linear-gradient(90deg, var(--primary), var(--accent));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       display: flex;
       align-items: center;
+      justify-content: center;
     }
     
     .logo i {
       margin-right: 12px;
-      font-size: 1.8rem;
-    }
-    
-    .nav {
-      display: flex;
-      gap: 25px;
-    }
-    
-    .nav-link {
-      color: var(--text);
-      text-decoration: none;
-      font-weight: 500;
-      font-size: 1.1rem;
-      position: relative;
-      padding: 8px 0;
-      opacity: 0.8;
-      transition: var(--transition);
-    }
-    
-    .nav-link:hover {
-      opacity: 1;
-      color: var(--primary-light);
-    }
-    
-    .nav-link::after {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 0;
-      height: 2px;
-      background: var(--primary-light);
-      transition: var(--transition);
-    }
-    
-    .nav-link:hover::after {
-      width: 100%;
+      font-size: 2rem;
     }
     
     /* Hero */
@@ -133,41 +94,6 @@
       max-width: 700px;
       margin: 0 auto 30px;
       opacity: 0.9;
-    }
-    
-    .search-bar {
-      max-width: 600px;
-      margin: 0 auto;
-      position: relative;
-    }
-    
-    .search-input {
-      width: 100%;
-      padding: 16px 24px;
-      border-radius: 50px;
-      border: none;
-      background: rgba(0, 0, 0, 0.3);
-      backdrop-filter: blur(5px);
-      -webkit-backdrop-filter: blur(5px);
-      color: var(--text);
-      font-size: 1.1rem;
-      border: 1px solid var(--glass-border);
-      transition: var(--transition);
-    }
-    
-    .search-input:focus {
-      outline: none;
-      border-color: var(--primary-light);
-      box-shadow: 0 0 0 3px rgba(123, 44, 191, 0.3);
-    }
-    
-    .search-icon {
-      position: absolute;
-      right: 20px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: var(--text);
-      opacity: 0.7;
     }
     
     /* App Grid */
@@ -207,24 +133,63 @@
       border-radius: 20px;
       font-size: 0.8rem;
       font-weight: 700;
-      z-index: 2;
+      z-index: 3;
     }
     
+    /* Enhanced Slideshow Preview */
     .app-preview {
-      height: 200px;
+      height: 250px;
       position: relative;
       overflow: hidden;
     }
     
-    .app-preview img {
+    .slideshow {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+    
+    .slide {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      transition: opacity 0.5s ease-in-out;
+    }
+    
+    .slide.active {
+      opacity: 1;
+    }
+    
+    .slide img {
       width: 100%;
       height: 100%;
       object-fit: cover;
+    }
+    
+    .slide-controls {
+      position: absolute;
+      bottom: 15px;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      z-index: 2;
+    }
+    
+    .slide-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.5);
+      cursor: pointer;
       transition: var(--transition);
     }
     
-    .app-card:hover .app-preview img {
-      transform: scale(1.05);
+    .slide-dot.active {
+      background: var(--accent);
+      transform: scale(1.3);
     }
     
     .app-overlay {
@@ -313,64 +278,12 @@
       margin-right: 8px;
     }
     
-    /* Categories */
-    .categories {
-      display: flex;
-      gap: 15px;
-      margin-bottom: 40px;
-      flex-wrap: wrap;
-    }
-    
-    .category {
-      padding: 8px 20px;
-      border-radius: 50px;
-      background: var(--glass);
-      border: 1px solid var(--glass-border);
-      color: var(--text);
-      text-decoration: none;
-      font-size: 0.95rem;
-      transition: var(--transition);
-    }
-    
-    .category:hover, .category.active {
-      background: var(--primary);
-      border-color: var(--primary);
-      color: white;
-    }
-    
     /* Footer */
     footer {
       margin-top: 80px;
       padding: 40px 0;
       text-align: center;
       border-top: 1px solid var(--glass-border);
-    }
-    
-    .social-links {
-      display: flex;
-      justify-content: center;
-      gap: 20px;
-      margin-bottom: 20px;
-    }
-    
-    .social-link {
-      width: 45px;
-      height: 45px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: var(--glass);
-      border: 1px solid var(--glass-border);
-      color: var(--text);
-      font-size: 1.2rem;
-      transition: var(--transition);
-    }
-    
-    .social-link:hover {
-      background: var(--primary);
-      border-color: var(--primary);
-      transform: translateY(-3px);
     }
     
     .copyright {
@@ -380,11 +293,6 @@
     
     /* Responsive */
     @media (max-width: 768px) {
-      .header {
-        flex-direction: column;
-        gap: 20px;
-      }
-      
       .hero h1 {
         font-size: 2.5rem;
       }
@@ -420,38 +328,34 @@
         <i class="fas fa-cube"></i>
         <span>D-TECh</span>
       </div>
-      <nav class="nav">
-        <a href="#" class="nav-link">Home</a>
-        <a href="#" class="nav-link">Apps</a>
-        <a href="#" class="nav-link">Features</a>
-        <a href="#" class="nav-link">About</a>
-        <a href="#" class="nav-link">Contact</a>
-      </nav>
     </header>
     
     <section class="hero floating">
       <h1>Premium Android Apps</h1>
       <p>Experience the next level of mobile performance with our optimized applications</p>
-      <div class="search-bar">
-        <input type="text" class="search-input" placeholder="Search apps...">
-        <i class="fas fa-search search-icon"></i>
-      </div>
     </section>
-    
-    <div class="categories">
-      <a href="#" class="category active">All</a>
-      <a href="#" class="category">Utilities</a>
-      <a href="#" class="category">Entertainment</a>
-      <a href="#" class="category">Productivity</a>
-      <a href="#" class="category">Featured</a>
-    </div>
     
     <main class="app-grid">
       <!-- DTECH SERVICE -->
       <div class="app-card">
         <div class="app-badge">Featured</div>
         <div class="app-preview">
-          <img src="service1.png" alt="DTECH SERVICE">
+          <div class="slideshow">
+            <div class="slide active">
+              <img src="service1.png" alt="DTECH SERVICE Preview 1">
+            </div>
+            <div class="slide">
+              <img src="service2.png" alt="DTECH SERVICE Preview 2">
+            </div>
+            <div class="slide">
+              <img src="service3.png" alt="DTECH SERVICE Preview 3">
+            </div>
+          </div>
+          <div class="slide-controls">
+            <div class="slide-dot active" data-slide="0"></div>
+            <div class="slide-dot" data-slide="1"></div>
+            <div class="slide-dot" data-slide="2"></div>
+          </div>
           <div class="app-overlay">
             <h3 class="app-title"><i class="fas fa-cog"></i> DTECH SERVICE</h3>
             <div class="app-meta">
@@ -477,7 +381,22 @@
       <!-- DTECH TOOLS -->
       <div class="app-card">
         <div class="app-preview">
-          <img src="tool1.png" alt="DTECH TOOLS">
+          <div class="slideshow">
+            <div class="slide active">
+              <img src="tool1.png" alt="DTECH TOOLS Preview 1">
+            </div>
+            <div class="slide">
+              <img src="tool2.png" alt="DTECH TOOLS Preview 2">
+            </div>
+            <div class="slide">
+              <img src="tool3.png" alt="DTECH TOOLS Preview 3">
+            </div>
+          </div>
+          <div class="slide-controls">
+            <div class="slide-dot active" data-slide="0"></div>
+            <div class="slide-dot" data-slide="1"></div>
+            <div class="slide-dot" data-slide="2"></div>
+          </div>
           <div class="app-overlay">
             <h3 class="app-title"><i class="fas fa-tools"></i> DTECH TOOLS</h3>
             <div class="app-meta">
@@ -504,7 +423,22 @@
       <div class="app-card">
         <div class="app-badge">Popular</div>
         <div class="app-preview">
-          <img src="anime1.png" alt="DTECH ANIME">
+          <div class="slideshow">
+            <div class="slide active">
+              <img src="anime1.png" alt="DTECH ANIME Preview 1">
+            </div>
+            <div class="slide">
+              <img src="anime2.png" alt="DTECH ANIME Preview 2">
+            </div>
+            <div class="slide">
+              <img src="anime3.png" alt="DTECH ANIME Preview 3">
+            </div>
+          </div>
+          <div class="slide-controls">
+            <div class="slide-dot active" data-slide="0"></div>
+            <div class="slide-dot" data-slide="1"></div>
+            <div class="slide-dot" data-slide="2"></div>
+          </div>
           <div class="app-overlay">
             <h3 class="app-title"><i class="fas fa-film"></i> DTECH ANIME</h3>
             <div class="app-meta">
@@ -526,36 +460,59 @@
           </div>
         </div>
       </div>
-      
-      <!-- Additional app cards can be added here following the same pattern -->
     </main>
     
     <footer>
-      <div class="social-links">
-        <a href="#" class="social-link"><i class="fab fa-telegram"></i></a>
-        <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
-        <a href="#" class="social-link"><i class="fab fa-github"></i></a>
-        <a href="#" class="social-link"><i class="fab fa-discord"></i></a>
-      </div>
       <p class="copyright">© 2023 D-TECh APK Hub. All rights reserved.</p>
     </footer>
   </div>
   
   <script>
-    // Simple animation for category buttons
-    document.querySelectorAll('.category').forEach(btn => {
-      btn.addEventListener('click', function(e) {
-        e.preventDefault();
-        document.querySelector('.category.active').classList.remove('active');
-        this.classList.add('active');
+    // Initialize slideshows for each app card
+    document.querySelectorAll('.app-card').forEach(card => {
+      const slideshow = card.querySelector('.slideshow');
+      const slides = card.querySelectorAll('.slide');
+      const dots = card.querySelectorAll('.slide-dot');
+      let currentSlide = 0;
+      
+      // Auto-rotate slides
+      const interval = setInterval(() => {
+        slides[currentSlide].classList.remove('active');
+        dots[currentSlide].classList.remove('active');
+        
+        currentSlide = (currentSlide + 1) % slides.length;
+        
+        slides[currentSlide].classList.add('active');
+        dots[currentSlide].classList.add('active');
+      }, 3000);
+      
+      // Pause on hover
+      card.addEventListener('mouseenter', () => {
+        clearInterval(interval);
       });
-    });
-    
-    // Search functionality placeholder
-    document.querySelector('.search-input').addEventListener('keyup', function(e) {
-      if(e.key === 'Enter') {
-        alert('Search functionality would go here for: ' + this.value);
-      }
+      
+      card.addEventListener('mouseleave', () => {
+        currentSlide = 0;
+        slides.forEach(slide => slide.classList.remove('active'));
+        dots.forEach(dot => dot.classList.remove('active'));
+        slides[0].classList.add('active');
+        dots[0].classList.add('active');
+      });
+      
+      // Dot navigation
+      dots.forEach(dot => {
+        dot.addEventListener('click', function() {
+          const slideIndex = parseInt(this.getAttribute('data-slide'));
+          
+          slides[currentSlide].classList.remove('active');
+          dots[currentSlide].classList.remove('active');
+          
+          currentSlide = slideIndex;
+          
+          slides[currentSlide].classList.add('active');
+          dots[currentSlide].classList.add('active');
+        });
+      });
     });
     
     // Card hover effect enhancement
