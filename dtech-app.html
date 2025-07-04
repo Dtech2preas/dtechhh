@@ -6,18 +6,20 @@
   <title>D-TECh APK Hub</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     :root {
-      --primary: #4361ee;
-      --primary-dark: #3a56d4;
-      --accent: #7209b7;
-      --text: #2b2d42;
-      --light: #f8f9fa;
-      --white: #ffffff;
-      --dark: #1a1a2e;
-      --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+      --primary: #7b2cbf;
+      --primary-light: #9d4edd;
+      --accent: #ff9e00;
+      --text: #e0e0e0;
+      --text-dark: #1a1a1a;
+      --bg: #121212;
+      --card-bg: rgba(30, 30, 30, 0.6);
+      --glass: rgba(255, 255, 255, 0.05);
+      --glass-border: rgba(255, 255, 255, 0.1);
+      --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     }
     
     * {
@@ -27,181 +29,243 @@
     }
     
     body {
-      font-family: 'Poppins', sans-serif;
-      background-color: #f8faff;
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
       color: var(--text);
-      line-height: 1.6;
-      padding: 0;
+      line-height: 1.7;
+      background-image: 
+        radial-gradient(circle at 25% 25%, rgba(123, 44, 191, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 75% 75%, rgba(255, 158, 0, 0.1) 0%, transparent 50%);
+      min-height: 100vh;
     }
     
     .container {
-      max-width: 1200px;
+      max-width: 1400px;
       margin: 0 auto;
       padding: 40px 20px;
     }
     
-    /* New Header Design */
-    .hero {
-      background: linear-gradient(135deg, #4361ee 0%, #7209b7 100%);
-      color: white;
-      padding: 60px 20px;
-      text-align: center;
-      border-radius: 0 0 20px 20px;
-      margin-bottom: 50px;
-      box-shadow: 0 10px 30px rgba(67, 97, 238, 0.2);
-    }
-    
-    .hero h1 {
-      font-size: 3rem;
-      margin-bottom: 15px;
-      font-weight: 700;
-    }
-    
-    .hero p {
-      font-size: 1.2rem;
-      max-width: 700px;
-      margin: 0 auto;
-      opacity: 0.9;
-    }
-    
-    /* New Card Grid */
-    .app-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-      gap: 30px;
-      margin-top: 30px;
-    }
-    
-    /* Completely Redesigned App Card */
-    .app-card {
-      background: var(--white);
-      border-radius: 16px;
-      overflow: hidden;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-      transition: var(--transition);
+    /* Header */
+    .header {
       display: flex;
-      flex-direction: column;
-      border: 1px solid rgba(0,0,0,0.05);
-    }
-    
-    .app-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
-    }
-    
-    .app-header {
-      padding: 25px 25px 15px;
-      background: var(--white);
+      justify-content: space-between;
+      align-items: center;
+      padding: 30px 0;
+      margin-bottom: 40px;
       position: relative;
     }
     
-    .app-title {
-      font-size: 1.6rem;
-      margin-bottom: 5px;
-      color: var(--dark);
+    .logo {
+      font-size: 2rem;
       font-weight: 700;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: flex;
+      align-items: center;
+    }
+    
+    .logo i {
+      margin-right: 12px;
+      font-size: 1.8rem;
+    }
+    
+    .nav {
+      display: flex;
+      gap: 25px;
+    }
+    
+    .nav-link {
+      color: var(--text);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 1.1rem;
+      position: relative;
+      padding: 8px 0;
+      opacity: 0.8;
+      transition: var(--transition);
+    }
+    
+    .nav-link:hover {
+      opacity: 1;
+      color: var(--primary-light);
+    }
+    
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: var(--primary-light);
+      transition: var(--transition);
+    }
+    
+    .nav-link:hover::after {
+      width: 100%;
+    }
+    
+    /* Hero */
+    .hero {
+      text-align: center;
+      margin-bottom: 60px;
+      padding: 60px 20px;
+      background: var(--glass);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-radius: 24px;
+      border: 1px solid var(--glass-border);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+    
+    .hero h1 {
+      font-size: 3.5rem;
+      margin-bottom: 20px;
+      font-weight: 700;
+      background: linear-gradient(90deg, var(--primary-light), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    
+    .hero p {
+      font-size: 1.3rem;
+      max-width: 700px;
+      margin: 0 auto 30px;
+      opacity: 0.9;
+    }
+    
+    .search-bar {
+      max-width: 600px;
+      margin: 0 auto;
+      position: relative;
+    }
+    
+    .search-input {
+      width: 100%;
+      padding: 16px 24px;
+      border-radius: 50px;
+      border: none;
+      background: rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(5px);
+      -webkit-backdrop-filter: blur(5px);
+      color: var(--text);
+      font-size: 1.1rem;
+      border: 1px solid var(--glass-border);
+      transition: var(--transition);
+    }
+    
+    .search-input:focus {
+      outline: none;
+      border-color: var(--primary-light);
+      box-shadow: 0 0 0 3px rgba(123, 44, 191, 0.3);
+    }
+    
+    .search-icon {
+      position: absolute;
+      right: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text);
+      opacity: 0.7;
+    }
+    
+    /* App Grid */
+    .app-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 30px;
+      margin-top: 50px;
+    }
+    
+    /* App Card */
+    .app-card {
+      background: var(--card-bg);
+      border-radius: 20px;
+      overflow: hidden;
+      transition: var(--transition);
+      position: relative;
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    }
+    
+    .app-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+      border-color: rgba(123, 44, 191, 0.3);
+    }
+    
+    .app-badge {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: linear-gradient(45deg, var(--accent), #ff6d00);
+      color: var(--text-dark);
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      z-index: 2;
+    }
+    
+    .app-preview {
+      height: 200px;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .app-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: var(--transition);
+    }
+    
+    .app-card:hover .app-preview img {
+      transform: scale(1.05);
+    }
+    
+    .app-overlay {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 20px;
+      background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+      z-index: 1;
+    }
+    
+    .app-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 5px;
       display: flex;
       align-items: center;
     }
     
     .app-title i {
-      margin-right: 12px;
-      color: var(--primary);
-      font-size: 1.4rem;
-      width: 40px;
-      height: 40px;
-      background: rgba(67, 97, 238, 0.1);
-      border-radius: 50%;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
+      margin-right: 10px;
+      color: var(--primary-light);
     }
     
-    .app-version {
-      font-size: 0.85rem;
-      color: var(--primary);
-      font-weight: 600;
-    }
-    
-    /* New Preview Section */
-    .app-preview {
-      height: 400px;
-      background: #f5f7ff;
+    .app-meta {
       display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-      position: relative;
-      border-top: 1px solid rgba(0,0,0,0.05);
-      border-bottom: 1px solid rgba(0,0,0,0.05);
+      gap: 15px;
+      font-size: 0.9rem;
+      opacity: 0.8;
+      margin-bottom: 15px;
     }
     
-    .phone-frame {
-      width: 100%;
-      max-width: 220px;
-      height: 100%;
-      max-height: 450px;
-      background: #111;
-      border-radius: 30px;
-      position: relative;
-      overflow: hidden;
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-      border: 10px solid #222;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    
-    .phone-screen {
-      width: calc(100% - 4px);
-      height: calc(100% - 4px);
-      overflow: hidden;
-      position: relative;
-    }
-    
-    .phone-screen img {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-      background: #000;
-    }
-    
-    .preview-controls {
-      position: absolute;
-      bottom: 20px;
-      left: 0;
-      right: 0;
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-      z-index: 2;
-    }
-    
-    .preview-dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.5);
-      cursor: pointer;
-      transition: var(--transition);
-    }
-    
-    .preview-dot.active {
-      background: var(--white);
-      transform: scale(1.3);
-    }
-    
-    /* App Info Section */
-    .app-info {
-      padding: 20px 25px;
-      background: var(--white);
+    .app-content {
+      padding: 25px;
     }
     
     .app-description {
-      color: #6c757d;
       margin-bottom: 25px;
+      opacity: 0.9;
       font-size: 0.95rem;
-      line-height: 1.7;
     }
     
     .app-actions {
@@ -210,7 +274,7 @@
     }
     
     .btn {
-      padding: 14px 20px;
+      padding: 12px 20px;
       border-radius: 12px;
       font-weight: 600;
       text-decoration: none;
@@ -218,121 +282,187 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      flex: 1;
       font-size: 0.95rem;
+      flex: 1;
     }
     
     .btn-primary {
-      background-color: var(--primary);
-      color: var(--white);
-      box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+      background: linear-gradient(45deg, var(--primary), var(--primary-light));
+      color: white;
+      box-shadow: 0 4px 15px rgba(123, 44, 191, 0.4);
     }
     
     .btn-primary:hover {
-      background-color: var(--primary-dark);
       transform: translateY(-3px);
-      box-shadow: 0 8px 20px rgba(67, 97, 238, 0.4);
+      box-shadow: 0 8px 25px rgba(123, 44, 191, 0.5);
     }
     
     .btn-secondary {
-      background-color: var(--white);
-      color: var(--primary);
-      border: 2px solid var(--primary);
+      background: var(--glass);
+      color: var(--text);
+      border: 1px solid var(--glass-border);
     }
     
     .btn-secondary:hover {
-      background-color: rgba(67, 97, 238, 0.1);
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.2);
       transform: translateY(-3px);
     }
     
     .btn i {
       margin-right: 8px;
-      font-size: 1rem;
     }
     
-    /* Badge */
-    .featured-badge {
-      position: absolute;
-      top: -10px;
-      right: 20px;
-      background: var(--accent);
+    /* Categories */
+    .categories {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 40px;
+      flex-wrap: wrap;
+    }
+    
+    .category {
+      padding: 8px 20px;
+      border-radius: 50px;
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      color: var(--text);
+      text-decoration: none;
+      font-size: 0.95rem;
+      transition: var(--transition);
+    }
+    
+    .category:hover, .category.active {
+      background: var(--primary);
+      border-color: var(--primary);
       color: white;
-      padding: 6px 14px;
-      border-radius: 20px;
-      font-size: 0.8rem;
-      font-weight: 600;
-      box-shadow: 0 3px 10px rgba(114, 9, 183, 0.3);
-      z-index: 2;
     }
     
     /* Footer */
     footer {
+      margin-top: 80px;
+      padding: 40px 0;
       text-align: center;
-      margin-top: 70px;
-      padding: 30px;
-      color: #adb5bd;
-      font-size: 0.9rem;
-      border-top: 1px solid rgba(0,0,0,0.05);
+      border-top: 1px solid var(--glass-border);
     }
     
-    /* Responsive Adjustments */
+    .social-links {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+    
+    .social-link {
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      color: var(--text);
+      font-size: 1.2rem;
+      transition: var(--transition);
+    }
+    
+    .social-link:hover {
+      background: var(--primary);
+      border-color: var(--primary);
+      transform: translateY(-3px);
+    }
+    
+    .copyright {
+      opacity: 0.7;
+      font-size: 0.9rem;
+    }
+    
+    /* Responsive */
     @media (max-width: 768px) {
+      .header {
+        flex-direction: column;
+        gap: 20px;
+      }
+      
       .hero h1 {
-        font-size: 2.2rem;
+        font-size: 2.5rem;
       }
       
       .hero p {
-        font-size: 1rem;
+        font-size: 1.1rem;
       }
       
       .app-grid {
         grid-template-columns: 1fr;
       }
-      
-      .app-preview {
-        height: 350px;
+    }
+    
+    /* Animation */
+    @keyframes float {
+      0%, 100% {
+        transform: translateY(0);
       }
-      
-      .phone-frame {
-        max-width: 200px;
-        max-height: 400px;
+      50% {
+        transform: translateY(-10px);
       }
+    }
+    
+    .floating {
+      animation: float 6s ease-in-out infinite;
     }
   </style>
 </head>
 <body>
-  <div class="hero">
-    <div class="container">
-      <h1>D-TECh Applications</h1>
-      <p>Premium Android apps designed for performance and elegance</p>
-    </div>
-  </div>
-  
   <div class="container">
+    <header class="header">
+      <div class="logo">
+        <i class="fas fa-cube"></i>
+        <span>D-TECh</span>
+      </div>
+      <nav class="nav">
+        <a href="#" class="nav-link">Home</a>
+        <a href="#" class="nav-link">Apps</a>
+        <a href="#" class="nav-link">Features</a>
+        <a href="#" class="nav-link">About</a>
+        <a href="#" class="nav-link">Contact</a>
+      </nav>
+    </header>
+    
+    <section class="hero floating">
+      <h1>Premium Android Apps</h1>
+      <p>Experience the next level of mobile performance with our optimized applications</p>
+      <div class="search-bar">
+        <input type="text" class="search-input" placeholder="Search apps...">
+        <i class="fas fa-search search-icon"></i>
+      </div>
+    </section>
+    
+    <div class="categories">
+      <a href="#" class="category active">All</a>
+      <a href="#" class="category">Utilities</a>
+      <a href="#" class="category">Entertainment</a>
+      <a href="#" class="category">Productivity</a>
+      <a href="#" class="category">Featured</a>
+    </div>
+    
     <main class="app-grid">
       <!-- DTECH SERVICE -->
       <div class="app-card">
-        <div class="featured-badge">Featured</div>
-        <div class="app-header">
-          <h2 class="app-title"><i class="fas fa-cog"></i> DTECH SERVICE</h2>
-          <div class="app-version">v2.5.1</div>
-        </div>
-        
+        <div class="app-badge">Featured</div>
         <div class="app-preview">
-          <div class="phone-frame">
-            <div class="phone-screen">
-              <img src="service1.png" alt="DTECH SERVICE preview" class="active">
+          <img src="service1.png" alt="DTECH SERVICE">
+          <div class="app-overlay">
+            <h3 class="app-title"><i class="fas fa-cog"></i> DTECH SERVICE</h3>
+            <div class="app-meta">
+              <span>v2.5.1</span>
+              <span>12 MB</span>
+              <span><i class="fas fa-download"></i> 10K+</span>
             </div>
           </div>
-          <div class="preview-controls">
-            <div class="preview-dot active" onclick="showPreview(this, 'service')"></div>
-            <div class="preview-dot" onclick="showPreview(this, 'service')"></div>
-            <div class="preview-dot" onclick="showPreview(this, 'service')"></div>
-          </div>
         </div>
-        
-        <div class="app-info">
-          <p class="app-description">All-in-one service app with essential utilities for your device. Optimized performance with premium features.</p>
+        <div class="app-content">
+          <p class="app-description">Comprehensive service app with premium utilities to optimize and enhance your device performance.</p>
           <div class="app-actions">
             <a href="DTECH SERVICE.apk" class="btn btn-primary" download>
               <i class="fas fa-download"></i> Download
@@ -346,26 +476,19 @@
       
       <!-- DTECH TOOLS -->
       <div class="app-card">
-        <div class="app-header">
-          <h2 class="app-title"><i class="fas fa-tools"></i> DTECH TOOLS</h2>
-          <div class="app-version">v1.8.3</div>
-        </div>
-        
         <div class="app-preview">
-          <div class="phone-frame">
-            <div class="phone-screen">
-              <img src="tool1.png" alt="DTECH TOOLS preview" class="active">
+          <img src="tool1.png" alt="DTECH TOOLS">
+          <div class="app-overlay">
+            <h3 class="app-title"><i class="fas fa-tools"></i> DTECH TOOLS</h3>
+            <div class="app-meta">
+              <span>v1.8.3</span>
+              <span>8.5 MB</span>
+              <span><i class="fas fa-download"></i> 7.5K+</span>
             </div>
           </div>
-          <div class="preview-controls">
-            <div class="preview-dot active" onclick="showPreview(this, 'tool')"></div>
-            <div class="preview-dot" onclick="showPreview(this, 'tool')"></div>
-            <div class="preview-dot" onclick="showPreview(this, 'tool')"></div>
-          </div>
         </div>
-        
-        <div class="app-info">
-          <p class="app-description">Advanced toolkit for power users. Includes specialized utilities and customization options.</p>
+        <div class="app-content">
+          <p class="app-description">Powerful toolkit for advanced users with specialized utilities and customization options.</p>
           <div class="app-actions">
             <a href="DTECH TOOLS.apk" class="btn btn-primary" download>
               <i class="fas fa-download"></i> Download
@@ -379,26 +502,20 @@
       
       <!-- DTECH ANIME -->
       <div class="app-card">
-        <div class="app-header">
-          <h2 class="app-title"><i class="fas fa-film"></i> DTECH ANIME</h2>
-          <div class="app-version">v3.2.0</div>
-        </div>
-        
+        <div class="app-badge">Popular</div>
         <div class="app-preview">
-          <div class="phone-frame">
-            <div class="phone-screen">
-              <img src="anime1.png" alt="DTECH ANIME preview" class="active">
+          <img src="anime1.png" alt="DTECH ANIME">
+          <div class="app-overlay">
+            <h3 class="app-title"><i class="fas fa-film"></i> DTECH ANIME</h3>
+            <div class="app-meta">
+              <span>v3.2.0</span>
+              <span>15 MB</span>
+              <span><i class="fas fa-download"></i> 25K+</span>
             </div>
           </div>
-          <div class="preview-controls">
-            <div class="preview-dot active" onclick="showPreview(this, 'anime')"></div>
-            <div class="preview-dot" onclick="showPreview(this, 'anime')"></div>
-            <div class="preview-dot" onclick="showPreview(this, 'anime')"></div>
-          </div>
         </div>
-        
-        <div class="app-info">
-          <p class="app-description">Ultimate anime experience with curated content, high-quality streaming, and exclusive features.</p>
+        <div class="app-content">
+          <p class="app-description">Your ultimate anime companion with high-quality streaming and exclusive content.</p>
           <div class="app-actions">
             <a href="DTECH ANIME.apk" class="btn btn-primary" download>
               <i class="fas fa-download"></i> Download
@@ -409,46 +526,57 @@
           </div>
         </div>
       </div>
+      
+      <!-- Additional app cards can be added here following the same pattern -->
     </main>
     
     <footer>
-      <p>© 2023 D-TECh by Preasx24. All rights reserved.</p>
+      <div class="social-links">
+        <a href="#" class="social-link"><i class="fab fa-telegram"></i></a>
+        <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+        <a href="#" class="social-link"><i class="fab fa-github"></i></a>
+        <a href="#" class="social-link"><i class="fab fa-discord"></i></a>
+      </div>
+      <p class="copyright">© 2023 D-TECh APK Hub. All rights reserved.</p>
     </footer>
   </div>
   
   <script>
-    function showPreview(dot, app) {
-      const card = dot.closest('.app-card');
-      const images = card.querySelectorAll('.phone-screen img');
-      const dots = card.querySelectorAll('.preview-dot');
-      
-      dots.forEach(d => d.classList.remove('active'));
-      dot.classList.add('active');
-      
-      const index = Array.from(dots).indexOf(dot);
-      images.forEach(img => img.style.display = 'none');
-      images[index].style.display = 'block';
-    }
-    
-    function autoRotatePreviews() {
-      document.querySelectorAll('.app-card').forEach(card => {
-        const images = card.querySelectorAll('.phone-screen img');
-        const dots = card.querySelectorAll('.preview-dot');
-        let currentIndex = 0;
-        
-        setInterval(() => {
-          images[currentIndex].style.display = 'none';
-          dots[currentIndex].classList.remove('active');
-          
-          currentIndex = (currentIndex + 1) % images.length;
-          
-          images[currentIndex].style.display = 'block';
-          dots[currentIndex].classList.add('active');
-        }, 3000);
+    // Simple animation for category buttons
+    document.querySelectorAll('.category').forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        document.querySelector('.category.active').classList.remove('active');
+        this.classList.add('active');
       });
-    }
+    });
     
-    window.addEventListener('load', autoRotatePreviews);
+    // Search functionality placeholder
+    document.querySelector('.search-input').addEventListener('keyup', function(e) {
+      if(e.key === 'Enter') {
+        alert('Search functionality would go here for: ' + this.value);
+      }
+    });
+    
+    // Card hover effect enhancement
+    document.querySelectorAll('.app-card').forEach(card => {
+      card.addEventListener('mousemove', function(e) {
+        const x = e.clientX - this.getBoundingClientRect().left;
+        const y = e.clientY - this.getBoundingClientRect().top;
+        
+        const centerX = this.offsetWidth / 2;
+        const centerY = this.offsetHeight / 2;
+        
+        const angleX = (y - centerY) / 10;
+        const angleY = (centerX - x) / 10;
+        
+        this.style.transform = `perspective(1000px) rotateX(${angleX}deg) rotateY(${angleY}deg) translateY(-10px)`;
+      });
+      
+      card.addEventListener('mouseleave', function() {
+        this.style.transform = 'translateY(-10px)';
+      });
+    });
   </script>
 </body>
 </html>
