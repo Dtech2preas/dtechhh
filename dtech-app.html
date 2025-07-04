@@ -52,6 +52,7 @@
       background: linear-gradient(90deg, var(--primary), var(--accent));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
     
     .subtitle {
@@ -64,45 +65,71 @@
     
     .apk-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
       gap: 30px;
     }
     
     .apk-card {
       background: var(--white);
-      border-radius: 16px;
+      border-radius: 18px;
       overflow: hidden;
-      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.08);
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
       transition: var(--transition);
       border: none;
-      position: relative;
       display: flex;
       flex-direction: column;
       height: 100%;
+      position: relative;
+      border: 1px solid rgba(0,0,0,0.05);
     }
     
     .apk-card:hover {
       transform: translateY(-10px);
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    }
+    
+    .apk-header {
+      padding: 25px 25px 15px;
+      background: linear-gradient(135deg, #f5f7ff 0%, #e6e9ff 100%);
+      border-bottom: 1px solid rgba(0,0,0,0.05);
+    }
+    
+    .apk-title {
+      font-size: 1.5rem;
+      margin-bottom: 5px;
+      color: var(--dark);
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+    
+    .apk-title i {
+      margin-right: 12px;
+      color: var(--primary);
+      font-size: 1.3rem;
     }
     
     .preview-container {
       position: relative;
-      padding: 30px 30px 0;
+      padding: 0 25px 25px;
       background: linear-gradient(135deg, #f5f7ff 0%, #e6e9ff 100%);
       flex: 1;
+      display: flex;
+      flex-direction: column;
     }
     
     .phone-mockup {
       width: 100%;
-      height: 400px; /* Increased height for more vertical space */
+      height: 450px;
       background: #111;
-      border-radius: 25px;
+      border-radius: 30px;
       margin: 0 auto;
       position: relative;
       overflow: hidden;
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-      border: 8px solid #222;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+      border: 10px solid #222;
     }
     
     .preview-gallery {
@@ -114,13 +141,14 @@
     .preview-gallery img {
       width: 100%;
       height: 100%;
-      object-fit: cover;
+      object-fit: contain;
+      background-color: #000;
       transition: opacity 0.5s ease;
     }
     
     .preview-nav {
       position: absolute;
-      bottom: 20px;
+      bottom: 25px;
       left: 0;
       right: 0;
       display: flex;
@@ -144,28 +172,16 @@
     }
     
     .apk-info {
-      padding: 25px 30px 30px;
-    }
-    
-    .apk-title {
-      font-size: 1.5rem;
-      margin-bottom: 12px;
-      color: var(--dark);
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-    }
-    
-    .apk-title i {
-      margin-right: 10px;
-      color: var(--primary);
+      padding: 20px 25px 25px;
+      background: var(--white);
     }
     
     .apk-desc {
       color: #6c757d;
       margin-bottom: 25px;
       font-size: 0.95rem;
-      min-height: 60px; /* Ensure consistent height for descriptions */
+      text-align: center;
+      line-height: 1.7;
     }
     
     .apk-actions {
@@ -174,8 +190,8 @@
     }
     
     .btn {
-      padding: 12px 25px;
-      border-radius: 10px;
+      padding: 14px 20px;
+      border-radius: 12px;
       font-weight: 600;
       text-decoration: none;
       transition: var(--transition);
@@ -228,12 +244,20 @@
       right: 20px;
       background: var(--accent);
       color: white;
-      padding: 5px 12px;
+      padding: 6px 14px;
       border-radius: 20px;
       font-size: 0.8rem;
       font-weight: 600;
       box-shadow: 0 3px 10px rgba(114, 9, 183, 0.3);
       z-index: 3;
+    }
+    
+    .version {
+      font-size: 0.8rem;
+      color: var(--primary);
+      text-align: center;
+      font-weight: 600;
+      margin-top: 5px;
     }
     
     @media (max-width: 768px) {
@@ -250,7 +274,12 @@
       }
       
       .phone-mockup {
-        height: 350px; /* Adjusted for mobile */
+        height: 400px;
+        border-radius: 25px;
+      }
+      
+      .apk-title {
+        font-size: 1.4rem;
       }
     }
   </style>
@@ -266,6 +295,10 @@
       <!-- DTECH SERVICE -->
       <div class="apk-card">
         <div class="badge">Popular</div>
+        <div class="apk-header">
+          <h2 class="apk-title"><i class="fas fa-cog"></i> DTECH SERVICE</h2>
+          <div class="version">v2.5.1</div>
+        </div>
         <div class="preview-container">
           <div class="phone-mockup">
             <div class="preview-gallery">
@@ -281,7 +314,6 @@
           </div>
         </div>
         <div class="apk-info">
-          <h2 class="apk-title"><i class="fas fa-cog"></i> DTECH SERVICE</h2>
           <p class="apk-desc">All-in-one service app with essential utilities for your device. Optimized performance with premium features.</p>
           <div class="apk-actions">
             <a href="DTECH SERVICE.apk" class="btn btn-download" download>
@@ -296,6 +328,10 @@
       
       <!-- DTECH TOOLS -->
       <div class="apk-card">
+        <div class="apk-header">
+          <h2 class="apk-title"><i class="fas fa-tools"></i> DTECH TOOLS</h2>
+          <div class="version">v1.8.3</div>
+        </div>
         <div class="preview-container">
           <div class="phone-mockup">
             <div class="preview-gallery">
@@ -311,7 +347,6 @@
           </div>
         </div>
         <div class="apk-info">
-          <h2 class="apk-title"><i class="fas fa-tools"></i> DTECH TOOLS</h2>
           <p class="apk-desc">Advanced toolkit for power users. Includes specialized utilities and customization options.</p>
           <div class="apk-actions">
             <a href="DTECH TOOLS.apk" class="btn btn-download" download>
@@ -326,6 +361,10 @@
       
       <!-- DTECH ANIME -->
       <div class="apk-card">
+        <div class="apk-header">
+          <h2 class="apk-title"><i class="fas fa-film"></i> DTECH ANIME</h2>
+          <div class="version">v3.2.0</div>
+        </div>
         <div class="preview-container">
           <div class="phone-mockup">
             <div class="preview-gallery">
@@ -341,7 +380,6 @@
           </div>
         </div>
         <div class="apk-info">
-          <h2 class="apk-title"><i class="fas fa-film"></i> DTECH ANIME</h2>
           <p class="apk-desc">Ultimate anime experience with curated content, high-quality streaming, and exclusive features.</p>
           <div class="apk-actions">
             <a href="DTECH ANIME.apk" class="btn btn-download" download>
