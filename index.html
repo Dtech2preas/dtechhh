@@ -584,4 +584,86 @@
                         🖼️ → 🔗
                     </div>
                     <div class="tool-info">
- 
+                        <h3><i class="fas fa-image"></i> Image to URL</h3>
+                        <p>Convert your images to shareable URLs instantly with our powerful conversion tool.</p>
+                        <a href="https://about.preasx24.co.za" class="tool-link">
+                            <i class="fas fa-external-link-alt"></i> Open Tool
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Web Host Checker -->
+                <div class="tool-card">
+                    <div class="tool-preview host-checker-preview">
+                        🌐 ✓
+                    </div>
+                    <div class="tool-info">
+                        <h3><i class="fas fa-server"></i> Host Checker</h3>
+                        <p>Check the status and performance of any web host with our comprehensive checker.</p>
+                        <a href="https://ext.dtech24.co.za" class="tool-link">
+                            <i class="fas fa-external-link-alt"></i> Check Now
+                        </a>
+                    </div>
+                </div>
+
+                <!-- More Tools -->
+                <div class="tool-card">
+                    <div class="tool-preview more-tools-preview">
+                        🧰 +
+                    </div>
+                    <div class="tool-info">
+                        <h3><i class="fas fa-box-open"></i> More Tools</h3>
+                        <p>Discover additional utilities and services in our menu to boost your productivity.</p>
+                        <a href="#" class="tool-link" onclick="toggleMenu()">
+                            <i class="fas fa-bars"></i> View Menu
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-links">
+            <a href="terms.html">Terms</a>
+            <a href="privacy.html">Privacy</a>
+            <a href="contact.html">Contact</a>
+        </div>
+        <div class="copyright">
+            &copy; 2025 DTECH Headquarters. All rights reserved.
+        </div>
+    </footer>
+
+    <script>
+        function toggleMenu() {
+            const menu = document.getElementById('sideMenu');
+            const overlay = document.getElementById('menuOverlay');
+            const icon = document.querySelector('.menu-icon');
+            menu.classList.toggle('open');
+            overlay.classList.toggle('active');
+            icon.innerHTML = menu.classList.contains('open') ?
+                '<span style="transform: rotate(45deg) translate(5px, 5px);"></span><span style="opacity: 0;"></span><span style="transform: rotate(-45deg) translate(5px, -5px);"></span>' :
+                '<span></span><span></span><span></span>';
+        }
+
+        function openModal(imageSrc) {
+            const modal = document.getElementById('previewModal');
+            const modalImg = document.getElementById('modalImage');
+            modalImg.src = imageSrc;
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('previewModal');
+            modal.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('previewModal').addEventListener('click', function(e) {
+            if (e.target === this) closeModal();
+        });
+    </script>
+</body>
+</html>
