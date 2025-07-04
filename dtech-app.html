@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>D-TECh APK Downloads</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #0088cc;
+      --primary-dark: #006699;
+      --text: #1a1a1a;
+      --light: #f8f9fa;
+      --white: #ffffff;
+      --border: #e1e4e8;
+      --transition: all 0.2s ease;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--light);
+      color: var(--text);
+      line-height: 1.6;
+      padding: 20px;
+    }
+    
+    header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    
+    h1 {
+      color: var(--primary);
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+    }
+    
+    .subtitle {
+      font-size: 1.1rem;
+      color: #555;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+    
+    .apk-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 30px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    .apk-card {
+      background: var(--white);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+      transition: var(--transition);
+      border: 1px solid var(--border);
+    }
+    
+    .apk-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+    
+    .preview-gallery {
+      height: 200px;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .preview-gallery img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: opacity 0.5s ease;
+    }
+    
+    .preview-nav {
+      position: absolute;
+      bottom: 10px;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+    }
+    
+    .preview-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.5);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    
+    .preview-dot.active {
+      background: var(--white);
+      transform: scale(1.2);
+    }
+    
+    .apk-info {
+      padding: 20px;
+    }
+    
+    .apk-title {
+      font-size: 1.3rem;
+      margin-bottom: 10px;
+      color: var(--primary);
+    }
+    
+    .apk-desc {
+      color: #555;
+      margin-bottom: 20px;
+      min-height: 60px;
+    }
+    
+    .apk-actions {
+      display: flex;
+      gap: 10px;
+    }
+    
+    .btn {
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex: 1;
+    }
+    
+    .btn-download {
+      background-color: var(--primary);
+      color: var(--white);
+    }
+    
+    .btn-download:hover {
+      background-color: var(--primary-dark);
+      transform: translateY(-2px);
+    }
+    
+    .btn-learn {
+      background-color: var(--light);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    
+    .btn-learn:hover {
+      background-color: #e9ecef;
+    }
+    
+    .btn i {
+      margin-right: 8px;
+    }
+    
+    footer {
+      text-align: center;
+      margin-top: 50px;
+      padding: 20px;
+      color: #666;
+      font-size: 0.9rem;
+    }
+    
+    @media (max-width: 768px) {
+      .apk-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      h1 {
+        font-size: 2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>D-TECh APK Downloads</h1>
+    <p class="subtitle">Get all official D-TECh applications directly from the source. Safe, fast, and always up-to-date.</p>
+  </header>
+  
+  <main class="apk-grid">
+    <!-- DTECH SERVICE -->
+    <div class="apk-card">
+      <div class="preview-gallery">
+        <img src="service1.png" alt="DTECH SERVICE preview 1" class="active">
+        <img src="service2.png" alt="DTECH SERVICE preview 2" style="display:none">
+        <img src="service3.png" alt="DTECH SERVICE preview 3" style="display:none">
+        <div class="preview-nav">
+          <div class="preview-dot active" onclick="showPreview(this, 'service')"></div>
+          <div class="preview-dot" onclick="showPreview(this, 'service')"></div>
+          <div class="preview-dot" onclick="showPreview(this, 'service')"></div>
+        </div>
+      </div>
+      <div class="apk-info">
+        <h2 class="apk-title">DTECH SERVICE</h2>
+        <p class="apk-desc">Comprehensive service application with all essential D-TECh utilities in one package.</p>
+        <div class="apk-actions">
+          <a href="DTECH SERVICE.apk" class="btn btn-download" download>
+            <i class="fas fa-download"></i> Download
+          </a>
+          <a href="service.html" class="btn btn-learn">
+            <i class="fas fa-info-circle"></i> Learn More
+          </a>
+        </div>
+      </div>
+    </div>
+    
+    <!-- DTECH TOOLS -->
+    <div class="apk-card">
+      <div class="preview-gallery">
+        <img src="tools1.png" alt="DTECH TOOLS preview 1" class="active">
+        <img src="tools2.png" alt="DTECH TOOLS preview 2" style="display:none">
+        <img src="tools3.png" alt="DTECH TOOLS preview 3" style="display:none">
+        <div class="preview-nav">
+          <div class="preview-dot active" onclick="showPreview(this, 'tools')"></div>
+          <div class="preview-dot" onclick="showPreview(this, 'tools')"></div>
+          <div class="preview-dot" onclick="showPreview(this, 'tools')"></div>
+        </div>
+      </div>
+      <div class="apk-info">
+        <h2 class="apk-title">DTECH TOOLS</h2>
+        <p class="apk-desc">Powerful toolkit for advanced users with specialized D-TECh utilities and features.</p>
+        <div class="apk-actions">
+          <a href="DTECH TOOLS.apk" class="btn btn-download" download>
+            <i class="fas fa-download"></i> Download
+          </a>
+          <a href="tools.html" class="btn btn-learn">
+            <i class="fas fa-info-circle"></i> Learn More
+          </a>
+        </div>
+      </div>
+    </div>
+    
+    <!-- DTECH ANIME -->
+    <div class="apk-card">
+      <div class="preview-gallery">
+        <img src="anime1.png" alt="DTECH ANIME preview 1" class="active">
+        <img src="anime2.png" alt="DTECH ANIME preview 2" style="display:none">
+        <img src="anime3.png" alt="DTECH ANIME preview 3" style="display:none">
+        <div class="preview-nav">
+          <div class="preview-dot active" onclick="showPreview(this, 'anime')"></div>
+          <div class="preview-dot" onclick="showPreview(this, 'anime')"></div>
+          <div class="preview-dot" onclick="showPreview(this, 'anime')"></div>
+        </div>
+      </div>
+      <div class="apk-info">
+        <h2 class="apk-title">DTECH ANIME</h2>
+        <p class="apk-desc">Specialized application for anime lovers with unique D-TECh curated content.</p>
+        <div class="apk-actions">
+          <a href="DTECH ANIME.apk" class="btn btn-download" download>
+            <i class="fas fa-download"></i> Download
+          </a>
+          <a href="anime.html" class="btn btn-learn">
+            <i class="fas fa-info-circle"></i> Learn More
+          </a>
+        </div>
+      </div>
+    </div>
+  </main>
+  
+  <footer>
+    <p>© 2023 D-TECh. All applications are property of Preasx24.</p>
+  </footer>
+  
+  <script>
+    function showPreview(dot, app) {
+      // Get all preview images and dots for this app
+      const gallery = dot.closest('.preview-gallery');
+      const images = gallery.querySelectorAll('img');
+      const dots = gallery.querySelectorAll('.preview-dot');
+      
+      // Remove active class from all dots
+      dots.forEach(d => d.classList.remove('active'));
+      
+      // Add active class to clicked dot
+      dot.classList.add('active');
+      
+      // Get index of clicked dot
+      const index = Array.from(dots).indexOf(dot);
+      
+      // Hide all images and show the selected one
+      images.forEach(img => img.style.display = 'none');
+      images[index].style.display = 'block';
+    }
+    
+    // Auto-rotate previews
+    function autoRotatePreviews() {
+      document.querySelectorAll('.preview-gallery').forEach(gallery => {
+        const images = gallery.querySelectorAll('img');
+        const dots = gallery.querySelectorAll('.preview-dot');
+        let currentIndex = 0;
+        
+        setInterval(() => {
+          // Hide current image
+          images[currentIndex].style.display = 'none';
+          dots[currentIndex].classList.remove('active');
+          
+          // Move to next image
+          currentIndex = (currentIndex + 1) % images.length;
+          
+          // Show next image
+          images[currentIndex].style.display = 'block';
+          dots[currentIndex].classList.add('active');
+        }, 3000);
+      });
+    }
+    
+    // Start auto-rotation after page loads
+    window.addEventListener('load', autoRotatePreviews);
+  </script>
+</body>
+</html>
