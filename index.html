@@ -224,8 +224,8 @@
             color: white;
         }
 
-        /* Improved Preview Sections */
-        .preview-section {
+        /* APK Download Sections */
+        .apk-section {
             margin-bottom: 3rem;
             background: white;
             border-radius: 0.75rem;
@@ -233,49 +233,82 @@
             box-shadow: var(--card-shadow);
         }
 
-        .preview-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        .apk-header {
+            display: flex;
+            align-items: center;
             gap: 1rem;
-            margin-top: 1rem;
+            margin-bottom: 1.5rem;
         }
 
-        .preview-card {
-            border-radius: 0.5rem;
-            overflow: hidden;
-            box-shadow: var(--card-shadow);
-            transition: transform 0.2s ease;
+        .apk-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.25rem;
         }
 
-        .preview-card:hover {
-            transform: translateY(-5px);
-        }
-
-        .preview-card img {
-            width: 100%;
-            height: 280px;
-            object-fit: cover;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .preview-info {
-            padding: 0.75rem;
-            text-align: center;
-        }
-
-        .preview-info h3 {
-            font-size: 0.95rem;
+        .apk-info h2 {
+            font-size: 1.5rem;
             margin-bottom: 0.25rem;
         }
 
-        .preview-info p {
+        .apk-info p {
             color: var(--gray);
-            font-size: 0.85rem;
+            font-size: 0.9rem;
+        }
+
+        .preview-scroller {
+            display: flex;
+            overflow-x: auto;
+            gap: 1rem;
+            padding: 0.5rem 0;
+            margin-bottom: 1.5rem;
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary) #f1f1f1;
+        }
+
+        .preview-scroller::-webkit-scrollbar {
+            height: 6px;
+        }
+
+        .preview-scroller::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .preview-scroller::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 10px;
+        }
+
+        .preview-item {
+            flex: 0 0 auto;
+            width: 200px;
+            border-radius: 0.5rem;
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .preview-item:hover {
+            transform: scale(1.03);
+        }
+
+        .preview-item img {
+            width: 100%;
+            height: 350px;
+            object-fit: cover;
         }
 
         .download-button {
-            display: inline-block;
-            margin-top: 1.5rem;
+            display: inline-flex;
+            align-items: center;
             background-color: var(--primary);
             color: white;
             padding: 0.75rem 1.5rem;
@@ -283,10 +316,55 @@
             text-decoration: none;
             font-weight: 500;
             transition: background-color 0.2s ease;
+            gap: 0.5rem;
         }
 
         .download-button:hover {
             background-color: var(--primary-dark);
+        }
+
+        /* Modal for enlarged preview */
+        .preview-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .preview-modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            max-width: 90%;
+            max-height: 90%;
+            position: relative;
+        }
+
+        .modal-content img {
+            max-width: 100%;
+            max-height: 80vh;
+            border-radius: 0.5rem;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+
+        .close-modal {
+            position: absolute;
+            top: -40px;
+            right: 0;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
         }
 
         /* Tools Section */
@@ -351,12 +429,12 @@
 
         /* Responsive Adjustments */
         @media (max-width: 768px) {
-            .preview-grid {
-                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            .preview-item {
+                width: 160px;
             }
             
-            .preview-card img {
-                height: 200px;
+            .preview-item img {
+                height: 280px;
             }
             
             .tools-grid {
@@ -365,12 +443,18 @@
         }
 
         @media (max-width: 480px) {
-            .preview-grid {
-                grid-template-columns: repeat(2, 1fr);
+            .preview-item {
+                width: 140px;
             }
             
-            .preview-card img {
-                height: 180px;
+            .preview-item img {
+                height: 240px;
+            }
+            
+            .apk-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
             }
         }
     </style>
@@ -406,14 +490,92 @@
     </div>
     <div class="menu-overlay" id="menuOverlay" onclick="toggleMenu()"></div>
 
+    <!-- Preview Modal -->
+    <div class="preview-modal" id="previewModal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal()">&times;</span>
+            <img id="modalImage" src="" alt="Enlarged preview">
+        </div>
+    </div>
+
     <div class="content">
         <p>Welcome to DTECH Headquarters. Explore our digital resources, tools, and community platforms designed to empower your technological journey.</p>
+
+        <!-- DTECH TOOLS APK Section -->
+        <div class="apk-section">
+            <div class="apk-header">
+                <div class="apk-icon">
+                    <i class="fas fa-tools"></i>
+                </div>
+                <div class="apk-info">
+                    <h2>DTECH TOOLS App</h2>
+                    <p>Comprehensive toolkit for all your digital needs</p>
+                </div>
+            </div>
+            
+            <div class="preview-scroller">
+                <div class="preview-item" onclick="openModal('tool1.png')">
+                    <img src="tool1.png" alt="DTECH TOOLS Screenshot 1">
+                </div>
+                <div class="preview-item" onclick="openModal('tool2.png')">
+                    <img src="tool2.png" alt="DTECH TOOLS Screenshot 2">
+                </div>
+                <div class="preview-item" onclick="openModal('tool3.png')">
+                    <img src="tool3.png" alt="DTECH TOOLS Screenshot 3">
+                </div>
+                <div class="preview-item" onclick="openModal('tool4.png')">
+                    <img src="tool4.png" alt="DTECH TOOLS Screenshot 4">
+                </div>
+                <div class="preview-item" onclick="openModal('tool5.png')">
+                    <img src="tool5.png" alt="DTECH TOOLS Screenshot 5">
+                </div>
+            </div>
+            
+            <a href="DTECH TOOLS.apk" download class="download-button">
+                <i class="fas fa-download"></i> Download APK
+            </a>
+        </div>
+
+        <!-- DTECH ANIME APK Section -->
+        <div class="apk-section">
+            <div class="apk-header">
+                <div class="apk-icon">
+                    <i class="fas fa-film"></i>
+                </div>
+                <div class="apk-info">
+                    <h2>DTECH ANIME App</h2>
+                    <p>Your gateway to endless anime entertainment</p>
+                </div>
+            </div>
+            
+            <div class="preview-scroller">
+                <div class="preview-item" onclick="openModal('anime1.png')">
+                    <img src="anime1.png" alt="DTECH ANIME Screenshot 1">
+                </div>
+                <div class="preview-item" onclick="openModal('anime2.png')">
+                    <img src="anime2.png" alt="DTECH ANIME Screenshot 2">
+                </div>
+                <div class="preview-item" onclick="openModal('anime3.png')">
+                    <img src="anime3.png" alt="DTECH ANIME Screenshot 3">
+                </div>
+                <div class="preview-item" onclick="openModal('anime4.png')">
+                    <img src="anime4.png" alt="DTECH ANIME Screenshot 4">
+                </div>
+                <div class="preview-item" onclick="openModal('anime5.png')">
+                    <img src="anime5.png" alt="DTECH ANIME Screenshot 5">
+                </div>
+            </div>
+            
+            <a href="DTECH ANIME.apk" download class="download-button">
+                <i class="fas fa-download"></i> Download APK
+            </a>
+        </div>
 
         <!-- Tools Section -->
         <div class="tools-section">
             <div class="section-header">
-                <h2><i class="fas fa-tools" style="color: var(--primary); margin-right: 0.5rem;"></i> DTECH Tools</h2>
-                <a href="#" class="view-more" onclick="toggleMenu()">More tools in menu <i class="fas fa-chevron-right"></i></a>
+                <h2><i class="fas fa-tools" style="color: var(--primary); margin-right: 0.5rem;"></i> Web Tools</h2>
+                <a href="#" class="view-more" onclick="toggleMenu()">More in menu <i class="fas fa-chevron-right"></i></a>
             </div>
             <p>Essential utilities to enhance your digital experience</p>
             
@@ -446,92 +608,6 @@
                 </div>
             </div>
         </div>
-
-        <!-- DTECH TOOLS Preview -->
-        <div class="preview-section">
-            <div class="section-header">
-                <h2>DTECH TOOLS App</h2>
-                <a href="#" class="view-more" onclick="toggleMenu()">More apps in menu <i class="fas fa-chevron-right"></i></a>
-            </div>
-            <p>Comprehensive toolkit for all your digital needs</p>
-            
-            <div class="preview-grid">
-                <div class="preview-card">
-                    <img src="tool1.png" alt="DTECH TOOLS Screenshot 1">
-                    <div class="preview-info">
-                        <h3>Main Interface</h3>
-                        <p>Clean and intuitive design</p>
-                    </div>
-                </div>
-                <div class="preview-card">
-                    <img src="tool2.png" alt="DTECH TOOLS Screenshot 2">
-                    <div class="preview-info">
-                        <h3>Tool Selection</h3>
-                        <p>Wide range of utilities</p>
-                    </div>
-                </div>
-                <div class="preview-card">
-                    <img src="tool3.png" alt="DTECH TOOLS Screenshot 3">
-                    <div class="preview-info">
-                        <h3>Settings</h3>
-                        <p>Customize your experience</p>
-                    </div>
-                </div>
-                <div class="preview-card">
-                    <img src="tool4.png" alt="DTECH TOOLS Screenshot 4">
-                    <div class="preview-info">
-                        <h3>Dark Mode</h3>
-                        <p>Eye-friendly interface</p>
-                    </div>
-                </div>
-            </div>
-            <a href="DTECH TOOLS.apk" download class="download-button">
-                <i class="fas fa-download" style="margin-right: 0.5rem;"></i> Download DTECH TOOLS
-            </a>
-        </div>
-
-        <!-- DTECH ANIME Preview -->
-        <div class="preview-section">
-            <div class="section-header">
-                <h2>DTECH ANIME App</h2>
-                <a href="#" class="view-more" onclick="toggleMenu()">More apps in menu <i class="fas fa-chevron-right"></i></a>
-            </div>
-            <p>Your gateway to endless anime entertainment</p>
-            
-            <div class="preview-grid">
-                <div class="preview-card">
-                    <img src="anime1.png" alt="DTECH ANIME Screenshot 1">
-                    <div class="preview-info">
-                        <h3>Home Screen</h3>
-                        <p>Latest releases</p>
-                    </div>
-                </div>
-                <div class="preview-card">
-                    <img src="anime2.png" alt="DTECH ANIME Screenshot 2">
-                    <div class="preview-info">
-                        <h3>Series View</h3>
-                        <p>Detailed information</p>
-                    </div>
-                </div>
-                <div class="preview-card">
-                    <img src="anime3.png" alt="DTECH ANIME Screenshot 3">
-                    <div class="preview-info">
-                        <h3>Player</h3>
-                        <p>High quality streaming</p>
-                    </div>
-                </div>
-                <div class="preview-card">
-                    <img src="anime4.png" alt="DTECH ANIME Screenshot 4">
-                    <div class="preview-info">
-                        <h3>Categories</h3>
-                        <p>Easy navigation</p>
-                    </div>
-                </div>
-            </div>
-            <a href="DTECH ANIME.apk" download class="download-button">
-                <i class="fas fa-download" style="margin-right: 0.5rem;"></i> Download DTECH ANIME
-            </a>
-        </div>
     </div>
 
     <footer>
@@ -556,6 +632,27 @@
                 '<span style="transform: rotate(45deg) translate(5px, 5px);"></span><span style="opacity: 0;"></span><span style="transform: rotate(-45deg) translate(5px, -5px);"></span>' :
                 '<span></span><span></span><span></span>';
         }
+
+        function openModal(imageSrc) {
+            const modal = document.getElementById('previewModal');
+            const modalImg = document.getElementById('modalImage');
+            modalImg.src = imageSrc;
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('previewModal');
+            modal.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Close modal when clicking outside the image
+        document.getElementById('previewModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
     </script>
 </body>
 </html>
