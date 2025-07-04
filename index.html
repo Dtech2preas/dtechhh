@@ -6,83 +6,63 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary: #2563eb;
             --primary-dark: #1e40af;
             --dark: #1e293b;
+            --darker: #0f172a;
             --light: #f8fafc;
+            --lighter: #ffffff;
             --gray: #94a3b8;
+            --accent: #f59e0b;
+            --accent-dark: #d97706;
             --border: #e2e8f0;
-            --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --card-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Inter', sans-serif;
             background-color: var(--light);
             color: var(--dark);
-            line-height: 1.6;
+            line-height: 1.5;
         }
-
         header {
-            background-color: var(--dark);
+            background-color: var(--darker);
             color: white;
-            padding: 2rem 5%;
+            padding: 1.5rem 5%;
             text-align: center;
             position: relative;
         }
-
         .logo {
-            width: 80px;
-            height: 80px;
+            width: 60px;
+            height: 60px;
             margin: 0 auto;
             display: flex;
             align-items: center;
             justify-content: center;
             background-color: rgba(255,255,255,0.1);
             border-radius: 50%;
-            padding: 1rem;
+            padding: 0.75rem;
         }
-
-        .logo img {
-            width: 100%;
-            filter: brightness(0) invert(1);
-        }
-
-        h1 {
-            font-size: 2rem;
-            margin: 1rem 0;
-            font-weight: 600;
-        }
-
+        .logo img { width: 100%; filter: brightness(0) invert(1); }
+        h1 { font-size: 1.75rem; margin: 0.75rem 0; font-weight: 600; }
         .subtitle {
             color: var(--gray);
             max-width: 700px;
             margin: 0 auto;
+            font-size: 0.95rem;
         }
-
         .menu-icon {
             position: absolute;
-            top: 2rem;
+            top: 1.5rem;
             left: 1.5rem;
             cursor: pointer;
             z-index: 100;
             width: 24px;
             height: 24px;
         }
-
         .menu-icon span {
             display: block;
             width: 100%;
@@ -91,66 +71,50 @@
             margin: 5px 0;
             transition: all 0.3s ease;
         }
-
         .side-menu {
             position: fixed;
             top: 0;
             left: -300px;
             width: 300px;
             height: 100%;
-            background: white;
-            box-shadow: 2px 0 15px rgba(0,0,0,0.1);
+            background: var(--lighter);
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
             transition: all 0.3s ease;
             z-index: 99;
             display: flex;
             flex-direction: column;
         }
-
-        .side-menu.open {
-            left: 0;
-        }
-
+        .side-menu.open { left: 0; }
         .menu-header {
-            background: var(--dark);
+            background: var(--darker);
             color: white;
-            padding: 1.5rem;
+            padding: 1.25rem;
             display: flex;
             align-items: center;
             gap: 1rem;
         }
-
-        .menu-header img {
-            width: 40px;
-        }
-
-        .menu-items {
-            flex: 1;
-            overflow-y: auto;
-            padding: 1rem 0;
-        }
-
+        .menu-header img { width: 36px; }
+        .menu-items { flex: 1; overflow-y: auto; padding: 0.5rem 0; }
         .menu-item {
             display: flex;
             align-items: center;
-            padding: 1rem 1.5rem;
+            padding: 0.9rem 1.25rem;
             color: var(--dark);
             text-decoration: none;
             transition: all 0.2s ease;
             border-left: 3px solid transparent;
+            font-size: 0.95rem;
         }
-
         .menu-item:hover {
             background: #f1f5f9;
             border-left: 3px solid var(--primary);
         }
-
         .menu-item i {
-            margin-right: 1rem;
+            margin-right: 0.75rem;
             color: var(--gray);
             width: 20px;
             text-align: center;
         }
-
         .menu-overlay {
             position: fixed;
             top: 0;
@@ -163,174 +127,227 @@
             visibility: hidden;
             transition: all 0.3s ease;
         }
-
-        .menu-overlay.active {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .content {
-            padding: 2rem 5%;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
+        .menu-overlay.active { opacity: 1; visibility: visible; }
+        .content { padding: 1.5rem 5%; max-width: 1200px; margin: 0 auto; }
         .section-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1rem;
         }
-
-        .section-header h2 {
-            font-size: 1.5rem;
-        }
-
+        .section-header h2 { font-size: 1.3rem; }
         .view-more {
             color: var(--primary);
             text-decoration: none;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             display: flex;
             align-items: center;
             gap: 0.3rem;
+            font-weight: 500;
         }
-
-        .view-more i {
-            font-size: 0.8rem;
-        }
-
+        .view-more i { font-size: 0.7rem; }
         footer {
-            background: var(--dark);
+            background: var(--darker);
             color: white;
-            padding: 2rem 5%;
+            padding: 1.5rem 5%;
             text-align: center;
-            margin-top: 2rem;
+            margin-top: 1.5rem;
         }
-
         .footer-links {
             display: flex;
             justify-content: center;
-            gap: 1.5rem;
-            margin: 1rem 0;
+            gap: 1.25rem;
+            margin: 0.75rem 0;
         }
-
         .footer-links a {
             color: var(--gray);
             text-decoration: none;
             transition: color 0.2s ease;
+            font-size: 0.85rem;
         }
+        .footer-links a:hover { color: white; }
 
-        .footer-links a:hover {
-            color: white;
-        }
-
-        /* APK Download Sections */
+        /* APK Sections */
         .apk-section {
-            margin-bottom: 3rem;
-            background: white;
-            border-radius: 0.75rem;
-            padding: 1.5rem;
+            margin-bottom: 2rem;
+            background: var(--lighter);
+            border-radius: 0.5rem;
+            padding: 1.25rem;
             box-shadow: var(--card-shadow);
         }
-
         .apk-header {
             display: flex;
             align-items: center;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
         }
-
         .apk-icon {
-            width: 50px;
-            height: 50px;
+            width: 44px;
+            height: 44px;
             background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            border-radius: 12px;
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 1.25rem;
+            font-size: 1.1rem;
         }
-
-        .apk-info h2 {
-            font-size: 1.5rem;
-            margin-bottom: 0.25rem;
-        }
-
-        .apk-info p {
-            color: var(--gray);
-            font-size: 0.9rem;
-        }
-
+        .apk-info h2 { font-size: 1.3rem; margin-bottom: 0.2rem; }
+        .apk-info p { color: var(--gray); font-size: 0.85rem; }
         .preview-scroller {
             display: flex;
             overflow-x: auto;
-            gap: 1rem;
+            gap: 0.75rem;
             padding: 0.5rem 0;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1rem;
             scrollbar-width: thin;
-            scrollbar-color: var(--primary) #f1f1f1;
         }
-
-        .preview-scroller::-webkit-scrollbar {
-            height: 6px;
-        }
-
-        .preview-scroller::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 10px;
-        }
-
-        .preview-scroller::-webkit-scrollbar-thumb {
-            background: var(--primary);
-            border-radius: 10px;
-        }
-
+        .preview-scroller::-webkit-scrollbar { height: 4px; }
+        .preview-scroller::-webkit-scrollbar-track { background: #f1f1f1; }
+        .preview-scroller::-webkit-scrollbar-thumb { background: var(--primary); }
         .preview-item {
             flex: 0 0 auto;
-            width: 200px;
-            border-radius: 0.5rem;
+            width: 180px;
+            border-radius: 0.4rem;
             overflow: hidden;
             box-shadow: var(--card-shadow);
             cursor: pointer;
             transition: transform 0.2s ease;
         }
-
-        .preview-item:hover {
-            transform: scale(1.03);
-        }
-
+        .preview-item:hover { transform: scale(1.02); }
         .preview-item img {
             width: 100%;
-            height: 350px;
+            height: 300px;
             object-fit: cover;
         }
-
+        .apk-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
         .download-button {
             display: inline-flex;
             align-items: center;
             background-color: var(--primary);
             color: white;
-            padding: 0.75rem 1.5rem;
-            border-radius: 0.5rem;
+            padding: 0.6rem 1.25rem;
+            border-radius: 0.4rem;
             text-decoration: none;
             font-weight: 500;
-            transition: background-color 0.2s ease;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
             gap: 0.5rem;
         }
-
         .download-button:hover {
             background-color: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+        .more-button {
+            display: inline-flex;
+            align-items: center;
+            background-color: var(--dark);
+            color: white;
+            padding: 0.6rem 1rem;
+            border-radius: 0.4rem;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.85rem;
+            transition: all 0.2s ease;
+            gap: 0.4rem;
+        }
+        .more-button:hover {
+            background-color: var(--darker);
+            transform: translateY(-1px);
         }
 
-        /* Modal for enlarged preview */
+        /* Tools Section */
+        .tools-section {
+            margin-bottom: 2rem;
+            background: var(--lighter);
+            border-radius: 0.5rem;
+            padding: 1.25rem;
+            box-shadow: var(--card-shadow);
+        }
+        .tools-scroller {
+            display: flex;
+            overflow-x: auto;
+            gap: 1rem;
+            padding: 0.5rem 0;
+            margin: 1rem 0;
+            scrollbar-width: thin;
+        }
+        .tool-card {
+            flex: 0 0 auto;
+            width: 240px;
+            background: var(--lighter);
+            border-radius: 0.5rem;
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+            transition: all 0.2s ease;
+            border: 1px solid var(--border);
+        }
+        .tool-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .tool-preview {
+            height: 140px;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2.5rem;
+        }
+        .image-converter-preview {
+            background: linear-gradient(135deg, var(--primary), #3b82f6);
+        }
+        .host-checker-preview {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+        .more-tools-preview {
+            background: linear-gradient(135deg, var(--dark), var(--darker));
+        }
+        .tool-info { padding: 1rem; }
+        .tool-info h3 {
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .tool-info p {
+            color: var(--gray);
+            font-size: 0.85rem;
+            margin-bottom: 1rem;
+        }
+        .tool-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            background-color: var(--primary);
+            color: white;
+            padding: 0.5rem 0.9rem;
+            border-radius: 0.3rem;
+            text-decoration: none;
+            font-size: 0.8rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        .tool-link:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+
+        /* Preview Modal */
         .preview-modal {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.8);
+            background: rgba(0,0,0,0.9);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -339,190 +356,42 @@
             visibility: hidden;
             transition: all 0.3s ease;
         }
-
-        .preview-modal.active {
-            opacity: 1;
-            visibility: visible;
-        }
-
+        .preview-modal.active { opacity: 1; visibility: visible; }
         .modal-content {
             max-width: 90%;
             max-height: 90%;
             position: relative;
         }
-
         .modal-content img {
             max-width: 100%;
             max-height: 80vh;
             border-radius: 0.5rem;
             box-shadow: 0 10px 25px rgba(0,0,0,0.3);
         }
-
         .close-modal {
             position: absolute;
-            top: -40px;
+            top: -35px;
             right: 0;
             color: white;
             font-size: 1.5rem;
             cursor: pointer;
         }
 
-        /* Tools Section with Visual Previews */
-        .tools-section {
-            margin-bottom: 3rem;
-            background: white;
-            border-radius: 0.75rem;
-            padding: 1.5rem;
-            box-shadow: var(--card-shadow);
-        }
-
-        .tools-scroller {
-            display: flex;
-            overflow-x: auto;
-            gap: 1.5rem;
-            padding: 1rem 0;
-            margin: 1.5rem 0;
-            scrollbar-width: thin;
-            scrollbar-color: var(--primary) #f1f1f1;
-        }
-
-        .tools-scroller::-webkit-scrollbar {
-            height: 6px;
-        }
-
-        .tools-scroller::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 10px;
-        }
-
-        .tools-scroller::-webkit-scrollbar-thumb {
-            background: var(--primary);
-            border-radius: 10px;
-        }
-
-        .tool-card {
-            flex: 0 0 auto;
-            width: 280px;
-            background: #f8fafc;
-            border-radius: 0.75rem;
-            overflow: hidden;
-            box-shadow: var(--card-shadow);
-            transition: transform 0.2s ease;
-        }
-
-        .tool-card:hover {
-            transform: translateY(-5px);
-        }
-
-        .tool-preview {
-            height: 160px;
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 3rem;
-        }
-
-        /* Custom preview styles for each tool */
-        .image-converter-preview {
-            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-        }
-
-        .image-converter-preview::before {
-            content: "🖼️ → 🔗";
-        }
-
-        .host-checker-preview {
-            background: linear-gradient(135deg, #10b981, #059669);
-        }
-
-        .host-checker-preview::before {
-            content: "🌐 ✓";
-        }
-
-        .more-tools-preview {
-            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
-        }
-
-        .more-tools-preview::before {
-            content: "🧰 +";
-        }
-
-        .tool-info {
-            padding: 1.25rem;
-        }
-
-        .tool-info h3 {
-            font-size: 1.1rem;
-            margin-bottom: 0.5rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .tool-info p {
-            color: var(--gray);
-            font-size: 0.9rem;
-            margin-bottom: 1.25rem;
-            min-height: 40px;
-        }
-
-        .tool-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            background-color: var(--primary);
-            color: white;
-            padding: 0.5rem 1rem;
-            border-radius: 0.25rem;
-            text-decoration: none;
-            font-size: 0.85rem;
-            transition: background-color 0.2s ease;
-        }
-
-        .tool-link:hover {
-            background-color: var(--primary-dark);
-        }
-
-        /* Responsive Adjustments */
+        /* Responsive */
         @media (max-width: 768px) {
-            .preview-item {
-                width: 160px;
-            }
-            
-            .preview-item img {
-                height: 280px;
-            }
-            
-            .tool-card {
-                width: 240px;
-            }
-            
-            .tool-preview {
-                height: 140px;
-            }
+            .preview-item { width: 150px; height: 250px; }
+            .preview-item img { height: 250px; }
+            .tool-card { width: 200px; }
+            .tool-preview { height: 120px; }
         }
-
         @media (max-width: 480px) {
-            .preview-item {
-                width: 140px;
-            }
-            
-            .preview-item img {
-                height: 240px;
-            }
-            
-            .apk-header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 0.5rem;
-            }
-            
-            .tool-card {
-                width: 220px;
-            }
+            header { padding: 1.25rem 5%; }
+            .logo { width: 50px; height: 50px; padding: 0.5rem; }
+            h1 { font-size: 1.5rem; }
+            .preview-item { width: 130px; height: 220px; }
+            .preview-item img { height: 220px; }
+            .tool-card { width: 180px; }
+            .apk-actions { flex-direction: column; gap: 0.75rem; align-items: flex-start; }
         }
     </style>
 </head>
@@ -546,8 +415,8 @@
         </div>
         <div class="menu-items">
             <a href="about.html" class="menu-item"><i>🏢</i> ABOUT US</a>
-            <a href="app.html" class="menu-item"><i>📱</i> APP</a>
-            <a href="dtech-app.html" class="menu-item"><i>🚀</i> DTECH APP</a>
+            <a href="app.html" class="menu-item"><i>📱</i> APPS</a>
+            <a href="dtech-app.html" class="menu-item"><i>🚀</i> DTECH APPS</a>
             <a href="youtube.html" class="menu-item"><i>▶️</i> YOUTUBE</a>
             <a href="telegram.html" class="menu-item"><i>📨</i> TELEGRAM</a>
             <a href="faqs.html" class="menu-item"><i>❓</i> FAQs</a>
@@ -566,7 +435,7 @@
     </div>
 
     <div class="content">
-        <p>Welcome to DTECH Headquarters. Explore our digital resources, tools, and community platforms designed to empower your technological journey.</p>
+        <p style="margin-bottom: 1.5rem;">Welcome to DTECH Headquarters. Explore our digital resources, tools, and community platforms.</p>
 
         <!-- DTECH TOOLS APK Section -->
         <div class="apk-section">
@@ -593,14 +462,16 @@
                 <div class="preview-item" onclick="openModal('tool4.png')">
                     <img src="tool4.png" alt="DTECH TOOLS Screenshot 4">
                 </div>
-                <div class="preview-item" onclick="openModal('tool5.png')">
-                    <img src="tool5.png" alt="DTECH TOOLS Screenshot 5">
-                </div>
             </div>
             
-            <a href="DTECH TOOLS.apk" download class="download-button">
-                <i class="fas fa-download"></i> Download APK
-            </a>
+            <div class="apk-actions">
+                <a href="DTECH TOOLS.apk" download class="download-button">
+                    <i class="fas fa-download"></i> Download APK
+                </a>
+                <a href="#" class="more-button" onclick="toggleMenu()">
+                    <i class="fas fa-ellipsis-h"></i> More APKs
+                </a>
+            </div>
         </div>
 
         <!-- DTECH ANIME APK Section -->
@@ -628,55 +499,62 @@
                 <div class="preview-item" onclick="openModal('anime4.png')">
                     <img src="anime4.png" alt="DTECH ANIME Screenshot 4">
                 </div>
-                <div class="preview-item" onclick="openModal('anime5.png')">
-                    <img src="anime5.png" alt="DTECH ANIME Screenshot 5">
-                </div>
             </div>
             
-            <a href="DTECH ANIME.apk" download class="download-button">
-                <i class="fas fa-download"></i> Download APK
-            </a>
+            <div class="apk-actions">
+                <a href="DTECH ANIME.apk" download class="download-button">
+                    <i class="fas fa-download"></i> Download APK
+                </a>
+                <a href="#" class="more-button" onclick="toggleMenu()">
+                    <i class="fas fa-ellipsis-h"></i> More APKs
+                </a>
+            </div>
         </div>
 
-        <!-- Tools Section with Visual Previews -->
+        <!-- Tools Section -->
         <div class="tools-section">
             <div class="section-header">
-                <h2><i class="fas fa-tools" style="color: var(--primary); margin-right: 0.5rem;"></i> Web Tools</h2>
-                <a href="#" class="view-more" onclick="toggleMenu()">More in menu <i class="fas fa-chevron-right"></i></a>
+                <h2><i class="fas fa-tools" style="color: var(--primary);"></i> Web Tools</h2>
+                <a href="#" class="view-more" onclick="toggleMenu()">More tools <i class="fas fa-chevron-right"></i></a>
             </div>
-            <p>Essential utilities to enhance your digital experience</p>
             
             <div class="tools-scroller">
-                <!-- Image to URL Converter Tool -->
+                <!-- Image to URL Converter -->
                 <div class="tool-card">
-                    <div class="tool-preview image-converter-preview"></div>
+                    <div class="tool-preview image-converter-preview">
+                        🖼️ → 🔗
+                    </div>
                     <div class="tool-info">
-                        <h3><i class="fas fa-image"></i> Image to URL Converter</h3>
-                        <p>Convert your images to shareable URLs instantly with our powerful conversion tool.</p>
+                        <h3><i class="fas fa-image"></i> Image to URL</h3>
+                        <p>Convert images to shareable URLs instantly</p>
                         <a href="https://about.preasx24.co.za" class="tool-link">
-                            <i class="fas fa-external-link-alt"></i> Use Tool
+                            <i class="fas fa-external-link-alt"></i> Open Tool
                         </a>
                     </div>
                 </div>
                 
-                <!-- Web Host Checker Tool -->
+                <!-- Web Host Checker -->
                 <div class="tool-card">
-                    <div class="tool-preview host-checker-preview"></div>
+                    <div class="tool-preview host-checker-preview">
+                        🌐 ✓
+                    </div>
                     <div class="tool-info">
-                        <h3><i class="fas fa-server"></i> Web Host Checker</h3>
-                        <p>Check the status and performance of any web host with our comprehensive checker.</p>
+                        <h3><i class="fas fa-server"></i> Host Checker</h3>
+                        <p>Check status of any web host</p>
                         <a href="https://ext.dtech24.co.za" class="tool-link">
-                            <i class="fas fa-external-link-alt"></i> Check Host
+                            <i class="fas fa-external-link-alt"></i> Check Now
                         </a>
                     </div>
                 </div>
                 
-                <!-- More Tools Card -->
+                <!-- More Tools -->
                 <div class="tool-card">
-                    <div class="tool-preview more-tools-preview"></div>
+                    <div class="tool-preview more-tools-preview">
+                        🧰 +
+                    </div>
                     <div class="tool-info">
                         <h3><i class="fas fa-box-open"></i> More Tools</h3>
-                        <p>Discover additional utilities and services in our side menu to boost your productivity.</p>
+                        <p>Discover additional utilities in our menu</p>
                         <a href="#" class="tool-link" onclick="toggleMenu()">
                             <i class="fas fa-bars"></i> View Menu
                         </a>
@@ -692,7 +570,7 @@
             <a href="privacy.html">Privacy</a>
             <a href="contact.html">Contact</a>
         </div>
-        <div class="copyright">
+        <div class="copyright" style="font-size: 0.85rem;">
             &copy; 2025 DTECH Headquarters. All rights reserved.
         </div>
     </footer>
@@ -723,11 +601,9 @@
             document.body.style.overflow = 'auto';
         }
 
-        // Close modal when clicking outside the image
+        // Close modal when clicking outside
         document.getElementById('previewModal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeModal();
-            }
+            if (e.target === this) closeModal();
         });
     </script>
 </body>
