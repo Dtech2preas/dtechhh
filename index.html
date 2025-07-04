@@ -198,10 +198,25 @@
             color: white;
         }
 
-        .slideshow img {
-            width: 100%;
-            max-width: 600px;
-            border-radius: 1rem;
+        .preview-section {
+            margin-bottom: 4rem;
+        }
+
+        .preview-section h2 {
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .preview-images {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .preview-images img {
+            width: 120px;
+            border-radius: 0.5rem;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
         }
 
         .download-button {
@@ -209,22 +224,14 @@
             margin-top: 1rem;
             background-color: var(--primary);
             color: white;
-            padding: 0.75rem 1.5rem;
+            padding: 0.6rem 1.2rem;
             border-radius: 0.5rem;
             text-decoration: none;
         }
 
-        section {
-            margin-bottom: 4rem;
-        }
-
-        @media (min-width: 768px) {
-            .side-menu {
-                left: -300px;
-            }
-
-            .content {
-                padding: 3rem 5%;
+        @media (max-width: 600px) {
+            .preview-images {
+                justify-content: center;
             }
         }
     </style>
@@ -232,9 +239,7 @@
 <body>
     <header>
         <div class="menu-icon" onclick="toggleMenu()">
-            <span></span>
-            <span></span>
-            <span></span>
+            <span></span><span></span><span></span>
         </div>
         <div class="logo">
             <img src="dtech-logo.png" alt="DTECH Logo">
@@ -260,29 +265,36 @@
             <a href="tutorials.html" class="menu-item"><i>📚</i> TUTORIALS</a>
         </div>
     </div>
-
     <div class="menu-overlay" id="menuOverlay" onclick="toggleMenu()"></div>
 
     <div class="content">
         <p>Welcome to DTECH Headquarters. Explore our digital resources, tools, and community platforms designed to empower your technological journey.</p>
 
-        <!-- DTECH TOOLS -->
-        <section>
+        <!-- DTECH TOOLS Preview -->
+        <div class="preview-section">
             <h2>DTECH TOOLS</h2>
-            <div class="slideshow" id="toolsSlideshow">
-                <img src="tool1.png" alt="DTECH TOOLS Preview">
+            <div class="preview-images">
+                <img src="tool1.png" alt="tool1">
+                <img src="tool2.png" alt="tool2">
+                <img src="tool3.png" alt="tool3">
+                <img src="tool4.png" alt="tool4">
+                <img src="tool5.png" alt="tool5">
             </div>
             <a href="DTECH TOOLS.apk" download class="download-button">Download DTECH TOOLS</a>
-        </section>
+        </div>
 
-        <!-- DTECH ANIME -->
-        <section>
+        <!-- DTECH ANIME Preview -->
+        <div class="preview-section">
             <h2>DTECH ANIME</h2>
-            <div class="slideshow" id="animeSlideshow">
-                <img src="anime1.png" alt="DTECH ANIME Preview">
+            <div class="preview-images">
+                <img src="anime1.png" alt="anime1">
+                <img src="anime2.png" alt="anime2">
+                <img src="anime3.png" alt="anime3">
+                <img src="anime4.png" alt="anime4">
+                <img src="anime5.png" alt="anime5">
             </div>
             <a href="DTECH ANIME.apk" download class="download-button">Download DTECH ANIME</a>
-        </section>
+        </div>
     </div>
 
     <footer>
@@ -307,20 +319,6 @@
                 '<span style="transform: rotate(45deg) translate(5px, 5px);"></span><span style="opacity: 0;"></span><span style="transform: rotate(-45deg) translate(5px, -5px);"></span>' :
                 '<span></span><span></span><span></span>';
         }
-
-        function startSlideshow(id, prefix) {
-            const container = document.getElementById(id);
-            const img = container.querySelector("img");
-            let index = 1;
-            setInterval(() => {
-                index = (index % 5) + 1;
-                img.src = `${prefix}${index}.png`;
-            }, 2500);
-        }
-
-        // Start both slideshows
-        startSlideshow("toolsSlideshow", "tool");
-        startSlideshow("animeSlideshow", "anime");
     </script>
 </body>
-      </html>
+</html>
