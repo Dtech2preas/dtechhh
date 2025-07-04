@@ -367,7 +367,7 @@
             cursor: pointer;
         }
 
-        /* Tools Section */
+        /* Tools Section with Visual Previews */
         .tools-section {
             margin-bottom: 3rem;
             background: white;
@@ -376,44 +376,103 @@
             box-shadow: var(--card-shadow);
         }
 
-        .tools-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        .tools-scroller {
+            display: flex;
+            overflow-x: auto;
             gap: 1.5rem;
-            margin-top: 1.5rem;
+            padding: 1rem 0;
+            margin: 1.5rem 0;
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary) #f1f1f1;
+        }
+
+        .tools-scroller::-webkit-scrollbar {
+            height: 6px;
+        }
+
+        .tools-scroller::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .tools-scroller::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 10px;
         }
 
         .tool-card {
+            flex: 0 0 auto;
+            width: 280px;
             background: #f8fafc;
-            border-radius: 0.5rem;
-            padding: 1.5rem;
+            border-radius: 0.75rem;
+            overflow: hidden;
             box-shadow: var(--card-shadow);
             transition: transform 0.2s ease;
         }
 
         .tool-card:hover {
-            transform: translateY(-3px);
+            transform: translateY(-5px);
         }
 
-        .tool-icon {
-            font-size: 1.75rem;
-            color: var(--primary);
-            margin-bottom: 1rem;
+        .tool-preview {
+            height: 160px;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3rem;
         }
 
-        .tool-card h3 {
+        /* Custom preview styles for each tool */
+        .image-converter-preview {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+        }
+
+        .image-converter-preview::before {
+            content: "🖼️ → 🔗";
+        }
+
+        .host-checker-preview {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+
+        .host-checker-preview::before {
+            content: "🌐 ✓";
+        }
+
+        .more-tools-preview {
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+        }
+
+        .more-tools-preview::before {
+            content: "🧰 +";
+        }
+
+        .tool-info {
+            padding: 1.25rem;
+        }
+
+        .tool-info h3 {
             font-size: 1.1rem;
-            margin-bottom: 0.75rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
-        .tool-card p {
+        .tool-info p {
             color: var(--gray);
             font-size: 0.9rem;
             margin-bottom: 1.25rem;
+            min-height: 40px;
         }
 
         .tool-link {
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
             background-color: var(--primary);
             color: white;
             padding: 0.5rem 1rem;
@@ -437,8 +496,12 @@
                 height: 280px;
             }
             
-            .tools-grid {
-                grid-template-columns: 1fr;
+            .tool-card {
+                width: 240px;
+            }
+            
+            .tool-preview {
+                height: 140px;
             }
         }
 
@@ -455,6 +518,10 @@
                 flex-direction: column;
                 align-items: flex-start;
                 gap: 0.5rem;
+            }
+            
+            .tool-card {
+                width: 220px;
             }
         }
     </style>
@@ -571,7 +638,7 @@
             </a>
         </div>
 
-        <!-- Tools Section -->
+        <!-- Tools Section with Visual Previews -->
         <div class="tools-section">
             <div class="section-header">
                 <h2><i class="fas fa-tools" style="color: var(--primary); margin-right: 0.5rem;"></i> Web Tools</h2>
@@ -579,32 +646,41 @@
             </div>
             <p>Essential utilities to enhance your digital experience</p>
             
-            <div class="tools-grid">
+            <div class="tools-scroller">
+                <!-- Image to URL Converter Tool -->
                 <div class="tool-card">
-                    <div class="tool-icon">
-                        <i class="fas fa-image"></i>
+                    <div class="tool-preview image-converter-preview"></div>
+                    <div class="tool-info">
+                        <h3><i class="fas fa-image"></i> Image to URL Converter</h3>
+                        <p>Convert your images to shareable URLs instantly with our powerful conversion tool.</p>
+                        <a href="https://about.preasx24.co.za" class="tool-link">
+                            <i class="fas fa-external-link-alt"></i> Use Tool
+                        </a>
                     </div>
-                    <h3>Image to URL Converter</h3>
-                    <p>Convert your images to shareable URLs instantly with our powerful conversion tool.</p>
-                    <a href="https://about.preasx24.co.za" class="tool-link">Use Tool</a>
                 </div>
                 
+                <!-- Web Host Checker Tool -->
                 <div class="tool-card">
-                    <div class="tool-icon">
-                        <i class="fas fa-server"></i>
+                    <div class="tool-preview host-checker-preview"></div>
+                    <div class="tool-info">
+                        <h3><i class="fas fa-server"></i> Web Host Checker</h3>
+                        <p>Check the status and performance of any web host with our comprehensive checker.</p>
+                        <a href="https://ext.dtech24.co.za" class="tool-link">
+                            <i class="fas fa-external-link-alt"></i> Check Host
+                        </a>
                     </div>
-                    <h3>Web Host Checker</h3>
-                    <p>Check the status and performance of any web host with our comprehensive checker.</p>
-                    <a href="https://ext.dtech24.co.za" class="tool-link">Check Host</a>
                 </div>
                 
+                <!-- More Tools Card -->
                 <div class="tool-card">
-                    <div class="tool-icon">
-                        <i class="fas fa-box-open"></i>
+                    <div class="tool-preview more-tools-preview"></div>
+                    <div class="tool-info">
+                        <h3><i class="fas fa-box-open"></i> More Tools</h3>
+                        <p>Discover additional utilities and services in our side menu to boost your productivity.</p>
+                        <a href="#" class="tool-link" onclick="toggleMenu()">
+                            <i class="fas fa-bars"></i> View Menu
+                        </a>
                     </div>
-                    <h3>More Tools Available</h3>
-                    <p>Discover additional utilities and services in our side menu to boost your productivity.</p>
-                    <a href="#" class="tool-link" onclick="toggleMenu()">View Menu</a>
                 </div>
             </div>
         </div>
