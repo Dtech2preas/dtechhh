@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>D-TECh Telegram Channel</title>
+  <title>Preasx24's D-TECh Telegram Channel</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -53,12 +53,26 @@
       padding: 24px;
       text-align: center;
       color: var(--white);
+      position: relative;
     }
     
-    .card-header i {
-      font-size: 48px;
-      margin-bottom: 12px;
-      display: block;
+    .profile-badge {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      border: 3px solid var(--white);
+      background: #fff;
+      margin: -60px auto 15px;
+      overflow: hidden;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      position: relative;
+      z-index: 2;
+    }
+    
+    .profile-badge img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
     }
     
     .card-header h1 {
@@ -74,165 +88,74 @@
     
     .card-content {
       padding: 28px;
+      text-align: center;
     }
     
-    .benefit-item {
-      display: flex;
-      align-items: flex-start;
-      margin-bottom: 16px;
-    }
-    
-    .benefit-icon {
-      color: var(--primary);
-      margin-right: 12px;
-      font-size: 18px;
-      margin-top: 2px;
-    }
-    
-    .benefit-text {
-      flex: 1;
-    }
-    
-    .benefit-text h3 {
-      font-size: 16px;
-      font-weight: 600;
-      margin-bottom: 4px;
-    }
-    
-    .benefit-text p {
-      font-size: 14px;
+    .personal-message {
+      font-size: 15px;
       color: #555;
+      margin-bottom: 24px;
+      font-style: italic;
+    }
+    
+    .signature {
+      font-family: 'Brush Script MT', cursive;
+      color: var(--primary);
+      margin: 10px 0 20px;
+      font-size: 18px;
     }
     
     .join-btn {
-      display: block;
+      display: inline-block;
       background-color: var(--primary);
       color: var(--white);
       text-align: center;
-      padding: 14px;
+      padding: 14px 28px;
       border-radius: 8px;
       font-weight: 600;
       text-decoration: none;
-      margin-top: 24px;
       transition: var(--transition);
+      margin-top: 10px;
     }
     
     .join-btn:hover {
       background-color: var(--primary-dark);
       transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 136, 204, 0.3);
     }
     
     .join-btn i {
       margin-right: 8px;
     }
     
-    .stats {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 24px;
-      padding-top: 20px;
-      border-top: 1px solid var(--border);
-    }
-    
-    .stat-item {
-      text-align: center;
-      flex: 1;
-    }
-    
-    .stat-number {
-      font-size: 20px;
-      font-weight: 700;
-      color: var(--primary);
-    }
-    
-    .stat-label {
-      font-size: 12px;
-      color: #666;
-      margin-top: 4px;
-    }
-    
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(10px); }
       to { opacity: 1; transform: translateY(0); }
-    }
-    
-    @media (max-width: 480px) {
-      .card-header {
-        padding: 20px;
-      }
-      
-      .card-content {
-        padding: 20px;
-      }
-      
-      .stats {
-        flex-direction: column;
-        gap: 12px;
-      }
-      
-      .stat-item {
-        text-align: left;
-      }
     }
   </style>
 </head>
 <body>
   <div class="telegram-card">
     <div class="card-header">
-      <i class="fab fa-telegram"></i>
-      <h1>D-TECh Official Channel</h1>
-      <p>Direct from founder Preasx24</p>
+      <div class="profile-badge">
+        <img src="https://i.imgur.com/J9mQZQy.png" alt="Preasx24">
+      </div>
+      <h1>Preasx24's D-TECh Channel</h1>
+      <p>My personal channel for all things D-TECh</p>
     </div>
     
     <div class="card-content">
-      <div class="benefit-item">
-        <div class="benefit-icon">
-          <i class="fas fa-bolt"></i>
-        </div>
-        <div class="benefit-text">
-          <h3>First Access</h3>
-          <p>Get all new tools and updates before anyone else</p>
-        </div>
-      </div>
+      <p class="personal-message">
+        "Join my personal Telegram channel where I share everything first - tools I'm building, 
+        updates I'm working on, and insights you won't find anywhere else. No team, just me 
+        sharing directly with you."
+      </p>
       
-      <div class="benefit-item">
-        <div class="benefit-icon">
-          <i class="fas fa-book"></i>
-        </div>
-        <div class="benefit-text">
-          <h3>Exclusive Tutorials</h3>
-          <p>Step-by-step guides to maximize your results</p>
-        </div>
-      </div>
-      
-      <div class="benefit-item">
-        <div class="benefit-icon">
-          <i class="fas fa-headset"></i>
-        </div>
-        <div class="benefit-text">
-          <h3>Priority Support</h3>
-          <p>Direct line to the D-TECh development team</p>
-        </div>
-      </div>
+      <div class="signature">- Preasx24</div>
       
       <a href="https://t.me/DTECHX24" target="_blank" class="join-btn">
-        <i class="fab fa-telegram"></i> Join Now on Telegram
+        <i class="fab fa-telegram"></i> Join My Channel
       </a>
-      
-      <div class="stats">
-        <div class="stat-item">
-          <div class="stat-number">5K+</div>
-          <div class="stat-label">Members</div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-number">24/7</div>
-          <div class="stat-label">Active</div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-number">100%</div>
-          <div class="stat-label">Free</div>
-        </div>
-      </div>
     </div>
   </div>
 </body>
