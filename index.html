@@ -5,6 +5,7 @@
     <meta name="description" content="South African tech entrepreneur building digital solutions through DTECH ecosystem">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -19,6 +20,7 @@
             --light: #f8fafc;
             --gray: #94a3b8;
             --border: #e2e8f0;
+            --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
         }
 
         * {
@@ -173,6 +175,30 @@
             margin: 0 auto;
         }
 
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .section-header h2 {
+            font-size: 1.5rem;
+        }
+
+        .view-more {
+            color: var(--primary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .view-more i {
+            font-size: 0.8rem;
+        }
+
         footer {
             background: var(--dark);
             color: white;
@@ -198,40 +224,153 @@
             color: white;
         }
 
+        /* Improved Preview Sections */
         .preview-section {
-            margin-bottom: 4rem;
+            margin-bottom: 3rem;
+            background: white;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: var(--card-shadow);
         }
 
-        .preview-section h2 {
-            margin-bottom: 1rem;
-            font-size: 1.5rem;
+        .preview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
         }
 
-        .preview-images {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-        }
-
-        .preview-images img {
-            width: 120px;
+        .preview-card {
             border-radius: 0.5rem;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+            transition: transform 0.2s ease;
+        }
+
+        .preview-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .preview-card img {
+            width: 100%;
+            height: 280px;
+            object-fit: cover;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .preview-info {
+            padding: 0.75rem;
+            text-align: center;
+        }
+
+        .preview-info h3 {
+            font-size: 0.95rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .preview-info p {
+            color: var(--gray);
+            font-size: 0.85rem;
         }
 
         .download-button {
             display: inline-block;
-            margin-top: 1rem;
+            margin-top: 1.5rem;
             background-color: var(--primary);
             color: white;
-            padding: 0.6rem 1.2rem;
+            padding: 0.75rem 1.5rem;
             border-radius: 0.5rem;
             text-decoration: none;
+            font-weight: 500;
+            transition: background-color 0.2s ease;
         }
 
-        @media (max-width: 600px) {
-            .preview-images {
-                justify-content: center;
+        .download-button:hover {
+            background-color: var(--primary-dark);
+        }
+
+        /* Tools Section */
+        .tools-section {
+            margin-bottom: 3rem;
+            background: white;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: var(--card-shadow);
+        }
+
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .tool-card {
+            background: #f8fafc;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            box-shadow: var(--card-shadow);
+            transition: transform 0.2s ease;
+        }
+
+        .tool-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .tool-icon {
+            font-size: 1.75rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .tool-card h3 {
+            font-size: 1.1rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .tool-card p {
+            color: var(--gray);
+            font-size: 0.9rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .tool-link {
+            display: inline-block;
+            background-color: var(--primary);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.25rem;
+            text-decoration: none;
+            font-size: 0.85rem;
+            transition: background-color 0.2s ease;
+        }
+
+        .tool-link:hover {
+            background-color: var(--primary-dark);
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .preview-grid {
+                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            }
+            
+            .preview-card img {
+                height: 200px;
+            }
+            
+            .tools-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .preview-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .preview-card img {
+                height: 180px;
             }
         }
     </style>
@@ -270,30 +409,128 @@
     <div class="content">
         <p>Welcome to DTECH Headquarters. Explore our digital resources, tools, and community platforms designed to empower your technological journey.</p>
 
+        <!-- Tools Section -->
+        <div class="tools-section">
+            <div class="section-header">
+                <h2><i class="fas fa-tools" style="color: var(--primary); margin-right: 0.5rem;"></i> DTECH Tools</h2>
+                <a href="#" class="view-more" onclick="toggleMenu()">More tools in menu <i class="fas fa-chevron-right"></i></a>
+            </div>
+            <p>Essential utilities to enhance your digital experience</p>
+            
+            <div class="tools-grid">
+                <div class="tool-card">
+                    <div class="tool-icon">
+                        <i class="fas fa-image"></i>
+                    </div>
+                    <h3>Image to URL Converter</h3>
+                    <p>Convert your images to shareable URLs instantly with our powerful conversion tool.</p>
+                    <a href="https://about.preasx24.co.za" class="tool-link">Use Tool</a>
+                </div>
+                
+                <div class="tool-card">
+                    <div class="tool-icon">
+                        <i class="fas fa-server"></i>
+                    </div>
+                    <h3>Web Host Checker</h3>
+                    <p>Check the status and performance of any web host with our comprehensive checker.</p>
+                    <a href="https://ext.dtech24.co.za" class="tool-link">Check Host</a>
+                </div>
+                
+                <div class="tool-card">
+                    <div class="tool-icon">
+                        <i class="fas fa-box-open"></i>
+                    </div>
+                    <h3>More Tools Available</h3>
+                    <p>Discover additional utilities and services in our side menu to boost your productivity.</p>
+                    <a href="#" class="tool-link" onclick="toggleMenu()">View Menu</a>
+                </div>
+            </div>
+        </div>
+
         <!-- DTECH TOOLS Preview -->
         <div class="preview-section">
-            <h2>DTECH TOOLS</h2>
-            <div class="preview-images">
-                <img src="tool1.png" alt="tool1">
-                <img src="tool2.png" alt="tool2">
-                <img src="tool3.png" alt="tool3">
-                <img src="tool4.png" alt="tool4">
-                <img src="tool5.png" alt="tool5">
+            <div class="section-header">
+                <h2>DTECH TOOLS App</h2>
+                <a href="#" class="view-more" onclick="toggleMenu()">More apps in menu <i class="fas fa-chevron-right"></i></a>
             </div>
-            <a href="DTECH TOOLS.apk" download class="download-button">Download DTECH TOOLS</a>
+            <p>Comprehensive toolkit for all your digital needs</p>
+            
+            <div class="preview-grid">
+                <div class="preview-card">
+                    <img src="tool1.png" alt="DTECH TOOLS Screenshot 1">
+                    <div class="preview-info">
+                        <h3>Main Interface</h3>
+                        <p>Clean and intuitive design</p>
+                    </div>
+                </div>
+                <div class="preview-card">
+                    <img src="tool2.png" alt="DTECH TOOLS Screenshot 2">
+                    <div class="preview-info">
+                        <h3>Tool Selection</h3>
+                        <p>Wide range of utilities</p>
+                    </div>
+                </div>
+                <div class="preview-card">
+                    <img src="tool3.png" alt="DTECH TOOLS Screenshot 3">
+                    <div class="preview-info">
+                        <h3>Settings</h3>
+                        <p>Customize your experience</p>
+                    </div>
+                </div>
+                <div class="preview-card">
+                    <img src="tool4.png" alt="DTECH TOOLS Screenshot 4">
+                    <div class="preview-info">
+                        <h3>Dark Mode</h3>
+                        <p>Eye-friendly interface</p>
+                    </div>
+                </div>
+            </div>
+            <a href="DTECH TOOLS.apk" download class="download-button">
+                <i class="fas fa-download" style="margin-right: 0.5rem;"></i> Download DTECH TOOLS
+            </a>
         </div>
 
         <!-- DTECH ANIME Preview -->
         <div class="preview-section">
-            <h2>DTECH ANIME</h2>
-            <div class="preview-images">
-                <img src="anime1.png" alt="anime1">
-                <img src="anime2.png" alt="anime2">
-                <img src="anime3.png" alt="anime3">
-                <img src="anime4.png" alt="anime4">
-                <img src="anime5.png" alt="anime5">
+            <div class="section-header">
+                <h2>DTECH ANIME App</h2>
+                <a href="#" class="view-more" onclick="toggleMenu()">More apps in menu <i class="fas fa-chevron-right"></i></a>
             </div>
-            <a href="DTECH ANIME.apk" download class="download-button">Download DTECH ANIME</a>
+            <p>Your gateway to endless anime entertainment</p>
+            
+            <div class="preview-grid">
+                <div class="preview-card">
+                    <img src="anime1.png" alt="DTECH ANIME Screenshot 1">
+                    <div class="preview-info">
+                        <h3>Home Screen</h3>
+                        <p>Latest releases</p>
+                    </div>
+                </div>
+                <div class="preview-card">
+                    <img src="anime2.png" alt="DTECH ANIME Screenshot 2">
+                    <div class="preview-info">
+                        <h3>Series View</h3>
+                        <p>Detailed information</p>
+                    </div>
+                </div>
+                <div class="preview-card">
+                    <img src="anime3.png" alt="DTECH ANIME Screenshot 3">
+                    <div class="preview-info">
+                        <h3>Player</h3>
+                        <p>High quality streaming</p>
+                    </div>
+                </div>
+                <div class="preview-card">
+                    <img src="anime4.png" alt="DTECH ANIME Screenshot 4">
+                    <div class="preview-info">
+                        <h3>Categories</h3>
+                        <p>Easy navigation</p>
+                    </div>
+                </div>
+            </div>
+            <a href="DTECH ANIME.apk" download class="download-button">
+                <i class="fas fa-download" style="margin-right: 0.5rem;"></i> Download DTECH ANIME
+            </a>
         </div>
     </div>
 
