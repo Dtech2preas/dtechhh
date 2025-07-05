@@ -18,6 +18,7 @@
             text-align: center;
             color: #f8bb22;
             margin-bottom: 30px;
+            text-shadow: 0 0 10px rgba(248, 187, 34, 0.5);
         }
         .tools-container {
             display: grid;
@@ -29,12 +30,13 @@
             border-radius: 10px;
             padding: 20px;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-            transition: transform 0.3s ease;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
             position: relative;
             overflow: hidden;
         }
         .tool-card:hover {
             transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
         }
         .tool-card::before {
             content: '';
@@ -72,6 +74,7 @@
             color: #b8b8b8;
             margin-bottom: 20px;
             line-height: 1.5;
+            min-height: 80px;
         }
         .btn {
             display: inline-flex;
@@ -85,6 +88,7 @@
             margin-right: 10px;
             cursor: pointer;
             border: none;
+            font-size: 14px;
         }
         .btn i {
             margin-right: 8px;
@@ -95,6 +99,7 @@
         }
         .btn-info:hover {
             background-color: #1a508b;
+            transform: scale(1.05);
         }
         .btn-tutorial {
             background-color: #e94560;
@@ -102,24 +107,48 @@
         }
         .btn-tutorial:hover {
             background-color: #ff6b81;
+            transform: scale(1.05);
         }
         .btn-open {
             background-color: #4CAF50;
             color: white;
             width: 100%;
             margin: 10px 0;
+            padding: 12px;
+            font-weight: 600;
         }
         .btn-open:hover {
             background-color: #45a049;
+            transform: scale(1.02);
         }
         .buttons-container {
             display: flex;
             justify-content: space-between;
         }
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            color: #b8b8b8;
+            font-size: 0.9rem;
+        }
+        @media (max-width: 768px) {
+            .tools-container {
+                grid-template-columns: 1fr;
+            }
+            .buttons-container {
+                flex-direction: column;
+                gap: 10px;
+            }
+            .buttons-container .btn {
+                width: 100%;
+                margin: 5px 0;
+            }
+        }
     </style>
 </head>
 <body>
-    <h1>DTECH Tools Tutorial</h1>
+    <h1><i class="fas fa-tools"></i> DTECH Tools Tutorial</h1>
     
     <div class="tools-container">
         <!-- DTECH URL VIDEO DOWNLOADER -->
@@ -130,7 +159,7 @@
                 </div>
                 <h3 class="tool-title">DTECH URL VIDEO DOWNLOADER</h3>
             </div>
-            <p class="tool-description">This tool lets you download any kind of video from any type of URL (TikTok, Facebook, YouTube, Instagram and any other site).</p>
+            <p class="tool-description">Download videos from any URL (TikTok, Facebook, YouTube, Instagram, etc.) with this versatile tool.</p>
             
             <button class="btn btn-open" onclick="window.open('https://cafewarriors.com/spymr251ew?key=ce76edf7e5c6e4907177e712dc143365','_blank')">
                 <i class="fas fa-external-link-alt"></i> Open Tool
@@ -154,7 +183,7 @@
                 </div>
                 <h3 class="tool-title">SNI HOST TESTER</h3>
             </div>
-            <p class="tool-description">Test host and give you a detailed report, good for looking for zero rated sites.</p>
+            <p class="tool-description">Test hosts and get detailed reports, perfect for finding zero-rated sites.</p>
             
             <button class="btn btn-open" onclick="window.open('https://raw.githubusercontent.com/Dtech2preas/100mb/main/sni.py','_blank')">
                 <i class="fas fa-external-link-alt"></i> Open Tool
@@ -178,7 +207,7 @@
                 </div>
                 <h3 class="tool-title">NEO FETCH</h3>
             </div>
-            <p class="tool-description">Show your system information in a visually appealing way in the terminal.</p>
+            <p class="tool-description">Display your system information in a visually appealing way in the terminal.</p>
             
             <button class="btn btn-open" onclick="window.open('https://github.com/dylanaraps/neofetch','_blank')">
                 <i class="fas fa-external-link-alt"></i> Open Tool
@@ -202,7 +231,7 @@
                 </div>
                 <h3 class="tool-title">ACCOUNT EXTRACT</h3>
             </div>
-            <p class="tool-description">Lets you extract email:password combinations from a txt file.</p>
+            <p class="tool-description">Extract email:password combinations from text files with this utility.</p>
             
             <button class="btn btn-open" onclick="window.open('https://ext.dtech24.co.za','_blank')">
                 <i class="fas fa-external-link-alt"></i> Open Tool
@@ -226,7 +255,7 @@
                 </div>
                 <h3 class="tool-title">WEB HOST TESTER</h3>
             </div>
-            <p class="tool-description">Lets you test host via API to check their status and response.</p>
+            <p class="tool-description">Test hosts via API to check their status and response times.</p>
             
             <button class="btn btn-open" onclick="window.open('https://host.dtech24.co.za','_blank')">
                 <i class="fas fa-external-link-alt"></i> Open Tool
@@ -250,7 +279,7 @@
                 </div>
                 <h3 class="tool-title">DTECH WEB APK BUILDER</h3>
             </div>
-            <p class="tool-description">Turn any website into an Android app. Paste a link and get a ready-to-install APK. No coding required. Features built-in pop-up ad blocker and creates fast, lightweight apps.</p>
+            <p class="tool-description">Convert any website into an Android APK with built-in ad blocker and no coding required.</p>
             
             <button class="btn btn-open" onclick="window.open('https://raw.githubusercontent.com/preasx24x/PREASX24/main/apk.py','_blank')">
                 <i class="fas fa-external-link-alt"></i> Open Tool
@@ -265,6 +294,226 @@
                 </button>
             </div>
         </div>
+        
+        <!-- D-TECH BULK SNI HOST CHECKER -->
+        <div class="tool-card">
+            <div class="tool-header">
+                <div class="tool-icon">
+                    <i class="fas fa-list-check"></i>
+                </div>
+                <h3 class="tool-title">D-TECH BULK SNI HOST CHECKER</h3>
+            </div>
+            <p class="tool-description">Efficiently test multiple hosts at once and find reliable ones for your projects.</p>
+            
+            <button class="btn btn-open" onclick="window.open('https://raw.githubusercontent.com/Preasx24/DTECHFILE/main/VIP%20BULK%20HOST%20TESTER.txt','_blank')">
+                <i class="fas fa-download"></i> Get Script
+            </button>
+            
+            <div class="buttons-container">
+                <button class="btn btn-info" onclick="window.open('https://t.me/DTECHXPORT','_blank')">
+                    <i class="fab fa-telegram"></i> Community
+                </button>
+                <button class="btn btn-tutorial" onclick="window.open('https://youtu.be/wS-mFs-z_T4','_blank')">
+                    <i class="fab fa-youtube"></i> Tutorial
+                </button>
+            </div>
+        </div>
+
+        <!-- FREE MTN 100MB DAILY FILE -->
+        <div class="tool-card">
+            <div class="tool-header">
+                <div class="tool-icon">
+                    <i class="fas fa-sim-card"></i>
+                </div>
+                <h3 class="tool-title">FREE MTN 100MB DAILY FILE</h3>
+            </div>
+            <p class="tool-description">Create free daily data files for MTN using V2Ray and alternative methods.</p>
+            
+            <button class="btn btn-open" onclick="window.open('https://t.me/DTECHXPORT','_blank')">
+                <i class="fas fa-file-download"></i> Get Method
+            </button>
+            
+            <div class="buttons-container">
+                <button class="btn btn-info" onclick="window.open('https://t.me/DTECHXPORT','_blank')">
+                    <i class="fab fa-telegram"></i> Community
+                </button>
+                <button class="btn btn-tutorial" onclick="window.open('https://youtu.be/M2wSjZ0j-XU','_blank')">
+                    <i class="fab fa-youtube"></i> Tutorial
+                </button>
+            </div>
+        </div>
+
+        <!-- SPEEDTEST TELEGRAM BOT -->
+        <div class="tool-card">
+            <div class="tool-header">
+                <div class="tool-icon">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <h3 class="tool-title">SPEEDTEST TELEGRAM BOT</h3>
+            </div>
+            <p class="tool-description">Test internet speeds directly from Telegram with this custom bot.</p>
+            
+            <button class="btn btn-open" onclick="window.open('https://github.com/Preasx24/D-TECH_CUSTOM_TEL.BOT','_blank')">
+                <i class="fas fa-code"></i> Get Script
+            </button>
+            
+            <div class="buttons-container">
+                <button class="btn btn-info" onclick="window.open('https://t.me/DTECHXPORT','_blank')">
+                    <i class="fab fa-telegram"></i> Community
+                </button>
+                <button class="btn btn-tutorial" onclick="window.open('https://youtu.be/L4ngUc63tRI','_blank')">
+                    <i class="fab fa-youtube"></i> Tutorial
+                </button>
+            </div>
+        </div>
+
+        <!-- FREE NETFLIX WITH VODACOM -->
+        <div class="tool-card">
+            <div class="tool-header">
+                <div class="tool-icon">
+                    <i class="fas fa-film"></i>
+                </div>
+                <h3 class="tool-title">FREE NETFLIX WITH VODACOM</h3>
+            </div>
+            <p class="tool-description">Access Netflix for free using your Vodacom number with this exclusive method.</p>
+            
+            <button class="btn btn-open" onclick="window.open('https://t.me/DTECHXPORT','_blank')">
+                <i class="fas fa-unlock"></i> Learn Method
+            </button>
+            
+            <div class="buttons-container">
+                <button class="btn btn-info" onclick="window.open('https://t.me/DTECHXPORT','_blank')">
+                    <i class="fab fa-telegram"></i> Community
+                </button>
+                <button class="btn btn-tutorial" onclick="window.open('https://youtu.be/I6iiXYrGdt8','_blank')">
+                    <i class="fab fa-youtube"></i> Tutorial
+                </button>
+            </div>
+        </div>
+
+        <!-- GITHUB WEBSITE HOSTING -->
+        <div class="tool-card">
+            <div class="tool-header">
+                <div class="tool-icon">
+                    <i class="fab fa-github"></i>
+                </div>
+                <h3 class="tool-title">GITHUB WEBSITE HOSTING</h3>
+            </div>
+            <p class="tool-description">Create and host websites on GitHub in minutes with this beginner-friendly tool.</p>
+            
+            <button class="btn btn-open" onclick="window.open('https://github.com/Preasx24/D-TECH_SITE_CREATION','_blank')">
+                <i class="fas fa-laptop-code"></i> Get Tool
+            </button>
+            
+            <div class="buttons-container">
+                <button class="btn btn-info" onclick="window.open('https://t.me/DTECHXPORT','_blank')">
+                    <i class="fab fa-telegram"></i> Community
+                </button>
+                <button class="btn btn-tutorial" onclick="window.open('https://youtu.be/5GCuMxRlFpY','_blank')">
+                    <i class="fab fa-youtube"></i> Tutorial
+                </button>
+            </div>
+        </div>
+
+        <!-- FASTER UDP FILE CREATION -->
+        <div class="tool-card">
+            <div class="tool-header">
+                <div class="tool-icon">
+                    <i class="fas fa-bolt"></i>
+                </div>
+                <h3 class="tool-title">FASTER UDP FILE CREATION</h3>
+            </div>
+            <p class="tool-description">Create faster and more stable UDP configuration files for free internet.</p>
+            
+            <button class="btn btn-open" onclick="window.open('https://t.me/DTECHXPORT','_blank')">
+                <i class="fas fa-tachometer-alt"></i> Learn Method
+            </button>
+            
+            <div class="buttons-container">
+                <button class="btn btn-info" onclick="window.open('https://t.me/DTECHXPORT','_blank')">
+                    <i class="fab fa-telegram"></i> Community
+                </button>
+                <button class="btn btn-tutorial" onclick="window.open('https://youtu.be/8-9WracHYjQ','_blank')">
+                    <i class="fab fa-youtube"></i> Tutorial
+                </button>
+            </div>
+        </div>
+
+        <!-- VPN FILE CREATOR -->
+        <div class="tool-card">
+            <div class="tool-header">
+                <div class="tool-icon">
+                    <i class="fas fa-file-code"></i>
+                </div>
+                <h3 class="tool-title">VPN FILE CREATOR</h3>
+            </div>
+            <p class="tool-description">Create VPN files for HTTP Custom, Napster VPN, HTTP Injector, and more.</p>
+            
+            <button class="btn btn-open" onclick="window.open('https://preasx24.github.io/Sni-host-generator/','_blank')">
+                <i class="fas fa-cogs"></i> Get Tool
+            </button>
+            
+            <div class="buttons-container">
+                <button class="btn btn-info" onclick="window.open('https://t.me/DTECHXPORT','_blank')">
+                    <i class="fab fa-telegram"></i> Community
+                </button>
+                <button class="btn btn-tutorial" onclick="window.open('https://youtu.be/3ZLv7w3qevc','_blank')">
+                    <i class="fab fa-youtube"></i> Tutorial
+                </button>
+            </div>
+        </div>
+
+        <!-- CCTV FOOTAGE HACKER -->
+        <div class="tool-card">
+            <div class="tool-header">
+                <div class="tool-icon">
+                    <i class="fas fa-camera"></i>
+                </div>
+                <h3 class="tool-title">CCTV FOOTAGE HACKER</h3>
+            </div>
+            <p class="tool-description">Access security cameras worldwide (for educational purposes only).</p>
+            
+            <button class="btn btn-open" onclick="window.open('https://github.com/Preasx24/CCTV-FOOTAGE-WORLDWIDE-','_blank')">
+                <i class="fas fa-shield-alt"></i> Get Tool
+            </button>
+            
+            <div class="buttons-container">
+                <button class="btn btn-info" onclick="window.open('https://t.me/DTECHXPORT','_blank')">
+                    <i class="fab fa-telegram"></i> Community
+                </button>
+                <button class="btn btn-tutorial" onclick="window.open('https://youtu.be/j7KSaa2CN3U','_blank')">
+                    <i class="fab fa-youtube"></i> Tutorial
+                </button>
+            </div>
+        </div>
+
+        <!-- SNI HOST CHECKER -->
+        <div class="tool-card">
+            <div class="tool-header">
+                <div class="tool-icon">
+                    <i class="fas fa-network-wired"></i>
+                </div>
+                <h3 class="tool-title">SNI HOST CHECKER</h3>
+            </div>
+            <p class="tool-description">Test connectivity and performance of SNI hosts with detailed insights.</p>
+            
+            <button class="btn btn-open" onclick="window.open('https://github.com/Preasx24/D-TECH_SNI_CHECKER','_blank')">
+                <i class="fas fa-wifi"></i> Get Tool
+            </button>
+            
+            <div class="buttons-container">
+                <button class="btn btn-info" onclick="window.open('https://t.me/DTECHXPORT','_blank')">
+                    <i class="fab fa-telegram"></i> Community
+                </button>
+                <button class="btn btn-tutorial" onclick="window.open('https://youtu.be/nmaS5jpe4J8','_blank')">
+                    <i class="fab fa-youtube"></i> Tutorial
+                </button>
+            </div>
+        </div>
     </div>
+    
+    <footer>
+        <p>DTECH Tools Tutorial &copy; 2023 | All tools and tutorials are for educational purposes only</p>
+    </footer>
 </body>
 </html>
