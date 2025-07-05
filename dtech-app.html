@@ -21,13 +21,13 @@
       --glass-border: rgba(255, 255, 255, 0.1);
       --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     }
-    
+
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
     }
-    
+
     body {
       font-family: 'Inter', sans-serif;
       background: var(--bg);
@@ -37,20 +37,21 @@
         radial-gradient(circle at 25% 25%, rgba(123, 44, 191, 0.15) 0%, transparent 50%),
         radial-gradient(circle at 75% 75%, rgba(255, 158, 0, 0.1) 0%, transparent 50%);
       min-height: 100vh;
+      position: relative;
     }
-    
+
     .container {
       max-width: 1400px;
       margin: 0 auto;
       padding: 40px 20px;
     }
-    
+
     /* Header */
     .header {
       padding: 30px 0;
       margin-bottom: 20px;
     }
-    
+
     .logo {
       font-size: 2.5rem;
       font-weight: 700;
@@ -61,12 +62,12 @@
       align-items: center;
       justify-content: center;
     }
-    
+
     .logo i {
       margin-right: 12px;
       font-size: 2rem;
     }
-    
+
     /* Hero */
     .hero {
       text-align: center;
@@ -79,7 +80,7 @@
       border: 1px solid var(--glass-border);
       box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
     }
-    
+
     .hero h1 {
       font-size: 3.5rem;
       margin-bottom: 20px;
@@ -88,14 +89,14 @@
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
-    
+
     .hero p {
       font-size: 1.3rem;
       max-width: 700px;
       margin: 0 auto 30px;
       opacity: 0.9;
     }
-    
+
     /* App Grid */
     .app-grid {
       display: grid;
@@ -103,7 +104,7 @@
       gap: 30px;
       margin-top: 50px;
     }
-    
+
     /* App Card */
     .app-card {
       background: var(--card-bg);
@@ -116,13 +117,13 @@
       -webkit-backdrop-filter: blur(8px);
       box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
     }
-    
+
     .app-card:hover {
       transform: translateY(-10px);
       box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
       border-color: rgba(123, 44, 191, 0.3);
     }
-    
+
     .app-badge {
       position: absolute;
       top: 15px;
@@ -135,38 +136,45 @@
       font-weight: 700;
       z-index: 3;
     }
-    
-    /* Enhanced Slideshow Preview */
+
+    /* Enhanced Slideshow Preview - Full Dimensions */
     .app-preview {
       height: 250px;
       position: relative;
       overflow: hidden;
+      background: #1a1a1a; /* Added background for better visibility */
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
-    
+
     .slideshow {
       width: 100%;
       height: 100%;
       position: relative;
     }
-    
+
     .slide {
       position: absolute;
       width: 100%;
       height: 100%;
       opacity: 0;
       transition: opacity 0.5s ease-in-out;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
-    
+
     .slide.active {
       opacity: 1;
     }
-    
+
     .slide img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
     }
-    
+
     .slide-controls {
       position: absolute;
       bottom: 15px;
@@ -177,7 +185,7 @@
       gap: 10px;
       z-index: 2;
     }
-    
+
     .slide-dot {
       width: 10px;
       height: 10px;
@@ -186,12 +194,12 @@
       cursor: pointer;
       transition: var(--transition);
     }
-    
+
     .slide-dot.active {
       background: var(--accent);
       transform: scale(1.3);
     }
-    
+
     .app-overlay {
       position: absolute;
       bottom: 0;
@@ -201,7 +209,7 @@
       background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
       z-index: 1;
     }
-    
+
     .app-title {
       font-size: 1.5rem;
       font-weight: 700;
@@ -209,12 +217,12 @@
       display: flex;
       align-items: center;
     }
-    
+
     .app-title i {
       margin-right: 10px;
       color: var(--primary-light);
     }
-    
+
     .app-meta {
       display: flex;
       gap: 15px;
@@ -222,22 +230,22 @@
       opacity: 0.8;
       margin-bottom: 15px;
     }
-    
+
     .app-content {
       padding: 25px;
     }
-    
+
     .app-description {
       margin-bottom: 25px;
       opacity: 0.9;
       font-size: 0.95rem;
     }
-    
+
     .app-actions {
       display: flex;
       gap: 15px;
     }
-    
+
     .btn {
       padding: 12px 20px;
       border-radius: 12px;
@@ -249,35 +257,37 @@
       justify-content: center;
       font-size: 0.95rem;
       flex: 1;
+      cursor: pointer;
+      border: none;
     }
-    
+
     .btn-primary {
       background: linear-gradient(45deg, var(--primary), var(--primary-light));
       color: white;
       box-shadow: 0 4px 15px rgba(123, 44, 191, 0.4);
     }
-    
+
     .btn-primary:hover {
       transform: translateY(-3px);
       box-shadow: 0 8px 25px rgba(123, 44, 191, 0.5);
     }
-    
+
     .btn-secondary {
       background: var(--glass);
       color: var(--text);
       border: 1px solid var(--glass-border);
     }
-    
+
     .btn-secondary:hover {
       background: rgba(255, 255, 255, 0.1);
       border-color: rgba(255, 255, 255, 0.2);
       transform: translateY(-3px);
     }
-    
+
     .btn i {
       margin-right: 8px;
     }
-    
+
     /* Footer */
     footer {
       margin-top: 80px;
@@ -285,27 +295,179 @@
       text-align: center;
       border-top: 1px solid var(--glass-border);
     }
-    
+
     .copyright {
       opacity: 0.7;
       font-size: 0.9rem;
     }
-    
+
+    /* Detailed Modal */
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.9);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: var(--transition);
+      backdrop-filter: blur(10px);
+    }
+
+    .modal.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .modal-content {
+      background: var(--card-bg);
+      border-radius: 24px;
+      border: 1px solid var(--glass-border);
+      width: 90%;
+      max-width: 800px;
+      max-height: 90vh;
+      overflow-y: auto;
+      position: relative;
+      padding: 40px;
+      transform: scale(0.9);
+      transition: var(--transition);
+    }
+
+    .modal.active .modal-content {
+      transform: scale(1);
+    }
+
+    .close-modal {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: transparent;
+      border: none;
+      color: var(--text);
+      font-size: 1.8rem;
+      cursor: pointer;
+      transition: var(--transition);
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+    }
+
+    .close-modal:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--accent);
+    }
+
+    .modal-title {
+      font-size: 2.2rem;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      background: linear-gradient(90deg, var(--primary-light), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .modal-title i {
+      margin-right: 15px;
+    }
+
+    .modal-subtitle {
+      font-size: 1.1rem;
+      margin-bottom: 30px;
+      opacity: 0.8;
+    }
+
+    .modal-features {
+      margin: 30px 0;
+    }
+
+    .feature-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .feature-item {
+      background: rgba(255, 255, 255, 0.05);
+      padding: 20px;
+      border-radius: 12px;
+      border-left: 3px solid var(--accent);
+    }
+
+    .feature-item h4 {
+      font-size: 1.1rem;
+      margin-bottom: 10px;
+      color: var(--accent);
+    }
+
+    .modal-screenshots {
+      margin: 40px 0;
+    }
+
+    .screenshot-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    .screenshot {
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--glass-border);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .screenshot:hover {
+      transform: translateY(-5px);
+      border-color: var(--primary-light);
+    }
+
+    .screenshot img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .modal-cta {
+      margin-top: 40px;
+      display: flex;
+      gap: 15px;
+    }
+
     /* Responsive */
     @media (max-width: 768px) {
       .hero h1 {
         font-size: 2.5rem;
       }
-      
+
       .hero p {
         font-size: 1.1rem;
       }
-      
+
       .app-grid {
         grid-template-columns: 1fr;
       }
+      
+      .modal-content {
+        padding: 20px;
+      }
+      
+      .modal-cta {
+        flex-direction: column;
+      }
     }
-    
+
     /* Animation */
     @keyframes float {
       0%, 100% {
@@ -315,7 +477,7 @@
         transform: translateY(-10px);
       }
     }
-    
+
     .floating {
       animation: float 6s ease-in-out infinite;
     }
@@ -329,12 +491,12 @@
         <span>D-TECh</span>
       </div>
     </header>
-    
+
     <section class="hero floating">
       <h1>Premium Android Apps</h1>
       <p>Experience the next level of mobile performance with our optimized applications</p>
     </section>
-    
+
     <main class="app-grid">
       <!-- DTECH SERVICE -->
       <div class="app-card">
@@ -342,13 +504,13 @@
         <div class="app-preview">
           <div class="slideshow">
             <div class="slide active">
-              <img src="service1.png" alt="DTECH SERVICE Preview 1">
+              <img src="https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1074&q=80" alt="DTECH SERVICE Preview 1">
             </div>
             <div class="slide">
-              <img src="service2.png" alt="DTECH SERVICE Preview 2">
+              <img src="https://images.unsplash.com/photo-1551650975-87deedd944c3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1074&q=80" alt="DTECH SERVICE Preview 2">
             </div>
             <div class="slide">
-              <img src="service3.png" alt="DTECH SERVICE Preview 3">
+              <img src="https://images.unsplash.com/photo-1581094794329-16b1a7770d15?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1074&q=80" alt="DTECH SERVICE Preview 3">
             </div>
           </div>
           <div class="slide-controls">
@@ -371,25 +533,26 @@
             <a href="DTECH SERVICE.apk" class="btn btn-primary" download>
               <i class="fas fa-download"></i> Download
             </a>
-            <a href="service.html" class="btn btn-secondary">
+            <button class="btn btn-secondary" onclick="openModal('service-modal')">
               <i class="fas fa-info-circle"></i> Details
-            </a>
+            </button>
           </div>
         </div>
       </div>
-      
+
       <!-- DTECH TOOLS -->
       <div class="app-card">
+        <div class="app-badge">New</div>
         <div class="app-preview">
           <div class="slideshow">
             <div class="slide active">
-              <img src="tool1.png" alt="DTECH TOOLS Preview 1">
+              <img src="https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80" alt="DTECH TOOLS Preview 1">
             </div>
             <div class="slide">
-              <img src="tool2.png" alt="DTECH TOOLS Preview 2">
+              <img src="https://images.unsplash.com/photo-1581094794329-16b1a7770d15?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1074&q=80" alt="DTECH TOOLS Preview 2">
             </div>
             <div class="slide">
-              <img src="tool3.png" alt="DTECH TOOLS Preview 3">
+              <img src="https://images.unsplash.com/photo-1581091226033-d5c48150dbaa?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80" alt="DTECH TOOLS Preview 3">
             </div>
           </div>
           <div class="slide-controls">
@@ -412,26 +575,26 @@
             <a href="DTECH TOOLS.apk" class="btn btn-primary" download>
               <i class="fas fa-download"></i> Download
             </a>
-            <a href="tool.html" class="btn btn-secondary">
+            <button class="btn btn-secondary" onclick="openModal('tools-modal')">
               <i class="fas fa-info-circle"></i> Details
-            </a>
+            </button>
           </div>
         </div>
       </div>
-      
+
       <!-- DTECH ANIME -->
       <div class="app-card">
         <div class="app-badge">Popular</div>
         <div class="app-preview">
           <div class="slideshow">
             <div class="slide active">
-              <img src="anime1.png" alt="DTECH ANIME Preview 1">
+              <img src="https://images.unsplash.com/photo-1633327941349-7d4ab8a0c4c8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80" alt="DTECH ANIME Preview 1">
             </div>
             <div class="slide">
-              <img src="anime2.png" alt="DTECH ANIME Preview 2">
+              <img src="https://images.unsplash.com/photo-1541562232579-512a21360020?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80" alt="DTECH ANIME Preview 2">
             </div>
             <div class="slide">
-              <img src="anime3.png" alt="DTECH ANIME Preview 3">
+              <img src="https://images.unsplash.com/photo-1635189779577-555de43a0c34?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80" alt="DTECH ANIME Preview 3">
             </div>
           </div>
           <div class="slide-controls">
@@ -454,19 +617,226 @@
             <a href="DTECH ANIME.apk" class="btn btn-primary" download>
               <i class="fas fa-download"></i> Download
             </a>
-            <a href="anime.html" class="btn btn-secondary">
+            <button class="btn btn-secondary" onclick="openModal('anime-modal')">
               <i class="fas fa-info-circle"></i> Details
-            </a>
+            </button>
           </div>
         </div>
       </div>
     </main>
-    
+
     <footer>
       <p class="copyright">© 2023 D-TECh APK Hub. All rights reserved.</p>
     </footer>
   </div>
+
+  <!-- Modals for detailed descriptions -->
+  <!-- DTECH SERVICE Modal -->
+  <div class="modal" id="service-modal">
+    <div class="modal-content">
+      <button class="close-modal" onclick="closeModal('service-modal')">&times;</button>
+      <h2 class="modal-title"><i class="fas fa-cog"></i> DTECH SERVICE</h2>
+      <p class="modal-subtitle">Comprehensive suite of utilities to optimize and enhance your device performance</p>
+      
+      <div class="modal-features">
+        <h3>Key Features</h3>
+        <div class="feature-list">
+          <div class="feature-item">
+            <h4><i class="fas fa-bolt"></i> Performance Boost</h4>
+            <p>Optimize RAM usage and clear background processes for faster device performance.</p>
+          </div>
+          <div class="feature-item">
+            <h4><i class="fas fa-battery-full"></i> Battery Optimization</h4>
+            <p>Extend battery life with intelligent power management and usage monitoring.</p>
+          </div>
+          <div class="feature-item">
+            <h4><i class="fas fa-thermometer-half"></i> Temperature Control</h4>
+            <p>Monitor and reduce device temperature during intensive usage.</p>
+          </div>
+          <div class="feature-item">
+            <h4><i class="fas fa-trash-alt"></i> Junk Cleaner</h4>
+            <p>Remove unnecessary files and free up valuable storage space.</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="modal-description">
+        <h3>App Overview</h3>
+        <p>DTECH SERVICE is your all-in-one solution for maintaining peak Android device performance. Developed by the D-TECh team, this application combines essential tools to keep your device running smoothly.</p>
+        <p>Based on information from preasx24.co.za, DTECH SERVICE offers:</p>
+        <ul>
+          <li>Real-time performance monitoring of CPU, RAM, and battery usage</li>
+          <li>One-tap optimization for immediate performance improvements</li>
+          <li>Smart notifications for potential issues and optimization opportunities</li>
+          <li>Customizable automation for scheduled maintenance tasks</li>
+          <li>Detailed analytics to understand your device's performance patterns</li>
+        </ul>
+      </div>
+      
+      <div class="modal-screenshots">
+        <h3>Screenshots</h3>
+        <div class="screenshot-grid">
+          <div class="screenshot">
+            <img src="https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1074&q=80" alt="DTECH SERVICE Screenshot 1">
+          </div>
+          <div class="screenshot">
+            <img src="https://images.unsplash.com/photo-1551650975-87deedd944c3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1074&q=80" alt="DTECH SERVICE Screenshot 2">
+          </div>
+          <div class="screenshot">
+            <img src="https://images.unsplash.com/photo-1581094794329-16b1a7770d15?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1074&q=80" alt="DTECH SERVICE Screenshot 3">
+          </div>
+        </div>
+      </div>
+      
+      <div class="modal-cta">
+        <a href="DTECH SERVICE.apk" class="btn btn-primary" download>
+          <i class="fas fa-download"></i> Download APK
+        </a>
+        <a href="https://www.preasx24.co.za" target="_blank" class="btn btn-secondary">
+          <i class="fas fa-external-link-alt"></i> Visit Website
+        </a>
+      </div>
+    </div>
+  </div>
   
+  <!-- DTECH TOOLS Modal -->
+  <div class="modal" id="tools-modal">
+    <div class="modal-content">
+      <button class="close-modal" onclick="closeModal('tools-modal')">&times;</button>
+      <h2 class="modal-title"><i class="fas fa-tools"></i> DTECH TOOLS</h2>
+      <p class="modal-subtitle">Advanced toolkit for power users and developers</p>
+      
+      <div class="modal-features">
+        <h3>Key Features</h3>
+        <div class="feature-list">
+          <div class="feature-item">
+            <h4><i class="fas fa-code"></i> Developer Tools</h4>
+            <p>Essential utilities for app development and debugging processes.</p>
+          </div>
+          <div class="feature-item">
+            <h4><i class="fas fa-network-wired"></i> Network Analysis</h4>
+            <p>Monitor network traffic and analyze connectivity issues.</p>
+          </div>
+          <div class="feature-item">
+            <h4><i class="fas fa-file-code"></i> File Management</h4>
+            <p>Advanced file explorer with root access and system file management.</p>
+          </div>
+          <div class="feature-item">
+            <h4><i class="fas fa-terminal"></i> Terminal Emulator</h4>
+            <p>Full Linux terminal environment for advanced command execution.</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="modal-description">
+        <h3>App Overview</h3>
+        <p>DTECH TOOLS provides a comprehensive set of utilities for power users, developers, and IT professionals. This application brings professional-grade tools to your Android device.</p>
+        <p>According to dtechhq.co.za, DTECH TOOLS includes:</p>
+        <ul>
+          <li>System information viewer with detailed hardware specifications</li>
+          <li>Advanced network scanner and diagnostic tools</li>
+          <li>APK analyzer and management tools</li>
+          <li>Screen recorder with custom settings</li>
+          <li>Automation tools for repetitive tasks</li>
+          <li>Secure file management with encryption options</li>
+        </ul>
+      </div>
+      
+      <div class="modal-screenshots">
+        <h3>Screenshots</h3>
+        <div class="screenshot-grid">
+          <div class="screenshot">
+            <img src="https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80" alt="DTECH TOOLS Screenshot 1">
+          </div>
+          <div class="screenshot">
+            <img src="https://images.unsplash.com/photo-1581094794329-16b1a7770d15?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1074&q=80" alt="DTECH TOOLS Screenshot 2">
+          </div>
+          <div class="screenshot">
+            <img src="https://images.unsplash.com/photo-1581091226033-d5c48150dbaa?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80" alt="DTECH TOOLS Screenshot 3">
+          </div>
+        </div>
+      </div>
+      
+      <div class="modal-cta">
+        <a href="DTECH TOOLS.apk" class="btn btn-primary" download>
+          <i class="fas fa-download"></i> Download APK
+        </a>
+        <a href="https://www.dtechhq.co.za" target="_blank" class="btn btn-secondary">
+          <i class="fas fa-external-link-alt"></i> Visit Website
+        </a>
+      </div>
+    </div>
+  </div>
+  
+  <!-- DTECH ANIME Modal -->
+  <div class="modal" id="anime-modal">
+    <div class="modal-content">
+      <button class="close-modal" onclick="closeModal('anime-modal')">&times;</button>
+      <h2 class="modal-title"><i class="fas fa-film"></i> DTECH ANIME</h2>
+      <p class="modal-subtitle">Your ultimate anime streaming and discovery platform</p>
+      
+      <div class="modal-features">
+        <h3>Key Features</h3>
+        <div class="feature-list">
+          <div class="feature-item">
+            <h4><i class="fas fa-play-circle"></i> HD Streaming</h4>
+            <p>Watch your favorite anime in high definition with minimal buffering.</p>
+          </div>
+          <div class="feature-item">
+            <h4><i class="fas fa-bell"></i> Release Notifications</h4>
+            <p>Get notified when new episodes of your followed series are available.</p>
+          </div>
+          <div class="feature-item">
+            <h4><i class="fas fa-bookmark"></i> Watchlist</h4>
+            <p>Save anime to your personal watchlist for easy access later.</p>
+          </div>
+          <div class="feature-item">
+            <h4><i class="fas fa-closed-captioning"></i> Multi-Language Subs</h4>
+            <p>Enjoy subtitles in multiple languages for global accessibility.</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="modal-description">
+        <h3>App Overview</h3>
+        <p>DTECH ANIME brings the world of Japanese animation to your fingertips. With a vast library of titles spanning classic series to the latest releases, this app is designed for anime enthusiasts.</p>
+        <p>As detailed on x24em.github.io/Ani, DTECH ANIME offers:</p>
+        <ul>
+          <li>Over 10,000 episodes across hundreds of series</li>
+          <li>Simulcast streaming of new episodes shortly after Japanese broadcast</li>
+          <li>Personalized recommendations based on your viewing history</li>
+          <li>Community features including reviews and ratings</li>
+          <li>Offline viewing capability for premium users</li>
+          <li>Multiple video quality options to match your connection speed</li>
+        </ul>
+      </div>
+      
+      <div class="modal-screenshots">
+        <h3>Screenshots</h3>
+        <div class="screenshot-grid">
+          <div class="screenshot">
+            <img src="https://images.unsplash.com/photo-1633327941349-7d4ab8a0c4c8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80" alt="DTECH ANIME Screenshot 1">
+          </div>
+          <div class="screenshot">
+            <img src="https://images.unsplash.com/photo-1541562232579-512a21360020?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80" alt="DTECH ANIME Screenshot 2">
+          </div>
+          <div class="screenshot">
+            <img src="https://images.unsplash.com/photo-1635189779577-555de43a0c34?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80" alt="DTECH ANIME Screenshot 3">
+          </div>
+        </div>
+      </div>
+      
+      <div class="modal-cta">
+        <a href="DTECH ANIME.apk" class="btn btn-primary" download>
+          <i class="fas fa-download"></i> Download APK
+        </a>
+        <a href="https://x24em.github.io/Ani/index.html" target="_blank" class="btn btn-secondary">
+          <i class="fas fa-external-link-alt"></i> Visit Website
+        </a>
+      </div>
+    </div>
+  </div>
+
   <script>
     // Initialize slideshows for each app card
     document.querySelectorAll('.app-card').forEach(card => {
@@ -474,23 +844,23 @@
       const slides = card.querySelectorAll('.slide');
       const dots = card.querySelectorAll('.slide-dot');
       let currentSlide = 0;
-      
+
       // Auto-rotate slides
       const interval = setInterval(() => {
         slides[currentSlide].classList.remove('active');
         dots[currentSlide].classList.remove('active');
-        
+
         currentSlide = (currentSlide + 1) % slides.length;
-        
+
         slides[currentSlide].classList.add('active');
         dots[currentSlide].classList.add('active');
       }, 3000);
-      
+
       // Pause on hover
       card.addEventListener('mouseenter', () => {
         clearInterval(interval);
       });
-      
+
       card.addEventListener('mouseleave', () => {
         currentSlide = 0;
         slides.forEach(slide => slide.classList.remove('active'));
@@ -498,38 +868,69 @@
         slides[0].classList.add('active');
         dots[0].classList.add('active');
       });
-      
+
       // Dot navigation
       dots.forEach(dot => {
         dot.addEventListener('click', function() {
           const slideIndex = parseInt(this.getAttribute('data-slide'));
-          
+
           slides[currentSlide].classList.remove('active');
           dots[currentSlide].classList.remove('active');
-          
+
           currentSlide = slideIndex;
-          
+
           slides[currentSlide].classList.add('active');
           dots[currentSlide].classList.add('active');
         });
       });
     });
+
+    // Modal functions
+    function openModal(modalId) {
+      document.getElementById(modalId).classList.add('active');
+      document.body.style.overflow = 'hidden'; // Prevent background scrolling
+    }
     
+    function closeModal(modalId) {
+      document.getElementById(modalId).classList.remove('active');
+      document.body.style.overflow = 'auto'; // Re-enable scrolling
+    }
+    
+    // Close modals when clicking outside content
+    document.querySelectorAll('.modal').forEach(modal => {
+      modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+          closeModal(modal.id);
+        }
+      });
+    });
+    
+    // Close modals with ESC key
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        document.querySelectorAll('.modal').forEach(modal => {
+          if (modal.classList.contains('active')) {
+            closeModal(modal.id);
+          }
+        });
+      }
+    });
+
     // Card hover effect enhancement
     document.querySelectorAll('.app-card').forEach(card => {
       card.addEventListener('mousemove', function(e) {
         const x = e.clientX - this.getBoundingClientRect().left;
         const y = e.clientY - this.getBoundingClientRect().top;
-        
+
         const centerX = this.offsetWidth / 2;
         const centerY = this.offsetHeight / 2;
-        
+
         const angleX = (y - centerY) / 10;
         const angleY = (centerX - x) / 10;
-        
+
         this.style.transform = `perspective(1000px) rotateX(${angleX}deg) rotateY(${angleY}deg) translateY(-10px)`;
       });
-      
+
       card.addEventListener('mouseleave', function() {
         this.style.transform = 'translateY(-10px)';
       });
