@@ -3,61 +3,231 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Browser Static Site Generator</title>
+  <title>Ultimate Static Site Generator</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.0.0/marked.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
   <style>
-    body { font-family: Arial, sans-serif; display: flex; height: 100vh; margin: 0; }
-    textarea, #preview { width: 50%; height: 100%; padding: 10px; box-sizing: border-box; }
-    textarea { border: none; resize: none; background: #f5f5f5; }
-    #preview { overflow-y: auto; border-left: 1px solid #ddd; }
-    button { position: fixed; bottom: 20px; right: 20px; padding: 10px; background: #0074d9; color: white; border: none; cursor: pointer; }
+    :root {
+      --bg: #fff;
+      --text: #333;
+      --sidebar: #f5f5f5;
+      --border: #ddd;
+    }
+    .dark-mode {
+      --bg: #1a1a1a;
+      --text: #f0f0f0;
+      --sidebar: #2d2d2d;
+      --border: #444;
+    }
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: var(--bg);
+      color: var(--text);
+      transition: background 0.3s;
+    }
+    #app {
+      display: flex;
+      height: 100vh;
+    }
+    #sidebar {
+      width: 250px;
+      background: var(--sidebar);
+      border-right: 1px solid var(--border);
+      padding: 15px;
+      overflow-y: auto;
+    }
+    #editor-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    #toolbar {
+      padding: 10px;
+      background: var(--sidebar);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      gap: 10px;
+    }
+    #editor {
+      flex: 1;
+      display: flex;
+    }
+    textarea, #preview {
+      width: 50%;
+      height: 100%;
+      padding: 20px;
+      box-sizing: border-box;
+      border: none;
+      resize: none;
+      background: var(--bg);
+      color: var(--text);
+    }
+    textarea {
+      font-family: 'Fira Code', monospace;
+      border-right: 1px solid var(--border);
+    }
+    #preview {
+      overflow-y: auto;
+    }
+    button {
+      padding: 8px 12px;
+      background: #0074d9;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button.secondary {
+      background: #666;
+    }
+    .page-item {
+      padding: 8px;
+      cursor: pointer;
+      border-radius: 4px;
+      margin-bottom: 5px;
+    }
+    .page-item:hover {
+      background: rgba(0, 116, 217, 0.1);
+    }
+    .active-page {
+      background: rgba(0, 116, 217, 0.2);
+      font-weight: bold;
+    }
   </style>
 </head>
 <body>
-  <textarea id="markdown" placeholder="# Hello, world!
-Write Markdown here...">
-# My Static Site
+  <div id="app">
+    <div id="sidebar">
+      <h3>Pages</h3>
+      <div id="pages-list"></div>
+      <button id="add-page" style="margin-top: 10px;">+ New Page</button>
+      <div style="margin-top: 20px;">
+        <h3>Themes</h3>
+        <select id="theme-select">
+          <option value="light">Light</option>
+          <option value="dark">Dark</option>
+          <option value="solarized">Solarized</option>
+        </select>
+      </div>
+    </div>
+    <div id="editor-container">
+      <div id="toolbar">
+        <button id="export-zip">Export ZIP</button>
+        <button id="deploy-gh" class="secondary">Deploy to GitHub</button>
+        <button id="toggle-mode">Toggle Dark Mode</button>
+      </div>
+      <div id="editor">
+        <textarea id="markdown" spellcheck="false"># Welcome to Ultimate SSG
 
 ## Features
-- No backend needed
-- Export as ZIP
-- Live preview</textarea>
-  <div id="preview"></div>
-  <button id="export">Export Site as ZIP</button>
+- **Multi-page support**
+- **Live preview**
+- **Export as ZIP**
+- **Deploy to GitHub Pages**</textarea>
+        <div id="preview"></div>
+      </div>
+    </div>
+  </div>
 
   <script>
-    // Live Markdown Preview
+    // ===== STATE MANAGEMENT =====
+    let pages = {
+      "index.md": "# Welcome to My Site\n\nThis is the homepage.",
+      "about.md": "# About Me\n\nI build stuff with HTML/CSS/JS."
+    };
+    let currentPage = "index.md";
+    let darkMode = false;
+
+    // ===== DOM ELEMENTS =====
     const markdownInput = document.getElementById('markdown');
     const preview = document.getElementById('preview');
+    const pagesList = document.getElementById('pages-list');
+    const addPageBtn = document.getElementById('add-page');
+    const exportZipBtn = document.getElementById('export-zip');
+    const deployGhBtn = document.getElementById('deploy-gh');
+    const toggleModeBtn = document.getElementById('toggle-mode');
+    const themeSelect = document.getElementById('theme-select');
+
+    // ===== INITIAL RENDER =====
+    function renderPagesList() {
+      pagesList.innerHTML = '';
+      Object.keys(pages).forEach(page => {
+        const pageItem = document.createElement('div');
+        pageItem.className = `page-item ${page === currentPage ? 'active-page' : ''}`;
+        pageItem.textContent = page;
+        pageItem.onclick = () => {
+          currentPage = page;
+          markdownInput.value = pages[page];
+          updatePreview();
+          renderPagesList();
+        };
+        pagesList.appendChild(pageItem);
+      });
+    }
 
     function updatePreview() {
       preview.innerHTML = marked.parse(markdownInput.value);
     }
-    markdownInput.addEventListener('input', updatePreview);
-    updatePreview(); // Initial render
 
-    // Export as ZIP
-    document.getElementById('export').addEventListener('click', () => {
+    // ===== EVENT LISTENERS =====
+    markdownInput.addEventListener('input', () => {
+      pages[currentPage] = markdownInput.value;
+      updatePreview();
+    });
+
+    addPageBtn.addEventListener('click', () => {
+      const pageName = prompt("Enter page name (e.g., 'contact.md'):");
+      if (pageName) {
+        pages[pageName] = `# ${pageName.replace('.md', '')}\n\nNew page content.`;
+        currentPage = pageName;
+        markdownInput.value = pages[pageName];
+        renderPagesList();
+        updatePreview();
+      }
+    });
+
+    exportZipBtn.addEventListener('click', () => {
       const zip = new JSZip();
-      zip.file("index.html", `
-<!DOCTYPE html>
+      Object.keys(pages).forEach(page => {
+        const htmlContent = `<!DOCTYPE html>
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Generated Static Site</title>
-  <style>body { max-width: 800px; margin: 0 auto; padding: 20px; }</style>
+  <title>${page.replace('.md', '')}</title>
+  <style>body { max-width: 800px; margin: 0 auto; padding: 20px; font-family: Arial, sans-serif; }</style>
 </head>
 <body>
-  ${marked.parse(markdownInput.value)}
+  ${marked.parse(pages[page])}
 </body>
-</html>
-      `);
+</html>`;
+        zip.file(page.replace('.md', '.html'), htmlContent);
+      });
       zip.generateAsync({ type: "blob" }).then(blob => {
         saveAs(blob, "static-site.zip");
       });
     });
+
+    deployGhBtn.addEventListener('click', () => {
+      alert("GitHub Pages deployment would use the GitHub API here.\n\n(For a real implementation, you'd need OAuth.)");
+    });
+
+    toggleModeBtn.addEventListener('click', () => {
+      darkMode = !darkMode;
+      document.body.classList.toggle('dark-mode');
+    });
+
+    themeSelect.addEventListener('change', (e) => {
+      // In a real app, you'd apply different CSS themes here
+      alert(`Selected theme: ${e.target.value}`);
+    });
+
+    // ===== INITIAL SETUP =====
+    markdownInput.value = pages[currentPage];
+    updatePreview();
+    renderPagesList();
   </script>
 </body>
 </html>
