@@ -3,14 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>About DTECH - Free Tech Empowerment</title>
+    <title>About DTECH - The Complete Ecosystem</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
             --primary: #2563eb;
+            --primary-dark: #1d4ed8;
             --dark: #0f172a;
+            --darker: #020617;
             --light: #f8fafc;
             --gray: #94a3b8;
+            --card-bg: #1e293b;
         }
         
         * {
@@ -23,7 +26,7 @@
         body {
             background-color: var(--dark);
             color: var(--light);
-            line-height: 1.5;
+            line-height: 1.6;
         }
         
         .container {
@@ -34,11 +37,12 @@
         
         /* Header */
         header {
-            background-color: rgba(15, 23, 42, 0.9);
+            background-color: var(--darker);
             padding: 15px 0;
             position: sticky;
             top: 0;
             border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+            z-index: 100;
         }
         
         .header-content {
@@ -50,170 +54,254 @@
         .logo {
             font-weight: 800;
             font-size: 1.5rem;
+            background: linear-gradient(to right, var(--primary), #7c3aed);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        nav a {
+            color: var(--gray);
+            text-decoration: none;
+            margin-left: 20px;
+            transition: color 0.3s;
+        }
+        
+        nav a:hover {
             color: var(--primary);
         }
         
         /* Hero */
         .hero {
-            padding: 60px 0;
+            padding: 70px 0 50px;
             text-align: center;
+            background: linear-gradient(to bottom, var(--darker), var(--dark));
         }
         
         .hero h1 {
-            font-size: 2.5rem;
+            font-size: 2.8rem;
             margin-bottom: 20px;
-            color: var(--primary);
+            background: linear-gradient(to right, var(--primary), #7c3aed);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
         }
         
-        .hero p {
-            color: var(--gray);
+        .mission-statement {
+            font-style: italic;
+            font-size: 1.5rem;
+            color: var(--primary);
+            margin: 30px auto;
             max-width: 800px;
-            margin: 0 auto 30px;
+            position: relative;
+        }
+        
+        .mission-statement::before,
+        .mission-statement::after {
+            content: '"';
+            font-size: 2rem;
+            color: var(--gray);
         }
         
         /* Sections */
         section {
-            padding: 40px 0;
-            border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+            padding: 50px 0;
         }
         
-        section:last-child {
-            border-bottom: none;
-        }
-        
-        h2 {
-            font-size: 1.8rem;
-            margin-bottom: 20px;
+        .section-title {
+            font-size: 2rem;
+            margin-bottom: 30px;
             color: var(--primary);
+            position: relative;
+            display: inline-block;
         }
         
-        h3 {
-            font-size: 1.3rem;
-            margin-bottom: 15px;
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 60px;
+            height: 4px;
+            background: linear-gradient(to right, var(--primary), #7c3aed);
+            border-radius: 2px;
         }
         
-        /* Founder */
-        .founder {
+        /* Founder Section */
+        .founder-container {
             display: grid;
             grid-template-columns: 1fr 2fr;
             gap: 30px;
+            align-items: center;
         }
         
         .founder-image {
             background: linear-gradient(135deg, #1e293b, #0f172a);
-            border-radius: 10px;
+            border-radius: 15px;
+            padding: 30px;
             display: flex;
             align-items: center;
             justify-content: center;
             aspect-ratio: 1/1;
+            border: 2px solid rgba(148, 163, 184, 0.1);
         }
         
         .founder-image i {
-            font-size: 3rem;
+            font-size: 5rem;
             color: var(--primary);
+            opacity: 0.7;
         }
         
-        /* Platforms */
-        .platforms {
+        .founder-tagline {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .tag {
+            background: rgba(37, 99, 235, 0.2);
+            padding: 5px 15px;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            border: 1px solid var(--primary);
+        }
+        
+        /* Ecosystem */
+        .ecosystem-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
         }
         
-        .platform {
-            background: #1e293b;
-            border-radius: 10px;
-            padding: 20px;
+        .ecosystem-card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 25px;
             border-left: 4px solid var(--primary);
+            transition: transform 0.3s;
         }
         
-        .platform-icon {
-            font-size: 2rem;
+        .ecosystem-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .ecosystem-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
             color: var(--primary);
-            margin-bottom: 10px;
         }
         
-        .platform ul {
+        .ecosystem-card ul {
             margin: 15px 0;
             padding-left: 20px;
             color: var(--gray);
         }
         
-        .platform li {
+        .ecosystem-card li {
             margin-bottom: 8px;
         }
         
-        .download-btn {
-            display: inline-block;
-            background: var(--primary);
-            color: white;
-            padding: 8px 15px;
-            border-radius: 5px;
-            text-decoration: none;
-            font-weight: 600;
-            margin-top: 10px;
-            font-size: 0.9rem;
-        }
-        
-        /* Philosophy */
-        .principles {
+        /* Projects */
+        .projects-container {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 20px;
-            margin-top: 20px;
         }
         
-        .principle {
-            background: #1e293b;
-            padding: 15px;
-            border-radius: 8px;
+        .project-card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
         }
         
-        .principle i {
+        .project-icon {
+            font-size: 1.8rem;
             color: var(--primary);
-            margin-bottom: 10px;
-            font-size: 1.5rem;
         }
         
         /* Connect */
-        .social-links {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            margin-top: 20px;
+        .connect-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
         }
         
-        .social-link {
-            background: #1e293b;
-            padding: 10px 15px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+        .connect-card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            transition: transform 0.3s;
+        }
+        
+        .connect-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .connect-icon {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+        
+        .connect-link {
+            color: var(--gray);
             text-decoration: none;
-            color: var(--light);
-            font-weight: 500;
+            transition: color 0.3s;
         }
         
-        .social-link i {
+        .connect-link:hover {
             color: var(--primary);
         }
         
         /* Footer */
         footer {
+            background-color: var(--darker);
+            padding: 40px 0;
             text-align: center;
-            padding: 30px 0;
-            color: var(--gray);
-            font-size: 0.9rem;
+            margin-top: 50px;
         }
         
+        .footer-content {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .footer-logo {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            background: linear-gradient(to right, var(--primary), #7c3aed);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .footer-text {
+            color: var(--gray);
+            margin-bottom: 20px;
+        }
+        
+        .heart {
+            color: #ef4444;
+        }
+        
+        /* Responsive */
         @media (max-width: 768px) {
-            .founder {
+            .founder-container {
                 grid-template-columns: 1fr;
             }
             
             .hero h1 {
-                font-size: 2rem;
+                font-size: 2.2rem;
+            }
+            
+            .mission-statement {
+                font-size: 1.2rem;
             }
         }
     </style>
@@ -224,137 +312,255 @@
             <div class="logo">DTECH</div>
             <nav>
                 <a href="#founder">Founder</a>
-                <a href="#platforms">Platforms</a>
+                <a href="#ecosystem">Ecosystem</a>
+                <a href="#projects">Projects</a>
                 <a href="#connect">Connect</a>
             </nav>
         </div>
     </header>
 
-    <main class="container">
+    <main>
         <section class="hero">
-            <h1>DTECH: Free Tech Empowerment</h1>
-            <p>DTECH is a digital ecosystem built to empower through free technology, education, and innovation. Founded by Preasx24, we provide accessible tools without logins, subscriptions, or payments.</p>
+            <div class="container">
+                <h1>The Complete DTECH Ecosystem</h1>
+                <p>Empowering students, developers, and entrepreneurs through accessible technology solutions</p>
+                
+                <div class="mission-statement">
+                    Build. Break. Share. Repeat.
+                </div>
+                
+                <p>This phrase defines the essence of Preasx24's work - technology built for people, broken down to understand, shared freely, and iterated to improve lives.</p>
+            </div>
         </section>
 
-        <section id="founder">
-            <h2>The Founder</h2>
-            <div class="founder">
+        <section id="founder" class="container">
+            <h2 class="section-title">Who is Preasx24?</h2>
+            
+            <div class="founder-container">
                 <div class="founder-image">
                     <i class="fas fa-user-secret"></i>
                 </div>
                 <div>
-                    <h3>Preasx24</h3>
-                    <p>Preasx24 is the pseudonymous founder behind DTECH, a South African tech entrepreneur focused on youth empowerment through accessible digital tools. Since 2018, he has built DTECH from a small Facebook page into a multi-platform ecosystem serving thousands.</p>
-                    <p>His approach combines grassroots practicality with technical innovation, creating tools that students and young developers can actually use. From Termux utilities to anime streaming and student resources, every DTECH platform reflects this commitment to open access.</p>
+                    <div class="founder-tagline">
+                        <span class="tag">Developer</span>
+                        <span class="tag">Innovator</span>
+                        <span class="tag">Student Community Builder</span>
+                    </div>
+                    
+                    <p>Preasx24 is the pseudonymous founder behind the DTECH ecosystem, a South African tech entrepreneur dedicated to youth empowerment through accessible digital solutions.</p>
+                    
+                    <p>His mission centers on empowering youth—especially students and emerging creators in South Africa—through practical technology solutions. He believes in building tools that solve real problems, then breaking them down to make them understandable, sharing them freely, and continuously improving them.</p>
+                    
+                    <p>From humble beginnings, Preasx24 has grown DTECH into a multi-platform ecosystem serving thousands of students and developers with free, accessible tools.</p>
                 </div>
             </div>
         </section>
 
-        <section id="platforms">
-            <h2>Our Platforms</h2>
-            <div class="platforms">
-                <div class="platform">
-                    <div class="platform-icon">
-                        <i class="fas fa-terminal"></i>
-                    </div>
-                    <h3>DTECH HQ</h3>
-                    <p>Termux Tool Hub for Android development:</p>
-                    <ul>
-                        <li>Advanced Termux utilities</li>
-                        <li>Step-by-step tutorials</li>
-                        <li>Terminal-based tools</li>
-                    </ul>
-                    <a href="https://www.dtech24.co.za/DTECH%20TOOLS.apk" class="download-btn">
-                        <i class="fas fa-download"></i> Download APK
-                    </a>
-                </div>
-
-                <div class="platform">
-                    <div class="platform-icon">
-                        <i class="fas fa-film"></i>
-                    </div>
-                    <h3>DTECH Anime</h3>
-                    <p>Free anime streaming platform:</p>
-                    <ul>
-                        <li>Thousands of titles</li>
-                        <li>No account needed</li>
-                        <li>Clean interface</li>
-                    </ul>
-                    <a href="https://www.dtech24.co.za/DTECH%20ANIME.apk" class="download-btn">
-                        <i class="fas fa-download"></i> Download APK
-                    </a>
-                </div>
-
-                <div class="platform">
-                    <div class="platform-icon">
-                        <i class="fas fa-graduation-cap"></i>
-                    </div>
-                    <h3>DTECH Services</h3>
-                    <p>Student resource hub:</p>
+        <section id="ecosystem" class="container">
+            <h2 class="section-title">The DTECH Ecosystem</h2>
+            <p>A tech-driven ecosystem supporting students, startups, and digital entrepreneurs across multiple platforms:</p>
+            
+            <div class="ecosystem-grid">
+                <div class="ecosystem-card">
+                    <h3>preasx24.co.za</h3>
+                    <p>The central hub for academic support including:</p>
                     <ul>
                         <li>Past exam papers</li>
-                        <li>Video/audio lessons</li>
-                        <li>University admissions info</li>
+                        <li>PATs and SBA guides</li>
                         <li>NSFAS resources</li>
+                        <li>Interactive quizzes</li>
+                        <li>APS calculator</li>
                     </ul>
-                    <a href="https://www.dtech24.co.za/DTECH%20SERVICES.apk" class="download-btn">
-                        <i class="fas fa-download"></i> Download APK
-                    </a>
+                </div>
+                
+                <div class="ecosystem-card">
+                    <h3>DTech Services</h3>
+                    <p>Student-centered marketplace offering:</p>
+                    <ul>
+                        <li>Textbook rentals</li>
+                        <li>Digital academic tools</li>
+                        <li>Website creation services</li>
+                        <li>Student productivity kits</li>
+                        <li>Microsoft Office tutoring</li>
+                    </ul>
+                </div>
+                
+                <div class="ecosystem-card">
+                    <h3>DTech HQ</h3>
+                    <p>The innovation branch featuring:</p>
+                    <ul>
+                        <li>Telegram bots</li>
+                        <li>System scripts</li>
+                        <li>Account checkers</li>
+                        <li>Coding resources</li>
+                        <li>Terminal utilities</li>
+                    </ul>
+                </div>
+                
+                <div class="ecosystem-card">
+                    <h3>DTech Info</h3>
+                    <p>Open knowledge library with:</p>
+                    <ul>
+                        <li>Technical tutorials</li>
+                        <li>Academic guides</li>
+                        <li>Curated tech resources</li>
+                        <li>Learning pathways</li>
+                        <li>Developer documentation</li>
+                    </ul>
                 </div>
             </div>
         </section>
 
-        <section>
-            <h2>Our Principles</h2>
-            <div class="principles">
-                <div class="principle">
-                    <i class="fas fa-unlock-alt"></i>
-                    <h3>No Barriers</h3>
-                    <p>No logins, no subscriptions, no payments - ever.</p>
+        <section id="projects" class="container">
+            <h2 class="section-title">Featured Projects & Tools</h2>
+            <p>Preasx24 is known for building practical, lightweight tools designed for students, businesses, and content creators:</p>
+            
+            <div class="projects-container" style="margin-top: 30px;">
+                <div class="project-card">
+                    <div class="project-icon">
+                        <i class="fab fa-telegram"></i>
+                    </div>
+                    <div>
+                        <h3>Telegram Bots</h3>
+                        <p>For giveaways, data checks, weather, and account management</p>
+                    </div>
                 </div>
-                <div class="principle">
-                    <i class="fas fa-bolt"></i>
-                    <h3>Instant Access</h3>
-                    <p>Download and use immediately with no setup.</p>
+                
+                <div class="project-card">
+                    <div class="project-icon">
+                        <i class="fas fa-code"></i>
+                    </div>
+                    <div>
+                        <h3>Python/Bash Scripts</h3>
+                        <p>System info tools, account checkers, and terminal utilities</p>
+                    </div>
                 </div>
-                <div class="principle">
-                    <i class="fas fa-users"></i>
-                    <h3>Community First</h3>
-                    <p>Built for students and young developers.</p>
+                
+                <div class="project-card">
+                    <div class="project-icon">
+                        <i class="fas fa-globe"></i>
+                    </div>
+                    <div>
+                        <h3>Web Utilities</h3>
+                        <p>Responsive static websites and dashboards for businesses</p>
+                    </div>
                 </div>
-                <div class="principle">
-                    <i class="fas fa-code"></i>
-                    <h3>Practical Tools</h3>
-                    <p>Real utilities that solve actual problems.</p>
+                
+                <div class="project-card">
+                    <div class="project-icon">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <div>
+                        <h3>Academic Services</h3>
+                        <p>Microsoft Office tutoring tools and student productivity kits</p>
+                    </div>
+                </div>
+                
+                <div class="project-card">
+                    <div class="project-icon">
+                        <i class="fas fa-palette"></i>
+                    </div>
+                    <div>
+                        <h3>Creator Tools</h3>
+                        <p>Link directories and content hub templates</p>
+                    </div>
+                </div>
+            </div>
+            
+            <h3 style="margin-top: 40px; color: var(--primary);">Highlighted Works</h3>
+            <div class="projects-container" style="margin-top: 20px;">
+                <div class="project-card">
+                    <div class="project-icon">
+                        <i class="fas fa-tv"></i>
+                    </div>
+                    <div>
+                        <h3>DTECH Netflix Checker</h3>
+                    </div>
+                </div>
+                
+                <div class="project-card">
+                    <div class="project-icon">
+                        <i class="fas fa-cloud-sun"></i>
+                    </div>
+                    <div>
+                        <h3>DTECH Weather Bot</h3>
+                    </div>
+                </div>
+                
+                <div class="project-card">
+                    <div class="project-icon">
+                        <i class="fas fa-info-circle"></i>
+                    </div>
+                    <div>
+                        <h3>System Info Script</h3>
+                    </div>
+                </div>
+                
+                <div class="project-card">
+                    <div class="project-icon">
+                        <i class="fas fa-link"></i>
+                    </div>
+                    <div>
+                        <h3>DTECH Link Directory</h3>
+                    </div>
+                </div>
+                
+                <div class="project-card">
+                    <div class="project-icon">
+                        <i class="fas fa-university"></i>
+                    </div>
+                    <div>
+                        <h3>University APS Calculator</h3>
+                    </div>
                 </div>
             </div>
         </section>
 
-        <section id="connect">
-            <h2>Connect With DTECH</h2>
-            <div class="social-links">
-                <a href="https://t.me/DTECHX24" class="social-link">
-                    <i class="fab fa-telegram"></i> Telegram
-                </a>
-                <a href="https://youtube.com/@d-tech_services" class="social-link">
-                    <i class="fab fa-youtube"></i> YouTube
-                </a>
-                <a href="https://www.facebook.com/profile.php?id=100054886954297" class="social-link">
-                    <i class="fab fa-facebook"></i> Facebook
-                </a>
-                <a href="https://www.instagram.com/preasx24" class="social-link">
-                    <i class="fab fa-instagram"></i> Instagram
-                </a>
-                <a href="https://tiktok.com/@dtech2preasx" class="social-link">
-                    <i class="fab fa-tiktok"></i> TikTok
-                </a>
+        <section id="connect" class="container">
+            <h2 class="section-title">Connect With Preasx24</h2>
+            <p>Explore platforms or reach out directly through these channels:</p>
+            
+            <div class="connect-grid" style="margin-top: 30px;">
+                <div class="connect-card">
+                    <div class="connect-icon">
+                        <i class="fab fa-telegram"></i>
+                    </div>
+                    <h3>Telegram</h3>
+                    <a href="https://t.me/Preasx24" class="connect-link">@Preasx24</a>
+                </div>
+                
+                <div class="connect-card">
+                    <div class="connect-icon">
+                        <i class="fab fa-instagram"></i>
+                    </div>
+                    <h3>Instagram</h3>
+                    <a href="https://instagram.com/preasx24" class="connect-link">@preasx24</a>
+                </div>
+                
+                <div class="connect-card">
+                    <div class="connect-icon">
+                        <i class="fab fa-youtube"></i>
+                    </div>
+                    <h3>YouTube</h3>
+                    <a href="https://youtube.com/@d-tech_services" class="connect-link">DTECH Channel</a>
+                </div>
+                
+                <div class="connect-card">
+                    <div class="connect-icon">
+                        <i class="fab fa-github"></i>
+                    </div>
+                    <h3>GitHub</h3>
+                    <a href="https://github.com/preasx24" class="connect-link">@preasx24</a>
+                </div>
             </div>
         </section>
     </main>
 
     <footer>
-        <div class="container">
-            <p>© 2025 DTECH | Dynamic Tech | Empowering through free technology</p>
+        <div class="container footer-content">
+            <div class="footer-logo">DTECH</div>
+            <p class="footer-text">Empowering students, developers, and entrepreneurs through accessible technology</p>
+            <p>© 2025 Preasx24 | Founder of DTECH | Built with <i class="fas fa-laptop heart"></i> and <i class="fas fa-heart heart"></i> in South Africa</p>
         </div>
     </footer>
 </body>
