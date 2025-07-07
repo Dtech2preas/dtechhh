@@ -1,30 +1,31 @@
 {
-  "TEXT": {
-    "description": "Editable text block",
-    "template": "<p contenteditable='true'>Edit me</p>"
-  },
   "BTU": {
-    "description": "Button component",
-    "template": "<button data-dtech-id='{id}' class='dtech-btn'>{text}</button>",
-    "required_fields": ["id","text"],
-    "placeholders": ["btn1","Click Me"]
+    "primary": {
+      "backgroundColor": "#007bff",
+      "color": "#fff",
+      "padding": "8px 12px",
+      "border": "none",
+      "borderRadius": "4px"
+    },
+    "danger": {
+      "backgroundColor": "#dc3545",
+      "color": "#fff",
+      "padding": "8px 12px"
+    }
   },
-  "IMG": {
-    "description": "Image component",
-    "template": "<img src='{url}' alt='{alt}' style='max-width:150px;' />",
-    "required_fields": ["url","alt"],
-    "placeholders": ["https://via.placeholder.com/150","Placeholder"]
+  "TEXT": {
+    "large": {
+      "fontSize": "20px",
+      "color": "#333"
+    },
+    "muted": {
+      "color": "#888"
+    }
   },
   "SIDEBAR_LAYOUT": {
-    "description": "Sidebar + Main",
-    "template": "<div style='display:flex; width:300px; height:200px;'><aside contenteditable='true' style='width:80px; background:#ddd; padding:5px;'>Menu</aside><main contenteditable='true' style='flex:1; padding:5px;'>Content</main></div>"
-  },
-  "GRID2": {
-    "description": "Two-column grid",
-    "template": "<div style='display:grid; grid-template-columns:1fr 1fr; gap:5px; width:200px;'><div contenteditable='true' style='background:#eee;padding:5px;'>Col 1</div><div contenteditable='true' style='background:#eee;padding:5px;'>Col 2</div></div>"
-  },
-  "LOGIN_LAYOUT": {
-    "description": "Login form",
-    "template": "<div style='width:200px;padding:10px;border:1px solid #ccc;'><h3 contenteditable='true'>Login</h3><input placeholder='User' style='width:100%;margin-bottom:5px;'/><input placeholder='Pass' type='password' style='width:100%;margin-bottom:5px;'/><button style='width:100%;'>Submit</button></div>"
+    "dark": {
+      "backgroundColor": "#444",
+      "color": "#fff"
+    }
   }
 }
