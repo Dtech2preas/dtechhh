@@ -88,6 +88,25 @@
   touch-action: none;
 }
 
+#stylePopup {
+  position: fixed;
+  top: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: white;
+  border: 1px solid #ccc;
+  padding: 15px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.3);
+  display: none;
+  z-index: 2000;
+  width: 250px;
+}
+#stylePopup input, #presetSelect {
+  width: 100%;
+  margin-bottom: 8px;
+  padding: 5px;
+}
+
   </style>
 </head>
 <body>  <div id="editorSection">
@@ -106,19 +125,25 @@
       </div>
     </div>
     <div id="previewCanvas"></div>
+  </div>  <div id="stylePopup">
+    <select id="presetSelect"><option value="">-- Choose Preset --</option></select>
+    <input id="fontSize" type="text" placeholder="Font size (e.g. 20px)" />
+    <input id="color" type="text" placeholder="Text color" />
+    <input id="bgColor" type="text" placeholder="Background color" />
+    <input id="padding" type="text" placeholder="Padding" />
+    <input id="borderRadius" type="text" placeholder="Border radius" />
+    <button onclick="applyStyles()">Apply</button>
+    <button onclick="closePopup()">Close</button>
   </div>  <script>
-    let commands = {};
-    let cssPresets = {};
-    let styleMode = false;
+    let commands = {}, cssPresets = {}, styleMode = false;
     let selectedElement = null;
 
     const editorSection = document.getElementById('editorSection');
     const previewSection = document.getElementById('previewSection');
     const canvas = document.getElementById('previewCanvas');
+    const popup = document.getElementById('stylePopup');
 
-    fetch('html_commands.json')
-      .then(res => res.json())
-      .then(data => commands = data);
+    fetch('html_commands.json').then(res => res.json()).then(data => commands = data);
 
     function parseLine(line) {
       const [cmd, rest] = line.split('=');
@@ -158,11 +183,56 @@
         wrapper.style.top = '10px';
 
         makeDraggable(wrapper);
+        wrapper.addEventListener('click', () => {
+          if (!styleMode) return;
+          selectedElement = wrapper.firstChild;
+          showPopup(cmd);
+        });
+
         canvas.appendChild(wrapper);
       });
       editorSection.style.display = 'none';
       previewSection.style.display = 'flex';
     });
+
+    function showPopup(cmd) {
+      const preset = document.getElementById('presetSelect');
+      preset.innerHTML = '<option value="">-- Choose Preset --</option>';
+      if (cssPresets[cmd]) {
+        Object.keys(cssPresets[cmd]).forEach(name => {
+          const opt = document.createElement('option');
+          opt.value = name;
+          opt.textContent = name;
+          preset.appendChild(opt);
+        });
+        preset.onchange = () => {
+          const styleObj = cssPresets[cmd][preset.value];
+          for (const [key, val] of Object.entries(styleObj)) {
+            selectedElement.style[key] = val;
+          }
+        };
+      }
+      document.getElementById('fontSize').value = selectedElement.style.fontSize || '';
+      document.getElementById('color').value = selectedElement.style.color || '';
+      document.getElementById('bgColor').value = selectedElement.style.backgroundColor || '';
+      document.getElementById('padding').value = selectedElement.style.padding || '';
+      document.getElementById('borderRadius').value = selectedElement.style.borderRadius || '';
+      popup.style.display = 'block';
+    }
+
+    function applyStyles() {
+      if (!selectedElement) return;
+      selectedElement.style.fontSize = document.getElementById('fontSize').value;
+      selectedElement.style.color = document.getElementById('color').value;
+      selectedElement.style.backgroundColor = document.getElementById('bgColor').value;
+      selectedElement.style.padding = document.getElementById('padding').value;
+      selectedElement.style.borderRadius = document.getElementById('borderRadius').value;
+      closePopup();
+    }
+
+    function closePopup() {
+      popup.style.display = 'none';
+    }
 
     function goBack() {
       previewSection.style.display = 'none';
@@ -171,17 +241,14 @@
 
     function loadCSS() {
       styleMode = true;
-      fetch('CSS.json')
-        .then(res => res.json())
-        .then(data => {
-          cssPresets = data;
-          alert("Style mode loaded. Styling will be available in the next version.");
-        });
+      fetch('CSS.json').then(res => res.json()).then(data => {
+        cssPresets = data;
+        alert("Style mode ON. Tap elements to style them.");
+      });
     }
 
     function makeDraggable(el) {
       let offsetX = 0, offsetY = 0;
-
       const getOffset = (x, y) => {
         const rect = canvas.getBoundingClientRect();
         return {
@@ -189,20 +256,17 @@
           y: y - rect.top
         };
       };
-
       const startDrag = (x, y) => {
         const elRect = el.getBoundingClientRect();
         const canvasRect = canvas.getBoundingClientRect();
         offsetX = x - elRect.left + canvas.scrollLeft - canvasRect.left;
         offsetY = y - elRect.top + canvas.scrollTop - canvasRect.top;
       };
-
       const moveDrag = (x, y) => {
         const { x: relX, y: relY } = getOffset(x, y);
         el.style.left = (relX - offsetX) + 'px';
         el.style.top = (relY - offsetY) + 'px';
       };
-
       el.addEventListener('mousedown', (e) => {
         startDrag(e.pageX, e.pageY);
         const onMouseMove = (e) => moveDrag(e.pageX, e.pageY);
@@ -211,7 +275,6 @@
           document.removeEventListener('mousemove', onMouseMove);
         }, { once: true });
       });
-
       el.addEventListener('touchstart', (e) => {
         e.preventDefault();
         const touch = e.touches[0];
