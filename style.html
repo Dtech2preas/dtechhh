@@ -1,176 +1,376 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>DTechML Style Editor</title>
   <style>
-    * { box-sizing: border-box; }
+    :root {
+      --primary-color: #4361ee;
+      --primary-hover: #3a56d4;
+      --secondary-color: #6c757d;
+      --secondary-hover: #5a6268;
+      --background: #f8f9fa;
+      --card-bg: #ffffff;
+      --border-color: #dee2e6;
+      --text-color: #212529;
+      --success-color: #28a745;
+      --shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    }
+
     body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f9f9f9;
-      overflow: hidden;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--background);
+      color: var(--text-color);
+      line-height: 1.6;
+      padding: 20px;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .container {
+      background: var(--card-bg);
+      border-radius: 10px;
+      box-shadow: var(--shadow);
+      padding: 30px;
+      margin-top: 20px;
+    }
+
+    h1 {
+      color: var(--primary-color);
+      margin-bottom: 5px;
+    }
+
+    .subtitle {
+      color: var(--secondary-color);
+      margin-bottom: 25px;
+      font-size: 1rem;
+    }
+
+    select, input {
+      width: 100%;
+      padding: 12px 15px;
+      margin-bottom: 15px;
+      font-size: 16px;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      transition: all 0.3s ease;
+      background-color: var(--background);
+    }
+
+    select:focus, input:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+    }
+
+    .button-group {
+      display: flex;
+      gap: 12px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      padding: 12px 24px;
+      font-size: 16px;
+      font-weight: 500;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      flex: 1;
+      min-width: 120px;
+    }
+
+    #applyBtn {
+      background: var(--primary-color);
+      color: white;
+    }
+
+    #applyBtn:hover {
+      background: var(--primary-hover);
+      transform: translateY(-1px);
+    }
+
+    #exportBtn {
+      background: var(--success-color);
+      color: white;
+    }
+
+    #exportBtn:hover {
+      background: #218838;
+      transform: translateY(-1px);
+    }
+
+    button:active {
+      transform: translateY(0);
     }
 
     #previewArea {
-      padding: 20px;
-      height: 100vh;
-      overflow-y: auto;
-    }
-
-    .style-popup {
-      position: fixed;
-      top: 120px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: white;
-      box-shadow: 0 0 15px rgba(0,0,0,0.1);
-      padding: 15px;
+      border: 1px solid var(--border-color);
       border-radius: 8px;
-      z-index: 999;
-      display: none;
-      width: 300px;
+      padding: 20px;
+      min-height: 300px;
+      background: var(--background);
+      margin-top: 30px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
     }
 
-    .style-popup input, .style-popup button {
-      width: 100%;
+    .preview-element {
+      padding: 15px;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      background: var(--card-bg);
+      transition: all 0.3s ease;
+    }
+
+    .preview-element.selected {
+      border: 2px solid var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+    }
+
+    .style-controls {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .control-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .control-group label {
       margin-bottom: 8px;
-      padding: 8px;
-      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-color);
     }
 
-    .highlight {
-      outline: 2px dashed #007bff;
-    }
-
-    .top-bar {
+    .status {
       position: fixed;
-      top: 0;
-      width: 100%;
-      background: #007bff;
+      bottom: 20px;
+      right: 20px;
+      padding: 12px 20px;
+      background: var(--primary-color);
       color: white;
-      padding: 10px 20px;
-      font-size: 18px;
-      font-weight: bold;
+      border-radius: 6px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      opacity: 0;
+      transition: opacity 0.3s ease;
       z-index: 1000;
     }
 
-    .go-next {
-      margin-top: 8px;
-      background: #28a745;
-      color: white;
-      border: none;
+    .status.visible {
+      opacity: 1;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 20px;
+      }
+      
+      .style-controls {
+        grid-template-columns: 1fr;
+      }
+      
+      button {
+        width: 100%;
+      }
     }
   </style>
 </head>
 <body>
+  <div class="container">
+    <h1>Style Editor</h1>
+    <p class="subtitle">Customize the appearance of your DTechML elements</p>
 
-  <div class="top-bar">DTechML Style Editor</div>
+    <div class="control-group">
+      <label for="elementSelect">Select Element to Style</label>
+      <select id="elementSelect">
+        <option value="">— Select an Element —</option>
+      </select>
+    </div>
 
-  <div id="previewArea" style="margin-top: 50px;"></div>
+    <div class="style-controls">
+      <div class="control-group">
+        <label for="fontSize">Font Size</label>
+        <input id="fontSize" type="text" placeholder="e.g. 16px or 1rem" />
+      </div>
+      <div class="control-group">
+        <label for="color">Text Color</label>
+        <input id="color" type="text" placeholder="e.g. #333 or navy" />
+      </div>
+      <div class="control-group">
+        <label for="bgColor">Background Color</label>
+        <input id="bgColor" type="text" placeholder="e.g. #fff or lightblue" />
+      </div>
+      <div class="control-group">
+        <label for="padding">Padding</label>
+        <input id="padding" type="text" placeholder="e.g. 10px or 1em 2em" />
+      </div>
+      <div class="control-group">
+        <label for="borderRadius">Border Radius</label>
+        <input id="borderRadius" type="text" placeholder="e.g. 5px or 50%" />
+      </div>
+    </div>
 
-  <div class="style-popup" id="stylePopup">
-    <input id="fontSize" placeholder="Font size (e.g. 16px)" />
-    <input id="color" placeholder="Text color (e.g. #000000)" />
-    <input id="bgColor" placeholder="Background color" />
-    <input id="padding" placeholder="Padding (e.g. 10px)" />
-    <input id="borderRadius" placeholder="Border radius (e.g. 5px)" />
-    <button onclick="applyStyle()">Apply Style</button>
-    <button class="go-next" onclick="goToExport()">Next: Export</button>
+    <div class="button-group">
+      <button id="applyBtn" onclick="applyStyle()">Apply Style</button>
+      <button id="exportBtn" onclick="goToExport()">Next: Export</button>
+    </div>
+
+    <h3>Preview</h3>
+    <div id="previewArea"></div>
   </div>
 
+  <div id="status" class="status">Style applied successfully!</div>
+
   <script>
-    let commands = {}, elements = [], currentElement = null;
+    let commands = {};
+    let elements = [];
+    let selectedElementIndex = -1;
 
-    function parseLine(line) {
-      const [cmd, rest] = line.split('=');
-      if (!cmd) return {};
-      const vals = [];
-      let cur = '', inB = false;
-      for (let c of (rest || '')) {
-        if (c === '{') inB = true;
-        else if (c === '}') inB = false;
-        if (c === ',' && !inB) {
-          vals.push(cur.trim());
-          cur = '';
-        } else {
-          cur += c;
-        }
-      }
-      if (cur) vals.push(cur.trim());
-      return { cmd: cmd.trim(), values: vals };
-    }
-
-    function showPopup(el, y) {
-      const popup = document.getElementById('stylePopup');
-      popup.style.top = `${y + 20}px`;
-      popup.style.display = 'block';
-
-      elements.forEach(e => e.classList.remove('highlight'));
-      el.classList.add('highlight');
-      currentElement = el;
-
-      // Prefill current styles
-      document.getElementById('fontSize').value = el.style.fontSize || '';
-      document.getElementById('color').value = el.style.color || '';
-      document.getElementById('bgColor').value = el.style.backgroundColor || '';
-      document.getElementById('padding').value = el.style.padding || '';
-      document.getElementById('borderRadius').value = el.style.borderRadius || '';
-    }
-
-    function applyStyle() {
-      if (!currentElement) return;
-      currentElement.style.fontSize = document.getElementById('fontSize').value;
-      currentElement.style.color = document.getElementById('color').value;
-      currentElement.style.backgroundColor = document.getElementById('bgColor').value;
-      currentElement.style.padding = document.getElementById('padding').value;
-      currentElement.style.borderRadius = document.getElementById('borderRadius').value;
-    }
-
-    function goToExport() {
-      const htmlContent = document.getElementById('previewArea').innerHTML;
-      localStorage.setItem('dtech_preview_html', htmlContent);
-      window.location.href = 'export.html';
-    }
-
-    fetch('html_commands.json')
-      .then(r => r.json())
-      .then(cmds => {
+    document.addEventListener('DOMContentLoaded', async function() {
+      try {
+        const [cmds] = await Promise.all([
+          fetch('html_commands.json').then(r => r.json()),
+          new Promise(resolve => setTimeout(resolve, 300)) // Small delay for better UX
+        ]);
+        
         commands = cmds;
         const code = localStorage.getItem('dtech_code') || '';
         const area = document.getElementById('previewArea');
-
+        const select = document.getElementById('elementSelect');
+        
+        // Clear any existing options except the first one
+        while (select.options.length > 1) {
+          select.remove(1);
+        }
+        
+        elements = []; // Reset elements array
+        
         code.split('\n').forEach((line, i) => {
-          const { cmd, values } = parseLine(line);
-          if (!commands[cmd]) return;
-
+          const {cmd, values} = parseLine(line.trim());
+          if (!cmd || !commands[cmd]) return;
+          
           let html = commands[cmd].template;
           (commands[cmd].required_fields || []).forEach((f, idx) => {
             html = html.replace(`{${f}}`, values[idx] || '');
           });
-
-          const container = document.createElement('div');
-          container.innerHTML = html;
-          const element = container.firstElementChild;
-
-          element.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const rect = element.getBoundingClientRect();
-            const popupY = rect.top + window.scrollY;
-            showPopup(element, popupY);
-          });
-
-          area.appendChild(element);
-          elements.push(element);
+          
+          const div = document.createElement('div');
+          div.className = 'preview-element';
+          div.dataset.index = i;
+          div.innerHTML = html;
+          area.appendChild(div);
+          elements.push(div);
+          
+          // Add to dropdown
+          const option = new Option(`${cmd} #${i + 1}`, i);
+          select.add(option);
         });
-
-        document.addEventListener('click', () => {
-          document.getElementById('stylePopup').style.display = 'none';
-          elements.forEach(e => e.classList.remove('highlight'));
-          currentElement = null;
+        
+        // Add event listener for select change
+        select.addEventListener('change', function() {
+          const idx = this.value;
+          updateSelectedElement(idx);
         });
-      });
+        
+        if (elements.length > 0) {
+          showStatus(`Loaded ${elements.length} elements`, 2000);
+        } else {
+          showStatus("No elements to style", 2000);
+        }
+      } catch (error) {
+        showStatus(`Error: ${error.message}`, 3000);
+        console.error("Error loading style editor:", error);
+      }
+    });
+
+    function parseLine(line) {
+      const [cmd, rest] = line.split('=');
+      if (!cmd) return { cmd: '', values: [] };
+      
+      const vals = [];
+      let current = '';
+      let inBrackets = false;
+      
+      for (let char of (rest || '')) {
+        if (char === '{') inBrackets = true;
+        else if (char === '}') inBrackets = false;
+        
+        if (char === ',' && !inBrackets) {
+          vals.push(current.trim());
+          current = '';
+        } else {
+          current += char;
+        }
+      }
+      
+      if (current) vals.push(current.trim());
+      return { cmd: cmd.trim(), values: vals };
+    }
+
+    function updateSelectedElement(idx) {
+      // Remove selected class from all elements
+      elements.forEach(el => el.classList.remove('selected'));
+      
+      if (idx && idx >= 0 && idx < elements.length) {
+        selectedElementIndex = idx;
+        const selectedElement = elements[idx];
+        selectedElement.classList.add('selected');
+        
+        // Scroll to the selected element
+        selectedElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        
+        showStatus(`Selected element ${parseInt(idx) + 1}`, 1000);
+      } else {
+        selectedElementIndex = -1;
+      }
+    }
+
+    function applyStyle() {
+      const idx = document.getElementById('elementSelect').value;
+      if (!idx || idx === "" || selectedElementIndex < 0) {
+        showStatus("Please select an element first", 2000);
+        return;
+      }
+      
+      const el = elements[selectedElementIndex];
+      if (!el) return;
+      
+      const fontSize = document.getElementById('fontSize').value;
+      const color = document.getElementById('color').value;
+      const bgColor = document.getElementById('bgColor').value;
+      const padding = document.getElementById('padding').value;
+      const borderRadius = document.getElementById('borderRadius').value;
+      
+      if (fontSize) el.style.fontSize = fontSize;
+      if (color) el.style.color = color;
+      if (bgColor) el.style.backgroundColor = bgColor;
+      if (padding) el.style.padding = padding;
+      if (borderRadius) el.style.borderRadius = borderRadius;
+      
+      showStatus("Style applied successfully!", 2000);
+    }
+
+    function showStatus(message, duration = 2000) {
+      const status = document.getElementById('status');
+      status.textContent = message;
+      status.classList.add('visible');
+      
+      setTimeout(() => {
+        status.classList.remove('visible');
+      }, duration);
+    }
+
+    function goToExport() { 
+      window.location.href = 'export.html'; 
+    }
   </script>
 </body>
 </html>
