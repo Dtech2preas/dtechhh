@@ -58,6 +58,7 @@
   padding: 10px;
   display: flex;
   justify-content: space-between;
+  align-items: center;
   z-index: 1000;
 }
 
@@ -69,6 +70,10 @@
   margin: 0 5px;
   border-radius: 5px;
   cursor: pointer;
+}
+
+.active-mode {
+  background: #007bff !important;
 }
 
 #previewCanvas {
@@ -83,7 +88,6 @@
 
 .draggable {
   position: absolute;
-  cursor: move;
   padding: 5px;
   touch-action: none;
 }
@@ -121,7 +125,8 @@
         <button onclick="goBack()">⬅ Back to Editor</button>
       </div>
       <div>
-        <button onclick="loadCSS()">🎨 Style Mode</button>
+        <button id="moveModeBtn" onclick="enableMoveMode()">🖱 Move Mode</button>
+        <button id="styleModeBtn" onclick="enableStyleMode()">🎨 Style Mode</button>
       </div>
     </div>
     <div id="previewCanvas"></div>
@@ -135,13 +140,15 @@
     <button onclick="applyStyles()">Apply</button>
     <button onclick="closePopup()">Close</button>
   </div>  <script>
-    let commands = {}, cssPresets = {}, styleMode = false;
-    let selectedElement = null;
+    let commands = {}, cssPresets = {}, selectedElement = null;
+    let mode = 'move';
 
     const editorSection = document.getElementById('editorSection');
     const previewSection = document.getElementById('previewSection');
     const canvas = document.getElementById('previewCanvas');
     const popup = document.getElementById('stylePopup');
+    const moveBtn = document.getElementById('moveModeBtn');
+    const styleBtn = document.getElementById('styleModeBtn');
 
     fetch('html_commands.json').then(res => res.json()).then(data => commands = data);
 
@@ -182,18 +189,38 @@
         wrapper.style.left = '10px';
         wrapper.style.top = '10px';
 
-        makeDraggable(wrapper);
-        wrapper.addEventListener('click', () => {
-          if (!styleMode) return;
-          selectedElement = wrapper.firstChild;
-          showPopup(cmd);
+        wrapper.addEventListener('click', (e) => {
+          e.stopPropagation();
+          if (mode === 'style') {
+            selectedElement = wrapper.firstChild;
+            showPopup(cmd);
+          }
         });
 
+        makeDraggable(wrapper);
         canvas.appendChild(wrapper);
       });
       editorSection.style.display = 'none';
       previewSection.style.display = 'flex';
+      enableMoveMode();
     });
+
+    function enableMoveMode() {
+      mode = 'move';
+      popup.style.display = 'none';
+      moveBtn.classList.add('active-mode');
+      styleBtn.classList.remove('active-mode');
+    }
+
+    function enableStyleMode() {
+      mode = 'style';
+      moveBtn.classList.remove('active-mode');
+      styleBtn.classList.add('active-mode');
+      fetch('CSS.json').then(res => res.json()).then(data => {
+        cssPresets = data;
+        alert("Style mode ON. Tap elements to style them.");
+      });
+    }
 
     function showPopup(cmd) {
       const preset = document.getElementById('presetSelect');
@@ -239,14 +266,6 @@
       editorSection.style.display = 'flex';
     }
 
-    function loadCSS() {
-      styleMode = true;
-      fetch('CSS.json').then(res => res.json()).then(data => {
-        cssPresets = data;
-        alert("Style mode ON. Tap elements to style them.");
-      });
-    }
-
     function makeDraggable(el) {
       let offsetX = 0, offsetY = 0;
       const getOffset = (x, y) => {
@@ -268,6 +287,7 @@
         el.style.top = (relY - offsetY) + 'px';
       };
       el.addEventListener('mousedown', (e) => {
+        if (mode !== 'move') return;
         startDrag(e.pageX, e.pageY);
         const onMouseMove = (e) => moveDrag(e.pageX, e.pageY);
         document.addEventListener('mousemove', onMouseMove);
@@ -276,6 +296,7 @@
         }, { once: true });
       });
       el.addEventListener('touchstart', (e) => {
+        if (mode !== 'move') return;
         e.preventDefault();
         const touch = e.touches[0];
         startDrag(touch.pageX, touch.pageY);
