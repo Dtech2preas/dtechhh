@@ -2,45 +2,83 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DTechML Builder - Advanced</title>
+  <title>DTechML Builder</title>
   <style>
-    body {
+    * { box-sizing: border-box; }
+    body, html {
+      margin: 0;
+      padding: 0;
       font-family: Arial, sans-serif;
-      margin: 20px;
-    }
-    #editor {
+      height: 100%;
       width: 100%;
-      height: 150px;
-      padding: 10px;
-      font-family: monospace;
-      border: 1px solid #ccc;
-      margin-bottom: 10px;
-    }
-    #generate, #styleMode {
-      padding: 10px 15px;
-      margin-right: 10px;
-      border: none;
-      border-radius: 4px;
-    }
-    #generate { background: #007bff; color: white; }
-    #styleMode { background: #28a745; color: white; }#layoutMode {
-  padding: 5px;
-  margin-left: 10px;
+    }#editorSection, #previewSection {
+  width: 100vw;
+  height: 100vh;
+  display: none;
+  flex-direction: column;
+  padding: 20px;
 }
 
-#preview-container {
-  border: 2px dashed #ccc;
-  overflow: auto;
-  min-height: 300px;
+#editorSection { display: flex; }
+
+#editor {
   width: 100%;
-  position: relative;
-  margin-top: 15px;
+  height: 60vh;
+  font-family: monospace;
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
 }
 
-#preview {
+#generateBtn {
+  padding: 10px 15px;
+  margin-top: 10px;
+  width: 100%;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+#previewSection {
   position: relative;
-  min-height: 100%;
-  min-width: 100%;
+  display: none;
+  overflow: hidden;
+  background: #f9f9f9;
+}
+
+#topBar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  background: #222;
+  color: white;
+  padding: 10px;
+  display: flex;
+  justify-content: space-between;
+  z-index: 1000;
+}
+
+#topBar button {
+  background: #444;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  margin: 0 5px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+#previewCanvas {
+  position: absolute;
+  top: 50px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: calc(100% - 50px);
 }
 
 .draggable {
@@ -50,58 +88,33 @@
   touch-action: none;
 }
 
-#overlay, #stylePopup {
-  position: fixed;
-  z-index: 999;
-}
-
-#overlay {
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0, 0, 0, 0.4);
-  display: none;
-}
-
-#stylePopup {
-  top: 20%; left: 50%; transform: translateX(-50%);
-  background: white; border: 1px solid #ccc;
-  padding: 15px; display: none;
-  box-shadow: 0 0 10px rgba(0,0,0,0.3);
-}
-
-#stylePopup input, #presetSelect {
-  width: 100%;
-  margin-bottom: 8px;
-}
-
   </style>
 </head>
-<body>  <h1>DTechML Builder</h1>
-  <textarea id="editor" placeholder="BTU=btn1,Download,https://youtube.com"></textarea><br />
-  <button id="generate">Generate HTML</button>
-  <button id="styleMode">Phase 2: Style Mode</button>
-  <label>Layout Mode:</label>
-  <select id="layoutMode">
-    <option value="portrait">Portrait</option>
-    <option value="landscape">Landscape</option>
-    <option value="free">Free</option>
-  </select>  <div id="preview-container">
-    <div id="preview"></div>
-  </div>  <!-- Style Popup -->  <div id="overlay"></div>
-  <div id="stylePopup">
-    <h3>Style Component</h3>
-    <select id="presetSelect"></select>
-    <input type="text" id="fontSize" placeholder="Font Size (e.g. 18px)" />
-    <input type="text" id="color" placeholder="Text Color" />
-    <input type="text" id="bgColor" placeholder="Background Color" />
-    <input type="text" id="padding" placeholder="Padding" />
-    <input type="text" id="borderRadius" placeholder="Border Radius" />
-    <button onclick="applyStyles()">Apply</button>
-    <button onclick="closePopup()">Close</button>
+<body>  <div id="editorSection">
+    <div style="flex: 1; display: flex; flex-direction: column;">
+      <h2>DTechML Editor</h2>
+      <textarea id="editor" placeholder="BTU=btn1,Download,https://youtube.com"></textarea>
+      <button id="generateBtn">Generate Preview</button>
+    </div>
+  </div>  <div id="previewSection">
+    <div id="topBar">
+      <div>
+        <button onclick="goBack()">⬅ Back to Editor</button>
+      </div>
+      <div>
+        <button onclick="loadCSS()">🎨 Style Mode</button>
+      </div>
+    </div>
+    <div id="previewCanvas"></div>
   </div>  <script>
     let commands = {};
     let cssPresets = {};
-    let selectedElement = null;
     let styleMode = false;
+    let selectedElement = null;
+
+    const editorSection = document.getElementById('editorSection');
+    const previewSection = document.getElementById('previewSection');
+    const canvas = document.getElementById('previewCanvas');
 
     fetch('html_commands.json')
       .then(res => res.json())
@@ -124,11 +137,9 @@
       return { cmd: cmd.trim(), values };
     }
 
-    document.getElementById('generate').addEventListener('click', () => {
+    document.getElementById('generateBtn').addEventListener('click', () => {
       const lines = document.getElementById('editor').value.trim().split('\n');
-      const preview = document.getElementById('preview');
-      preview.innerHTML = '';
-
+      canvas.innerHTML = '';
       lines.forEach(line => {
         if (!line.trim()) return;
         const { cmd, values } = parseLine(line);
@@ -147,82 +158,43 @@
         wrapper.style.top = '10px';
 
         makeDraggable(wrapper);
-        preview.appendChild(wrapper);
+        canvas.appendChild(wrapper);
       });
+      editorSection.style.display = 'none';
+      previewSection.style.display = 'flex';
     });
 
-    document.getElementById('styleMode').addEventListener('click', () => {
+    function goBack() {
+      previewSection.style.display = 'none';
+      editorSection.style.display = 'flex';
+    }
+
+    function loadCSS() {
       styleMode = true;
       fetch('CSS.json')
         .then(res => res.json())
-        .then(data => cssPresets = data);
-      alert('Style mode ON. Click a component to edit.');
-    });
-
-    document.getElementById('preview').addEventListener('click', e => {
-      if (!styleMode || !e.target.closest('.draggable')) return;
-      selectedElement = e.target.closest('.draggable').firstChild;
-      const tag = selectedElement.tagName.toLowerCase();
-      const cmd = Object.keys(commands).find(key => commands[key].template.includes(`<${tag}`));
-
-      const presetSelect = document.getElementById('presetSelect');
-      presetSelect.innerHTML = '<option value="">-- Select Preset --</option>';
-      if (cssPresets[cmd]) {
-        for (const name in cssPresets[cmd]) {
-          const opt = document.createElement('option');
-          opt.value = name;
-          opt.textContent = name;
-          presetSelect.appendChild(opt);
-        }
-      }
-
-      presetSelect.onchange = () => {
-        const preset = cssPresets[cmd][presetSelect.value];
-        for (const [k, v] of Object.entries(preset)) selectedElement.style[k] = v;
-      };
-
-      document.getElementById('fontSize').value = selectedElement.style.fontSize || '';
-      document.getElementById('color').value = selectedElement.style.color || '';
-      document.getElementById('bgColor').value = selectedElement.style.backgroundColor || '';
-      document.getElementById('padding').value = selectedElement.style.padding || '';
-      document.getElementById('borderRadius').value = selectedElement.style.borderRadius || '';
-
-      document.getElementById('overlay').style.display = 'block';
-      document.getElementById('stylePopup').style.display = 'block';
-    });
-
-    function applyStyles() {
-      if (!selectedElement) return;
-      selectedElement.style.fontSize = document.getElementById('fontSize').value;
-      selectedElement.style.color = document.getElementById('color').value;
-      selectedElement.style.backgroundColor = document.getElementById('bgColor').value;
-      selectedElement.style.padding = document.getElementById('padding').value;
-      selectedElement.style.borderRadius = document.getElementById('borderRadius').value;
-      closePopup();
-    }
-
-    function closePopup() {
-      document.getElementById('overlay').style.display = 'none';
-      document.getElementById('stylePopup').style.display = 'none';
+        .then(data => {
+          cssPresets = data;
+          alert("Style mode loaded. Styling will be available in the next version.");
+        });
     }
 
     function makeDraggable(el) {
       let offsetX = 0, offsetY = 0;
-      const container = document.getElementById('preview-container');
 
       const getOffset = (x, y) => {
-        const rect = container.getBoundingClientRect();
+        const rect = canvas.getBoundingClientRect();
         return {
-          x: x - rect.left + container.scrollLeft,
-          y: y - rect.top + container.scrollTop
+          x: x - rect.left,
+          y: y - rect.top
         };
       };
 
       const startDrag = (x, y) => {
         const elRect = el.getBoundingClientRect();
-        const containerRect = container.getBoundingClientRect();
-        offsetX = x - elRect.left + container.scrollLeft - containerRect.left;
-        offsetY = y - elRect.top + container.scrollTop - containerRect.top;
+        const canvasRect = canvas.getBoundingClientRect();
+        offsetX = x - elRect.left + canvas.scrollLeft - canvasRect.left;
+        offsetY = y - elRect.top + canvas.scrollTop - canvasRect.top;
       };
 
       const moveDrag = (x, y) => {
@@ -254,24 +226,5 @@
         }, { once: true });
       });
     }
-
-    document.getElementById('layoutMode').addEventListener('change', function () {
-      const mode = this.value;
-      const container = document.getElementById('preview-container');
-      const preview = document.getElementById('preview');
-      if (mode === 'portrait') {
-        container.style.overflowX = 'hidden';
-        container.style.overflowY = 'auto';
-        preview.style.display = 'block';
-      } else if (mode === 'landscape') {
-        container.style.overflowX = 'auto';
-        container.style.overflowY = 'hidden';
-        preview.style.display = 'flex';
-        preview.style.flexDirection = 'row';
-      } else {
-        container.style.overflow = 'auto';
-        preview.style.position = 'relative';
-      }
-    });
   </script></body>
 </html>
