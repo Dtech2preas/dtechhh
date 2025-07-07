@@ -1,42 +1,151 @@
 {
-  "SIDEBAR_LAYOUT": {
-    "dark": {
-      "backgroundColor": "#222",
-      "color": "#fff"
+  "BTU": {
+    "default": {
+      "background-color": "#007bff",
+      "color": "#ffffff",
+      "padding": "10px 20px",
+      "border": "none",
+      "border-radius": "5px",
+      "cursor": "pointer"
     },
-    "light": {
-      "backgroundColor": "#f4f4f4",
-      "color": "#000"
+    "outlined": {
+      "background-color": "transparent",
+      "color": "#007bff",
+      "border": "2px solid #007bff"
+    },
+    "danger": {
+      "background-color": "#dc3545",
+      "color": "#ffffff"
+    },
+    "success": {
+      "background-color": "#28a745",
+      "color": "#ffffff"
     }
   },
-  "GRID2": {
-    "modern": {
-      "gap": "20px",
-      "backgroundColor": "#fafafa"
+  "PAR": {
+    "default": {
+      "font-size": "16px",
+      "color": "#333333",
+      "line-height": "1.5"
+    },
+    "muted": {
+      "color": "#888888"
+    },
+    "large": {
+      "font-size": "20px"
     }
   },
-  "GRID3": {
-    "spaced": {
-      "gap": "15px",
-      "backgroundColor": "#eee"
+  "HED": {
+    "default": {
+      "font-size": "24px",
+      "font-weight": "bold",
+      "color": "#000000"
+    },
+    "highlight": {
+      "font-size": "28px",
+      "color": "#ff6600"
     }
   },
-  "LOGIN_LAYOUT": {
-    "material": {
-      "borderRadius": "8px",
-      "boxShadow": "0 2px 8px rgba(0,0,0,0.2)"
+  "IMG": {
+    "default": {
+      "max-width": "100%",
+      "border-radius": "8px"
+    },
+    "rounded": {
+      "border-radius": "50%"
+    },
+    "shadow": {
+      "box-shadow": "0 4px 8px rgba(0,0,0,0.1)"
     }
   },
-  "HEADER_NAV": {
+  "LNK": {
+    "default": {
+      "color": "#007bff",
+      "text-decoration": "none"
+    },
+    "hover": {
+      "color": "#0056b3",
+      "text-decoration": "underline"
+    },
+    "button-style": {
+      "display": "inline-block",
+      "padding": "10px 15px",
+      "background-color": "#007bff",
+      "color": "#fff",
+      "border-radius": "5px",
+      "text-decoration": "none"
+    }
+  },
+  "DIV": {
+    "default": {
+      "padding": "20px",
+      "border": "1px solid #ddd",
+      "border-radius": "6px"
+    },
+    "card": {
+      "box-shadow": "0 2px 5px rgba(0,0,0,0.1)",
+      "padding": "25px",
+      "border-radius": "8px"
+    }
+  },
+  "SEC": {
+    "default": {
+      "padding": "40px 20px",
+      "background-color": "#f9f9f9"
+    },
     "dark": {
-      "backgroundColor": "#111",
-      "color": "#eee"
+      "background-color": "#333",
+      "color": "#fff"
     }
   },
-  "FOOTER": {
-    "flat": {
-      "backgroundColor": "#111",
-      "color": "#ccc"
+  "VID": {
+    "default": {
+      "width": "100%",
+      "border-radius": "5px"
+    }
+  },
+  "ICN": {
+    "default": {
+      "font-size": "20px",
+      "color": "#333"
+    },
+    "primary": {
+      "color": "#007bff"
+    }
+  },
+  "TXT": {
+    "default": {
+      "width": "100%",
+      "padding": "10px",
+      "border": "1px solid #ccc",
+      "border-radius": "5px"
+    }
+  },
+  "LBL": {
+    "default": {
+      "font-weight": "bold",
+      "display": "block",
+      "margin-bottom": "5px"
+    }
+  },
+  "SEL": {
+    "default": {
+      "width": "100%",
+      "padding": "8px",
+      "border": "1px solid #ccc",
+      "border-radius": "5px"
+    }
+  },
+  "SPN": {
+    "default": {
+      "color": "#444",
+      "font-size": "14px"
+    }
+  },
+  "IFR": {
+    "default": {
+      "border": "none",
+      "border-radius": "6px"
     }
   }
 }
