@@ -1,23 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>DTechML Builder</title>
   <style>
     body { font-family: Arial, sans-serif; margin: 20px; }
     #editor { 
       width: 100%; 
-      height: 100px;
+      height: 150px;
       padding: 10px;
-      border: 1px solid #ddd;
-      margin-bottom: 10px;
+      border: 1px solid #ccc;
       font-family: monospace;
+      margin-bottom: 10px;
+    }
+    #generate {
+      padding: 10px 20px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
     }
     #preview {
       border: 1px solid #eee;
       padding: 20px;
-      min-height: 200px;
+      margin-top: 15px;
+      min-height: 150px;
     }
     .error {
       color: red;
@@ -27,71 +35,110 @@
 </head>
 <body>
   <h1>DTechML Builder</h1>
-  <textarea id="editor" placeholder="Enter commands like:
-BTU=submit-btn=Click Me=#
-IMG=hero=Main Banner=banner.jpg"></textarea>
+  <p><strong>Example:</strong><br>
+  BTU=btn1,Click Me,https://youtube.com<br>
+  PAR=p1,{This is a paragraph, with commas too}</p>
+
+  <textarea id="editor" placeholder="Write your DTechML code here..."></textarea>
   <button id="generate">Generate HTML</button>
   <div id="preview"></div>
 
   <script>
-    // Load commands from JSON file
-    fetch('html_commands.json')
-      .then(response => response.json())
-      .then(commands => {
-        document.getElementById('generate').addEventListener('click', () => {
-          const input = document.getElementById('editor').value;
-          const lines = input.split('\n');
-          let htmlOutput = '';
-          let errors = [];
+    const commands = {
+      BTU: {
+        description: "Button component",
+        template: "<button data-dtech-id='{id}' class='dtech-btn' data-href='{url}'>{text}</button>",
+        required_fields: ["id", "text", "url"]
+      },
+      IMG: {
+        description: "Image component",
+        template: "<img data-dtech-id='{id}' src='{url}' alt='{text}' />",
+        required_fields: ["id", "url", "text"]
+      },
+      HED: {
+        description: "Heading component",
+        template: "<h2 data-dtech-id='{id}'>{text}</h2>",
+        required_fields: ["id", "text"]
+      },
+      PAR: {
+        description: "Paragraph",
+        template: "<p data-dtech-id='{id}'>{text}</p>",
+        required_fields: ["id", "text"]
+      },
+      LNK: {
+        description: "Hyperlink",
+        template: "<a data-dtech-id='{id}' href='{url}'>{text}</a>",
+        required_fields: ["id", "text", "url"]
+      }
+    };
 
-          lines.forEach(line => {
-            if (line.trim() === '') return;
+    function parseLine(line) {
+      const [cmd, rest] = line.split('=');
+      if (!cmd || !rest) return { error: 'Invalid format' };
 
-            // Parse COMMAND=id=text=url
-            const parts = line.trim().split('=');
-            const command = parts[0];
-            
-            if (commands[command]) {
-              const fieldValues = {
-                id: parts[1] || '',
-                text: parts[2] || '',
-                url: parts[3] || '#'
-              };
+      // Smart split: handles {text, with, commas}
+      const values = [];
+      let current = '';
+      let inBraces = false;
+      for (let i = 0; i < rest.length; i++) {
+        const char = rest[i];
+        if (char === '{') inBraces = true;
+        else if (char === '}') inBraces = false;
 
-              // Validate required fields
-              const missingFields = commands[command].required_fields.filter(
-                field => !fieldValues[field]
-              );
+        if (char === ',' && !inBraces) {
+          values.push(current.trim());
+          current = '';
+        } else {
+          current += char;
+        }
+      }
+      if (current) values.push(current.trim());
 
-              if (missingFields.length > 0) {
-                errors.push(`Missing fields for ${command}: ${missingFields.join(', ')}`);
-              } else {
-                // Generate HTML from template
-                let componentHtml = commands[command].template;
-                for (const [key, value] of Object.entries(fieldValues)) {
-                  componentHtml = componentHtml.replace(`{${key}}`, value);
-                }
-                htmlOutput += componentHtml + '\n';
-              }
-            } else {
-              errors.push(`Unknown command: ${command}`);
-            }
-          });
+      return { cmd: cmd.trim(), values };
+    }
 
-          document.getElementById('preview').innerHTML = htmlOutput;
-          if (errors.length > 0) {
-            const errorDiv = document.createElement('div');
-            errorDiv.className = 'error';
-            errorDiv.innerHTML = errors.join('<br>');
-            document.getElementById('preview').appendChild(errorDiv);
-          }
+    document.getElementById('generate').addEventListener('click', () => {
+      const lines = document.getElementById('editor').value.trim().split('\n');
+      let htmlOutput = '';
+      let errors = [];
+
+      lines.forEach(line => {
+        if (line.trim() === '') return;
+
+        const parsed = parseLine(line.trim());
+        if (parsed.error) {
+          errors.push(parsed.error + ': ' + line);
+          return;
+        }
+
+        const { cmd, values } = parsed;
+
+        const component = commands[cmd];
+        if (!component) {
+          errors.push(`Unknown command: ${cmd}`);
+          return;
+        }
+
+        const fields = component.required_fields;
+        if (values.length < fields.length) {
+          errors.push(`Missing values for ${cmd}: expected ${fields.length}, got ${values.length}`);
+          return;
+        }
+
+        let html = component.template;
+        fields.forEach((field, i) => {
+          html = html.replace(`{${field}}`, values[i].replace(/^{|}$/g, '')); // Remove { } if present
         });
-      })
-      .catch(error => {
-        console.error("Error loading commands:", error);
-        document.getElementById('preview').innerHTML = 
-          '<div class="error">Failed to load component library</div>';
+
+        htmlOutput += html + '\n';
       });
+
+      document.getElementById('preview').innerHTML = htmlOutput;
+      if (errors.length) {
+        document.getElementById('preview').innerHTML += 
+          `<div class="error">${errors.join('<br>')}</div>`;
+      }
+    });
   </script>
 </body>
 </html>
