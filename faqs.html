@@ -42,24 +42,19 @@
 }
 
 #previewSection {
-  position: relative;
   display: none;
+  flex-direction: column;
+  height: 100vh;
   overflow: hidden;
-  background: #f9f9f9;
 }
 
 #topBar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
   background: #222;
   color: white;
   padding: 10px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  z-index: 1000;
 }
 
 #topBar button {
@@ -77,13 +72,11 @@
 }
 
 #previewCanvas {
-  position: absolute;
-  top: 50px;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  flex: 1;
   width: 100%;
-  height: calc(100% - 50px);
+  position: relative;
+  background: #f9f9f9;
+  overflow: auto;
 }
 
 .draggable {
@@ -123,8 +116,6 @@
     <div id="topBar">
       <div>
         <button onclick="goBack()">⬅ Back to Editor</button>
-      </div>
-      <div>
         <button id="moveModeBtn" onclick="enableMoveMode()">🖱 Move Mode</button>
         <button id="styleModeBtn" onclick="enableStyleMode()">🎨 Style Mode</button>
       </div>
