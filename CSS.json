@@ -1,0 +1,94 @@
+{
+  "BTU": {
+    "default": {
+      "background-color": "#007bff",
+      "color": "#ffffff",
+      "padding": "10px 20px",
+      "border": "none",
+      "border-radius": "5px",
+      "cursor": "pointer"
+    },
+    "outlined": {
+      "background-color": "transparent",
+      "color": "#007bff",
+      "border": "2px solid #007bff",
+      "padding": "10px 20px",
+      "border-radius": "5px",
+      "cursor": "pointer"
+    },
+    "danger": {
+      "background-color": "#dc3545",
+      "color": "#ffffff",
+      "padding": "10px 20px",
+      "border": "none",
+      "border-radius": "5px"
+    },
+    "success": {
+      "background-color": "#28a745",
+      "color": "#ffffff",
+      "padding": "10px 20px",
+      "border": "none",
+      "border-radius": "5px"
+    }
+  },
+  "PAR": {
+    "default": {
+      "font-size": "16px",
+      "color": "#333333",
+      "line-height": "1.5",
+      "margin-bottom": "12px"
+    },
+    "muted": {
+      "color": "#888888",
+      "font-size": "15px"
+    },
+    "large": {
+      "font-size": "20px",
+      "color": "#222222"
+    }
+  },
+  "HED": {
+    "default": {
+      "font-size": "24px",
+      "font-weight": "bold",
+      "color": "#000000",
+      "margin-bottom": "10px"
+    },
+    "highlight": {
+      "font-size": "28px",
+      "color": "#ff6600"
+    }
+  },
+  "IMG": {
+    "default": {
+      "max-width": "100%",
+      "border-radius": "8px"
+    },
+    "rounded": {
+      "border-radius": "50%",
+      "border": "2px solid #ccc"
+    },
+    "shadow": {
+      "box-shadow": "0 4px 8px rgba(0,0,0,0.1)",
+      "border-radius": "8px"
+    }
+  },
+  "LNK": {
+    "default": {
+      "color": "#007bff",
+      "text-decoration": "none"
+    },
+    "hover": {
+      "color": "#0056b3",
+      "text-decoration": "underline"
+    },
+    "button-style": {
+      "display": "inline-block",
+      "padding": "10px 15px",
+      "background-color": "#007bff",
+      "color": "#fff",
+      "border-radius": "5px",
+      "text-decoration": "none"
+    }
+  }
+}
