@@ -1,31 +1,42 @@
 {
-  "BTU": {
-    "primary": {
-      "backgroundColor": "#007bff",
-      "color": "#fff",
-      "padding": "8px 12px",
-      "border": "none",
-      "borderRadius": "4px"
-    },
-    "danger": {
-      "backgroundColor": "#dc3545",
-      "color": "#fff",
-      "padding": "8px 12px"
-    }
-  },
-  "TEXT": {
-    "large": {
-      "fontSize": "20px",
-      "color": "#333"
-    },
-    "muted": {
-      "color": "#888"
-    }
-  },
   "SIDEBAR_LAYOUT": {
     "dark": {
-      "backgroundColor": "#444",
+      "backgroundColor": "#222",
       "color": "#fff"
+    },
+    "light": {
+      "backgroundColor": "#f4f4f4",
+      "color": "#000"
+    }
+  },
+  "GRID2": {
+    "modern": {
+      "gap": "20px",
+      "backgroundColor": "#fafafa"
+    }
+  },
+  "GRID3": {
+    "spaced": {
+      "gap": "15px",
+      "backgroundColor": "#eee"
+    }
+  },
+  "LOGIN_LAYOUT": {
+    "material": {
+      "borderRadius": "8px",
+      "boxShadow": "0 2px 8px rgba(0,0,0,0.2)"
+    }
+  },
+  "HEADER_NAV": {
+    "dark": {
+      "backgroundColor": "#111",
+      "color": "#eee"
+    }
+  },
+  "FOOTER": {
+    "flat": {
+      "backgroundColor": "#111",
+      "color": "#ccc"
     }
   }
 }
