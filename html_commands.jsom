@@ -1,0 +1,17 @@
+{
+  "BTU": {
+    "description": "Button component",
+    "template": "<button data-dtech-id='{id}' class='dtech-btn' data-href='{url}'>{text}</button>",
+    "required_fields": ["id", "text"]
+  },
+  "IMG": {
+    "description": "Image component",
+    "template": "<img data-dtech-id='{id}' src='{url}' alt='{text}'>",
+    "required_fields": ["id", "url"]
+  },
+  "HED": {
+    "description": "Heading component",
+    "template": "<h2 data-dtech-id='{id}'>{text}</h2>",
+    "required_fields": ["id", "text"]
+  }
+}
