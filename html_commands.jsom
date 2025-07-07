@@ -2,7 +2,7 @@
   "BTU": {
     "description": "Button component",
     "template": "<button data-dtech-id='{id}' class='dtech-btn' data-href='{url}'>{text}</button>",
-    "required_fields": ["id", "text"]
+    "requiredfields": ["id", "text"]
   },
   "IMG": {
     "description": "Image component",
