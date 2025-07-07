@@ -1,66 +1,136 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Simple Website Builder</title>
-  <style>
-    body { font-family: Arial; display: flex; }
-    #blocks-panel, #canvas, #settings-panel { padding: 10px; }
-    #blocks-panel { width: 150px; background: #f0f0f0; }
-    #canvas { flex: 1; min-height: 500px; border: 2px dashed #ccc; }
-    #settings-panel { width: 200px; background: #f9f9f9; }
-    .block { background: #4CAF50; color: white; padding: 10px; margin: 5px; cursor: move; }
-    .element { margin: 10px; padding: 10px; border: 1px solid #ddd; }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>DTECH HTML Reverse Engineer</title>
+<style>
+  body { margin:0; font-family: Arial, sans-serif; display: flex; height: 100vh; }
+  #sidebar { width: 350px; overflow-y: auto; border-right: 1px solid #ccc; padding: 10px; }
+  #preview-container { flex: 1; position: relative; }
+  iframe { width: 100%; height: 100%; border: none; }
+  ul { list-style-type: none; padding-left: 20px; }
+  li { cursor: pointer; margin: 3px 0; }
+  li:hover { background-color: #eef; }
+  .highlighted { outline: 2px solid #f90; }
+  #url-input { width: 100%; padding: 6px; margin-bottom: 10px; }
+  button { padding: 6px 10px; margin-bottom: 10px; }
+</style>
 </head>
 <body>
-  <!-- Left Panel: Blocks to Drag -->
-  <div id="blocks-panel">
-    <div class="block" draggable="true" data-type="header">Header</div>
-    <div class="block" draggable="true" data-type="text">Text</div>
-    <div class="block" draggable="true" data-type="image">Image</div>
-    <div class="block" draggable="true" data-type="button">Button</div>
-  </div>
 
-  <!-- Middle: Drop Zone (Canvas) -->
-  <div id="canvas" ondragover="allowDrop(event)" ondrop="drop(event)"></div>
+<div id="sidebar">
+  <input id="url-input" type="text" placeholder="Enter URL (CORS enabled)" />
+  <button id="load-btn">Load & Analyze</button>
+  <div id="tree"></div>
+</div>
 
-  <!-- Right Panel: Element Settings -->
-  <div id="settings-panel">
-    <h3>Settings</h3>
-    <div id="element-settings">(Select an element)</div>
-  </div>
+<div id="preview-container">
+  <iframe id="preview-frame" sandbox="allow-scripts allow-same-origin"></iframe>
+</div>
 
-  <script>
-    // Allow dropping elements
-    function allowDrop(e) { e.preventDefault(); }
+<script>
+  const loadBtn = document.getElementById('load-btn');
+  const urlInput = document.getElementById('url-input');
+  const treeContainer = document.getElementById('tree');
+  const iframe = document.getElementById('preview-frame');
 
-    // Handle dropping a block
-    function drop(e) {
-      e.preventDefault();
-      const blockType = e.dataTransfer.getData("block-type");
-      const newElement = document.createElement("div");
-      newElement.className = "element";
-      newElement.setAttribute("contenteditable", "true");
+  // Use a public CORS proxy for demo purposes
+  const corsProxy = 'https://api.allorigins.win/get?url=';
 
-      if (blockType === "header") {
-        newElement.innerHTML = "<h2>Your Header</h2>";
-      } else if (blockType === "text") {
-        newElement.innerHTML = "<p>Edit this text...</p>";
-      } else if (blockType === "image") {
-        newElement.innerHTML = '<img src="https://via.placeholder.com/200" width="100%">';
-      } else if (blockType === "button") {
-        newElement.innerHTML = '<button style="padding: 10px 20px;">Click Me</button>';
+  // Recursively create DOM tree UI
+  function createTreeNode(node, parentEl) {
+    if (!node.tagName) return;
+    const li = document.createElement('li');
+    li.textContent = `<${node.tagName.toLowerCase()}>`;
+
+    li.addEventListener('click', e => {
+      e.stopPropagation();
+      highlightInIframe(node);
+    });
+
+    parentEl.appendChild(li);
+
+    // Add children ul
+    if (node.children.length) {
+      const ul = document.createElement('ul');
+      li.appendChild(ul);
+      Array.from(node.children).forEach(child => createTreeNode(child, ul));
+    }
+  }
+
+  // Highlight element inside iframe by injecting CSS
+  function highlightInIframe(domNode) {
+    const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+    clearHighlights(iframeDoc);
+    if (!domNode) return;
+    // Find the equivalent element in iframe by XPath or unique path
+    // Here we assume same structure, find by index path:
+
+    // Build path of indexes from root to domNode
+    function getPathIndexes(node) {
+      const indexes = [];
+      while (node && node !== iframeDoc.documentElement) {
+        const parent = node.parentNode;
+        if (!parent) break;
+        const idx = Array.prototype.indexOf.call(parent.children, node);
+        indexes.unshift(idx);
+        node = parent;
       }
-
-      e.target.appendChild(newElement);
+      return indexes;
     }
 
-    // Make blocks draggable
-    document.querySelectorAll(".block").forEach(block => {
-      block.addEventListener("dragstart", (e) => {
-        e.dataTransfer.setData("block-type", e.target.getAttribute("data-type"));
-      });
-    });
-  </script>
+    // Find element by indexes path in iframe
+    const path = getPathIndexes(domNode);
+    let el = iframeDoc.documentElement;
+    for (const i of path) {
+      if (!el.children[i]) return;
+      el = el.children[i];
+    }
+
+    el.classList.add('highlighted');
+    // Scroll iframe to element
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  function clearHighlights(doc) {
+    doc.querySelectorAll('.highlighted').forEach(el => el.classList.remove('highlighted'));
+  }
+
+  loadBtn.onclick = async () => {
+    const url = urlInput.value.trim();
+    if (!url) {
+      alert('Enter a URL');
+      return;
+    }
+    treeContainer.innerHTML = 'Loading...';
+    try {
+      // Fetch page content with CORS proxy
+      const res = await fetch(corsProxy + encodeURIComponent(url));
+      if (!res.ok) throw new Error('Failed to fetch URL');
+      const data = await res.json();
+      const htmlText = data.contents;
+
+      // Parse the HTML string
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(htmlText, 'text/html');
+
+      // Show in iframe
+      const blob = new Blob([htmlText], { type: 'text/html' });
+      const blobUrl = URL.createObjectURL(blob);
+      iframe.src = blobUrl;
+
+      // Build tree view
+      treeContainer.innerHTML = '';
+      const ul = document.createElement('ul');
+      treeContainer.appendChild(ul);
+
+      createTreeNode(doc.body, ul);
+    } catch (err) {
+      treeContainer.innerHTML = 'Error loading page: ' + err.message;
+    }
+  };
+</script>
+
 </body>
 </html>
