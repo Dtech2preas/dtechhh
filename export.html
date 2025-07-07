@@ -13,13 +13,21 @@
     h1 {
       margin-bottom: 10px;
     }
-    #exportedContent {
+    #previewBlock {
       background: white;
       padding: 20px;
       border: 1px solid #ccc;
-      min-height: 300px;
       margin-bottom: 20px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    textarea {
+      width: 100%;
+      height: 250px;
+      font-family: monospace;
+      padding: 10px;
+      border: 1px solid #ccc;
+      margin-bottom: 20px;
+      white-space: pre;
     }
     button {
       padding: 10px 20px;
@@ -35,17 +43,23 @@
 </head>
 <body>
   <h1>Exported HTML</h1>
-  <div id="exportedContent"></div>
+  <div id="previewBlock"></div>
+  <textarea id="exportedCode" readonly></textarea>
   <button id="downloadBtn" onclick="downloadCode()">Download .html</button>
-  <button id="backBtn" onclick="goBack()">⬅ Edit Again</button>
+  <button id="backBtn" onclick="goBack()">⬅ Back to Edit</button>
 
   <script>
     const html = localStorage.getItem('dtech_preview_html') || "<p>No content found.</p>";
-    document.getElementById('exportedContent').innerHTML = html;
+    const fullHTML = `<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><title>DTech Export</title></head>
+<body>${html}</body>
+</html>`;
+
+    document.getElementById('exportedCode').value = fullHTML;
+    document.getElementById('previewBlock').innerHTML = html;
 
     function downloadCode() {
-      const fullHTML = `<!DOCTYPE html>
-<html><head><meta charset="UTF-8"><title>DTech Export</title></head><body>${html}</body></html>`;
       const blob = new Blob([fullHTML], { type: 'text/html' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
