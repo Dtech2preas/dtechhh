@@ -3,80 +3,103 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>DTechML Builder</title>
+  <title>DTechML Builder with Styling</title>
   <style>
     body { font-family: Arial, sans-serif; margin: 20px; }
-    #editor { 
-      width: 100%; 
-      height: 150px;
-      padding: 10px;
+    #editor { width: 100%; height: 150px; padding: 10px; font-family: monospace; border: 1px solid #ccc; margin-bottom: 10px; }
+    #generate, #styleMode { padding: 10px 15px; margin-right: 10px; border: none; border-radius: 4px; }
+    #generate { background: #007bff; color: white; }
+    #styleMode { background: #28a745; color: white; }
+    #preview { border: 1px solid #eee; padding: 20px; min-height: 150px; margin-top: 15px; cursor: pointer; }
+    .error { color: red; margin-top: 10px; }
+
+    #stylePopup {
+      position: fixed;
+      top: 20%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: white;
       border: 1px solid #ccc;
-      font-family: monospace;
-      margin-bottom: 10px;
+      padding: 15px;
+      z-index: 1000;
+      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+      display: none;
     }
-    #generate {
-      padding: 10px 20px;
-      background: #007bff;
-      color: white;
-      border: none;
-      border-radius: 4px;
+
+    #stylePopup input[type="text"] {
+      width: 100%;
+      margin-bottom: 8px;
     }
-    #preview {
-      border: 1px solid #eee;
-      padding: 20px;
-      margin-top: 15px;
-      min-height: 150px;
-    }
-    .error {
-      color: red;
-      margin-top: 10px;
+
+    #overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.4);
+      display: none;
+      z-index: 999;
     }
   </style>
 </head>
 <body>
+
   <h1>DTechML Builder</h1>
-  <p><strong>Example:</strong><br>
-  BTU=btn1,Click Me,https://youtube.com<br>
-  PAR=p1,{This is a paragraph, with commas too}</p>
 
   <textarea id="editor" placeholder="Write your DTechML code here..."></textarea>
+  <br />
   <button id="generate">Generate HTML</button>
+  <button id="styleMode">Phase 2: Style Mode</button>
+
   <div id="preview"></div>
+
+  <!-- Styling Popup -->
+  <div id="overlay"></div>
+  <div id="stylePopup">
+    <h3>Style Component</h3>
+    <label>Font Size:</label>
+    <input type="text" id="fontSize" placeholder="e.g. 18px" />
+    <label>Text Color:</label>
+    <input type="text" id="color" placeholder="e.g. #333 or red" />
+    <label>Background Color:</label>
+    <input type="text" id="bgColor" placeholder="e.g. #eee" />
+    <label>Padding:</label>
+    <input type="text" id="padding" placeholder="e.g. 10px 15px" />
+    <label>Border Radius:</label>
+    <input type="text" id="borderRadius" placeholder="e.g. 5px" />
+    <button onclick="applyStyles()">Apply</button>
+    <button onclick="closePopup()">Close</button>
+  </div>
 
   <script>
     const commands = {
       BTU: {
-        description: "Button component",
         template: "<button data-dtech-id='{id}' class='dtech-btn' data-href='{url}'>{text}</button>",
         required_fields: ["id", "text", "url"]
       },
       IMG: {
-        description: "Image component",
         template: "<img data-dtech-id='{id}' src='{url}' alt='{text}' />",
         required_fields: ["id", "url", "text"]
       },
       HED: {
-        description: "Heading component",
         template: "<h2 data-dtech-id='{id}'>{text}</h2>",
         required_fields: ["id", "text"]
       },
       PAR: {
-        description: "Paragraph",
         template: "<p data-dtech-id='{id}'>{text}</p>",
         required_fields: ["id", "text"]
       },
       LNK: {
-        description: "Hyperlink",
         template: "<a data-dtech-id='{id}' href='{url}'>{text}</a>",
         required_fields: ["id", "text", "url"]
       }
     };
 
+    let styleMode = false;
+    let selectedElement = null;
+
     function parseLine(line) {
       const [cmd, rest] = line.split('=');
       if (!cmd || !rest) return { error: 'Invalid format' };
 
-      // Smart split: handles {text, with, commas}
       const values = [];
       let current = '';
       let inBraces = false;
@@ -112,8 +135,8 @@
         }
 
         const { cmd, values } = parsed;
-
         const component = commands[cmd];
+
         if (!component) {
           errors.push(`Unknown command: ${cmd}`);
           return;
@@ -127,7 +150,7 @@
 
         let html = component.template;
         fields.forEach((field, i) => {
-          html = html.replace(`{${field}}`, values[i].replace(/^{|}$/g, '')); // Remove { } if present
+          html = html.replace(`{${field}}`, values[i].replace(/^{|}$/g, ''));
         });
 
         htmlOutput += html + '\n';
@@ -139,6 +162,44 @@
           `<div class="error">${errors.join('<br>')}</div>`;
       }
     });
+
+    document.getElementById('styleMode').addEventListener('click', () => {
+      styleMode = !styleMode;
+      alert(styleMode ? 'Style Mode ON. Click any component to edit styles.' : 'Style Mode OFF.');
+    });
+
+    document.getElementById('preview').addEventListener('click', (e) => {
+      if (!styleMode || !e.target.matches('[data-dtech-id]')) return;
+
+      selectedElement = e.target;
+
+      // Pre-fill values
+      document.getElementById('fontSize').value = selectedElement.style.fontSize || '';
+      document.getElementById('color').value = selectedElement.style.color || '';
+      document.getElementById('bgColor').value = selectedElement.style.backgroundColor || '';
+      document.getElementById('padding').value = selectedElement.style.padding || '';
+      document.getElementById('borderRadius').value = selectedElement.style.borderRadius || '';
+
+      document.getElementById('overlay').style.display = 'block';
+      document.getElementById('stylePopup').style.display = 'block';
+    });
+
+    function applyStyles() {
+      if (!selectedElement) return;
+      selectedElement.style.fontSize = document.getElementById('fontSize').value;
+      selectedElement.style.color = document.getElementById('color').value;
+      selectedElement.style.backgroundColor = document.getElementById('bgColor').value;
+      selectedElement.style.padding = document.getElementById('padding').value;
+      selectedElement.style.borderRadius = document.getElementById('borderRadius').value;
+
+      closePopup();
+    }
+
+    function closePopup() {
+      document.getElementById('overlay').style.display = 'none';
+      document.getElementById('stylePopup').style.display = 'none';
+    }
   </script>
+
 </body>
 </html>
