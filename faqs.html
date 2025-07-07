@@ -208,16 +208,27 @@
 
     function makeDraggable(el) {
       let offsetX = 0, offsetY = 0;
+      const container = document.getElementById('preview-container');
+
+      const getOffset = (x, y) => {
+        const rect = container.getBoundingClientRect();
+        return {
+          x: x - rect.left + container.scrollLeft,
+          y: y - rect.top + container.scrollTop
+        };
+      };
 
       const startDrag = (x, y) => {
-        const rect = el.getBoundingClientRect();
-        offsetX = x - rect.left;
-        offsetY = y - rect.top;
+        const elRect = el.getBoundingClientRect();
+        const containerRect = container.getBoundingClientRect();
+        offsetX = x - elRect.left + container.scrollLeft - containerRect.left;
+        offsetY = y - elRect.top + container.scrollTop - containerRect.top;
       };
 
       const moveDrag = (x, y) => {
-        el.style.left = (x - offsetX) + 'px';
-        el.style.top = (y - offsetY) + 'px';
+        const { x: relX, y: relY } = getOffset(x, y);
+        el.style.left = (relX - offsetX) + 'px';
+        el.style.top = (relY - offsetY) + 'px';
       };
 
       el.addEventListener('mousedown', (e) => {
