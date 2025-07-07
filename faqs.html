@@ -3,135 +3,190 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>DTECH HTML Reverse Engineer</title>
+<title>DTECH Static HTML Snapshot Generator</title>
 <style>
-  body { margin:0; font-family: Arial, sans-serif; display: flex; height: 100vh; }
-  #sidebar { width: 350px; overflow-y: auto; border-right: 1px solid #ccc; padding: 10px; }
-  #preview-container { flex: 1; position: relative; }
-  iframe { width: 100%; height: 100%; border: none; }
-  ul { list-style-type: none; padding-left: 20px; }
-  li { cursor: pointer; margin: 3px 0; }
-  li:hover { background-color: #eef; }
-  .highlighted { outline: 2px solid #f90; }
-  #url-input { width: 100%; padding: 6px; margin-bottom: 10px; }
-  button { padding: 6px 10px; margin-bottom: 10px; }
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0; padding: 0;
+    display: flex; flex-direction: column; height: 100vh;
+  }
+  header {
+    background: #0078d7;
+    color: white;
+    padding: 12px 20px;
+    font-size: 1.3em;
+    text-align: center;
+  }
+  main {
+    display: flex;
+    flex: 1;
+    gap: 10px;
+    padding: 10px;
+    box-sizing: border-box;
+  }
+  textarea {
+    flex: 1;
+    font-family: monospace;
+    font-size: 14px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    resize: none;
+    height: 100%;
+  }
+  #preview-container {
+    flex: 1;
+    border: 1px solid #ccc;
+    position: relative;
+  }
+  iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+  }
+  #output-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  #output {
+    flex: 1;
+    font-family: monospace;
+    font-size: 14px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    white-space: pre-wrap;
+    overflow: auto;
+    background: #f5f5f5;
+  }
+  #buttons {
+    margin-top: 10px;
+    display: flex;
+    gap: 10px;
+  }
+  button {
+    background: #0078d7;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+    font-weight: bold;
+    border-radius: 3px;
+  }
+  button:hover {
+    background: #005ea1;
+  }
 </style>
 </head>
 <body>
 
-<div id="sidebar">
-  <input id="url-input" type="text" placeholder="Enter URL (CORS enabled)" />
-  <button id="load-btn">Load & Analyze</button>
-  <div id="tree"></div>
-</div>
+<header>DTECH Static HTML Snapshot Generator</header>
 
-<div id="preview-container">
-  <iframe id="preview-frame" sandbox="allow-scripts allow-same-origin"></iframe>
-</div>
+<main>
+  <textarea id="html-input" placeholder="Paste your full HTML code here (including &lt;html&gt; &lt;body&gt;)"></textarea>
+
+  <div id="preview-container">
+    <iframe id="preview-frame" sandbox="allow-scripts allow-same-origin"></iframe>
+  </div>
+
+  <div id="output-container">
+    <div id="output" title="Generated static snapshot with inline styles"></div>
+    <div id="buttons">
+      <button id="generate-btn">Generate Snapshot</button>
+      <button id="copy-btn">Copy to Clipboard</button>
+      <button id="download-btn">Download .html</button>
+    </div>
+  </div>
+</main>
 
 <script>
-  const loadBtn = document.getElementById('load-btn');
-  const urlInput = document.getElementById('url-input');
-  const treeContainer = document.getElementById('tree');
+  const htmlInput = document.getElementById('html-input');
   const iframe = document.getElementById('preview-frame');
+  const output = document.getElementById('output');
+  const generateBtn = document.getElementById('generate-btn');
+  const copyBtn = document.getElementById('copy-btn');
+  const downloadBtn = document.getElementById('download-btn');
 
-  // Use a public CORS proxy for demo purposes
-  const corsProxy = 'https://api.allorigins.win/get?url=';
+  // Load the HTML input into the iframe live
+  htmlInput.addEventListener('input', () => {
+    const html = htmlInput.value;
+    const blob = new Blob([html], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    iframe.src = url;
+  });
 
-  // Recursively create DOM tree UI
-  function createTreeNode(node, parentEl) {
-    if (!node.tagName) return;
-    const li = document.createElement('li');
-    li.textContent = `<${node.tagName.toLowerCase()}>`;
+  // Utility: copy styles from computed style to inline style recursively
+  function inlineAllStyles(element) {
+    const computed = getComputedStyle(element);
 
-    li.addEventListener('click', e => {
-      e.stopPropagation();
-      highlightInIframe(node);
-    });
+    for (let i = 0; i < computed.length; i++) {
+      const prop = computed[i];
+      // Avoid some default styles that cause huge inline style bloat
+      if (
+        prop.startsWith('webkit') || 
+        prop.startsWith('moz') || 
+        prop.startsWith('ms') || 
+        prop === 'cssText' || 
+        prop === 'length' ||
+        prop === 'parentRule'
+      ) continue;
 
-    parentEl.appendChild(li);
-
-    // Add children ul
-    if (node.children.length) {
-      const ul = document.createElement('ul');
-      li.appendChild(ul);
-      Array.from(node.children).forEach(child => createTreeNode(child, ul));
-    }
-  }
-
-  // Highlight element inside iframe by injecting CSS
-  function highlightInIframe(domNode) {
-    const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
-    clearHighlights(iframeDoc);
-    if (!domNode) return;
-    // Find the equivalent element in iframe by XPath or unique path
-    // Here we assume same structure, find by index path:
-
-    // Build path of indexes from root to domNode
-    function getPathIndexes(node) {
-      const indexes = [];
-      while (node && node !== iframeDoc.documentElement) {
-        const parent = node.parentNode;
-        if (!parent) break;
-        const idx = Array.prototype.indexOf.call(parent.children, node);
-        indexes.unshift(idx);
-        node = parent;
+      // Copy all styles except default like 'auto' for margin/padding etc.
+      const val = computed.getPropertyValue(prop);
+      if (val && val !== 'initial' && val !== 'auto' && val !== 'normal' && val !== '') {
+        element.style.setProperty(prop, val, computed.getPropertyPriority(prop));
       }
-      return indexes;
     }
 
-    // Find element by indexes path in iframe
-    const path = getPathIndexes(domNode);
-    let el = iframeDoc.documentElement;
-    for (const i of path) {
-      if (!el.children[i]) return;
-      el = el.children[i];
+    // Recurse for children
+    for (const child of element.children) {
+      inlineAllStyles(child);
     }
-
-    el.classList.add('highlighted');
-    // Scroll iframe to element
-    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
 
-  function clearHighlights(doc) {
-    doc.querySelectorAll('.highlighted').forEach(el => el.classList.remove('highlighted'));
-  }
-
-  loadBtn.onclick = async () => {
-    const url = urlInput.value.trim();
-    if (!url) {
-      alert('Enter a URL');
-      return;
-    }
-    treeContainer.innerHTML = 'Loading...';
+  // Generate snapshot with inline styles
+  generateBtn.addEventListener('click', () => {
     try {
-      // Fetch page content with CORS proxy
-      const res = await fetch(corsProxy + encodeURIComponent(url));
-      if (!res.ok) throw new Error('Failed to fetch URL');
-      const data = await res.json();
-      const htmlText = data.contents;
+      const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+      if (!iframeDoc) throw new Error('Preview not loaded or cross-origin restriction.');
 
-      // Parse the HTML string
-      const parser = new DOMParser();
-      const doc = parser.parseFromString(htmlText, 'text/html');
+      // Clone full document element (<html>)
+      const clone = iframeDoc.documentElement.cloneNode(true);
 
-      // Show in iframe
-      const blob = new Blob([htmlText], { type: 'text/html' });
-      const blobUrl = URL.createObjectURL(blob);
-      iframe.src = blobUrl;
+      // Inline all computed styles recursively
+      inlineAllStyles(clone);
 
-      // Build tree view
-      treeContainer.innerHTML = '';
-      const ul = document.createElement('ul');
-      treeContainer.appendChild(ul);
+      // Serialize clone to string
+      const serializer = new XMLSerializer();
+      const snapshotHTML = '<!DOCTYPE html>\n' + serializer.serializeToString(clone);
 
-      createTreeNode(doc.body, ul);
+      output.textContent = snapshotHTML;
     } catch (err) {
-      treeContainer.innerHTML = 'Error loading page: ' + err.message;
+      output.textContent = 'Error generating snapshot:\n' + err.message;
     }
-  };
-</script>
+  });
 
+  // Copy snapshot to clipboard
+  copyBtn.addEventListener('click', () => {
+    if (!output.textContent) return alert('Generate snapshot first!');
+    navigator.clipboard.writeText(output.textContent).then(() => {
+      alert('Snapshot copied to clipboard!');
+    }).catch(() => {
+      alert('Failed to copy. Please copy manually.');
+    });
+  });
+
+  // Download snapshot as .html file
+  downloadBtn.addEventListener('click', () => {
+    if (!output.textContent) return alert('Generate snapshot first!');
+    const blob = new Blob([output.textContent], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'dtech_snapshot.html';
+    a.click();
+    URL.revokeObjectURL(url);
+  });
+</script>
 
 </body>
 </html>
