@@ -1,26 +1,32 @@
 {
   "SIDEBAR_LAYOUT": {
     "description": "Sidebar + Main layout",
-    "template": "<div style='display:flex;width:300px;height:200px;'><aside contenteditable='true' style='width:80px;background:#ddd;padding:5px;'>Menu</aside><main contenteditable='true' style='flex:1;padding:5px;'>Content</main></div>"
+    "template": "<div style='display:flex;width:300px;height:200px;'><aside contenteditable='true' style='width:80px;background:#ddd;padding:5px;'>Menu</aside><main contenteditable='true' style='flex:1;padding:5px;'>Content</main></div>",
+    "required_fields": []
   },
   "GRID2": {
     "description": "Two-column layout",
-    "template": "<div style='display:grid;grid-template-columns:1fr 1fr;gap:10px;width:300px;'><div contenteditable='true' style='background:#f0f0f0;padding:10px;'>Left</div><div contenteditable='true' style='background:#f0f0f0;padding:10px;'>Right</div></div>"
+    "template": "<div style='display:grid;grid-template-columns:1fr 1fr;gap:10px;width:300px;'><div contenteditable='true' style='background:#f0f0f0;padding:10px;'>Left</div><div contenteditable='true' style='background:#f0f0f0;padding:10px;'>Right</div></div>",
+    "required_fields": []
   },
   "GRID3": {
     "description": "Three-column layout",
-    "template": "<div style='display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;width:360px;'><div contenteditable='true' style='background:#eee;padding:10px;'>Col 1</div><div contenteditable='true' style='background:#eee;padding:10px;'>Col 2</div><div contenteditable='true' style='background:#eee;padding:10px;'>Col 3</div></div>"
+    "template": "<div style='display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;width:360px;'><div contenteditable='true' style='background:#eee;padding:10px;'>Col 1</div><div contenteditable='true' style='background:#eee;padding:10px;'>Col 2</div><div contenteditable='true' style='background:#eee;padding:10px;'>Col 3</div></div>",
+    "required_fields": []
   },
   "LOGIN_LAYOUT": {
     "description": "Login form layout",
-    "template": "<div style='width:200px;padding:10px;border:1px solid #ccc;background:#f9f9f9;'><h3 contenteditable='true'>Login</h3><input placeholder='Username' style='width:100%;margin-bottom:5px;'/><input placeholder='Password' type='password' style='width:100%;margin-bottom:5px;'/><button style='width:100%;'>Submit</button></div>"
+    "template": "<div style='width:200px;padding:10px;border:1px solid #ccc;background:#f9f9f9;'><h3 contenteditable='true'>Login</h3><input placeholder='Username' style='width:100%;margin-bottom:5px;'/><input placeholder='Password' type='password' style='width:100%;margin-bottom:5px;'/><button style='width:100%;'>Submit</button></div>",
+    "required_fields": []
   },
   "HEADER_NAV": {
     "description": "Header with nav bar",
-    "template": "<header style='background:#333;color:#fff;padding:10px;'><h1 contenteditable='true'>My Website</h1><nav style='margin-top:5px;'><a href='#' style='color:#fff;margin-right:10px;'>Home</a><a href='#' style='color:#fff;'>About</a></nav></header>"
+    "template": "<header style='background:#333;color:#fff;padding:10px;'><h1 contenteditable='true'>My Website</h1><nav style='margin-top:5px;'><a href='#' style='color:#fff;margin-right:10px;'>Home</a><a href='#' style='color:#fff;'>About</a></nav></header>",
+    "required_fields": []
   },
   "FOOTER": {
     "description": "Basic footer",
-    "template": "<footer style='background:#222;color:#fff;text-align:center;padding:10px;'>© 2025 DTech</footer>"
+    "template": "<footer style='background:#222;color:#fff;text-align:center;padding:10px;'>© 2025 DTech</footer>",
+    "required_fields": []
   }
 }
