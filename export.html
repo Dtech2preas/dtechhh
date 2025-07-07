@@ -1,76 +1,249 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>DTechML Export</title>
   <style>
+    :root {
+      --primary-color: #4361ee;
+      --primary-hover: #3a56d4;
+      --success-color: #28a745;
+      --success-hover: #218838;
+      --background: #f8f9fa;
+      --text-color: #212529;
+      --border-color: #dee2e6;
+      --card-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+    }
+    
     body {
-      font-family: Arial, sans-serif;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      line-height: 1.6;
+      color: var(--text-color);
+      background-color: var(--background);
+      max-width: 1000px;
+      margin: 0 auto;
       padding: 20px;
-      background: #f9f9f9;
     }
-    h1 {
-      margin-bottom: 10px;
-    }
-    #previewBlock {
+    
+    .container {
       background: white;
-      padding: 20px;
-      border: 1px solid #ccc;
-      margin-bottom: 20px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      border-radius: 8px;
+      box-shadow: var(--card-shadow);
+      padding: 25px;
+      margin-top: 20px;
     }
+    
+    h1 {
+      color: var(--primary-color);
+      margin-bottom: 20px;
+    }
+    
+    .subtitle {
+      color: #6c757d;
+      margin-bottom: 20px;
+      font-size: 1rem;
+    }
+    
     textarea {
       width: 100%;
-      height: 250px;
-      font-family: monospace;
-      padding: 10px;
-      border: 1px solid #ccc;
+      height: 60vh;
+      font-family: 'Consolas', 'Courier New', monospace;
+      font-size: 15px;
+      padding: 15px;
+      border: 1px solid var(--border-color);
+      border-radius: 5px;
+      resize: vertical;
+      background-color: #f8f9fa;
+      transition: border 0.3s ease;
       margin-bottom: 20px;
-      white-space: pre;
     }
+    
+    textarea:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 2px rgba(67, 97, 238, 0.2);
+    }
+    
+    .button-group {
+      display: flex;
+      gap: 12px;
+      margin-top: 15px;
+      flex-wrap: wrap;
+    }
+    
     button {
-      padding: 10px 20px;
+      padding: 12px 24px;
       font-size: 16px;
-      margin-right: 10px;
+      font-weight: 500;
       border: none;
       border-radius: 5px;
       cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
-    #downloadBtn { background: #28a745; color: #fff; }
-    #backBtn { background: #007bff; color: #fff; }
+    
+    #downloadBtn {
+      background: var(--success-color);
+      color: white;
+    }
+    
+    #downloadBtn:hover {
+      background: var(--success-hover);
+      transform: translateY(-1px);
+    }
+    
+    #backBtn {
+      background: var(--primary-color);
+      color: white;
+    }
+    
+    #backBtn:hover {
+      background: var(--primary-hover);
+      transform: translateY(-1px);
+    }
+    
+    button:active {
+      transform: translateY(0);
+    }
+    
+    .status {
+      margin-top: 15px;
+      padding: 12px;
+      border-radius: 5px;
+      display: none;
+      font-size: 15px;
+    }
+    
+    .success {
+      background-color: #d4edda;
+      color: #155724;
+      display: block;
+    }
+    
+    .info {
+      background-color: #e7f5ff;
+      color: #0c5460;
+      display: block;
+    }
+    
+    @media (max-width: 600px) {
+      .button-group {
+        flex-direction: column;
+      }
+      
+      button {
+        width: 100%;
+        justify-content: center;
+      }
+    }
   </style>
 </head>
 <body>
-  <h1>Exported HTML</h1>
-  <div id="previewBlock"></div>
-  <textarea id="exportedCode" readonly></textarea>
-  <button id="downloadBtn" onclick="downloadCode()">Download .html</button>
-  <button id="backBtn" onclick="goBack()">⬅ Back to Edit</button>
+  <div class="container">
+    <h1>Export HTML</h1>
+    <p class="subtitle">Your DTechML configuration has been converted to HTML</p>
+    
+    <textarea id="exportedCode" readonly></textarea>
+    
+    <div class="button-group">
+      <button id="downloadBtn" onclick="downloadCode()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="7 10 12 15 17 10"></polyline>
+          <line x1="12" y1="15" x2="12" y2="3"></line>
+        </svg>
+        Download .html
+      </button>
+      <button id="backBtn" onclick="goBack()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="19" y1="12" x2="5" y2="12"></line>
+          <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+        Edit Again
+      </button>
+    </div>
+    
+    <div id="status" class="status"></div>
+  </div>
 
   <script>
-    const html = localStorage.getItem('dtech_preview_html') || "<p>No content found.</p>";
-    const fullHTML = `<!DOCTYPE html>
-<html>
-<head><meta charset="UTF-8"><title>DTech Export</title></head>
-<body>${html}</body>
-</html>`;
-
-    document.getElementById('exportedCode').value = fullHTML;
-    document.getElementById('previewBlock').innerHTML = html;
+    document.addEventListener('DOMContentLoaded', async function() {
+      const statusEl = document.getElementById('status');
+      statusEl.textContent = "Generating HTML from your DTechML code...";
+      statusEl.className = "status info";
+      statusEl.style.display = "block";
+      
+      try {
+        const [commands] = await Promise.all([
+          fetch('html_commands.json').then(r => r.json()),
+          new Promise(resolve => setTimeout(resolve, 300)) // Small delay for better UX
+        ]);
+        
+        const code = localStorage.getItem('dtech_code') || '';
+        let out = '';
+        
+        code.split('\n').forEach(line => {
+          const trimmedLine = line.trim();
+          if (!trimmedLine) return;
+          
+          const [cmd, rest] = trimmedLine.split('=');
+          if (!commands[cmd]) return;
+          
+          const vals = (rest || '').split(',');
+          let snip = commands[cmd].template;
+          
+          (commands[cmd].required_fields || []).forEach((f, i) => {
+            snip = snip.replace(`{${f}}`, vals[i] || '');
+          });
+          
+          out += snip + "\n";
+        });
+        
+        document.getElementById('exportedCode').value = out;
+        statusEl.style.display = "none";
+      } catch (error) {
+        statusEl.textContent = "Error generating HTML: " + error.message;
+        statusEl.style.backgroundColor = "#f8d7da";
+        statusEl.style.color = "#721c24";
+      }
+    });
 
     function downloadCode() {
-      const blob = new Blob([fullHTML], { type: 'text/html' });
+      const text = document.getElementById('exportedCode').value;
+      if (!text.trim()) {
+        showStatus("No HTML content to download", false);
+        return;
+      }
+      
+      const blob = new Blob([text], {type: 'text/html'});
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
       a.download = 'dtechml_output.html';
+      document.body.appendChild(a);
       a.click();
+      document.body.removeChild(a);
       URL.revokeObjectURL(url);
+      
+      showStatus("HTML file downloaded successfully!", true);
     }
-
+    
     function goBack() {
-      location.href = 'style.html';
+      window.location.href = 'faqs.html';
+    }
+    
+    function showStatus(message, isSuccess) {
+      const statusEl = document.getElementById('status');
+      statusEl.textContent = message;
+      statusEl.className = isSuccess ? 'status success' : 'status';
+      statusEl.style.display = 'block';
+      
+      setTimeout(() => {
+        statusEl.style.display = 'none';
+      }, 3000);
     }
   </script>
 </body>
