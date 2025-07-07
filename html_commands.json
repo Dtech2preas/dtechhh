@@ -1,62 +1,30 @@
 {
+  "TEXT": {
+    "description": "Editable text block",
+    "template": "<p contenteditable='true'>Edit me</p>"
+  },
   "BTU": {
     "description": "Button component",
-    "template": "<button data-dtech-id='{id}' class='dtech-btn' data-href='{url}'>{text}</button>",
-    "required_fields": ["id", "text"]
+    "template": "<button data-dtech-id='{id}' class='dtech-btn'>{text}</button>",
+    "required_fields": ["id","text"],
+    "placeholders": ["btn1","Click Me"]
   },
   "IMG": {
     "description": "Image component",
-    "template": "<img data-dtech-id='{id}' src='{url}' alt='{text}'>",
-    "required_fields": ["id", "url"]
+    "template": "<img src='{url}' alt='{alt}' style='max-width:150px;' />",
+    "required_fields": ["url","alt"],
+    "placeholders": ["https://via.placeholder.com/150","Placeholder"]
   },
-  "HED": {
-    "description": "Heading component",
-    "template": "<h2 data-dtech-id='{id}'>{text}</h2>",
-    "required_fields": ["id", "text"]
+  "SIDEBAR_LAYOUT": {
+    "description": "Sidebar + Main",
+    "template": "<div style='display:flex; width:300px; height:200px;'><aside contenteditable='true' style='width:80px; background:#ddd; padding:5px;'>Menu</aside><main contenteditable='true' style='flex:1; padding:5px;'>Content</main></div>"
   },
-  "PAR": {
-    "description": "Paragraph component",
-    "template": "<p data-dtech-id='{id}'>{text}</p>",
-    "required_fields": ["id", "text"]
+  "GRID2": {
+    "description": "Two-column grid",
+    "template": "<div style='display:grid; grid-template-columns:1fr 1fr; gap:5px; width:200px;'><div contenteditable='true' style='background:#eee;padding:5px;'>Col 1</div><div contenteditable='true' style='background:#eee;padding:5px;'>Col 2</div></div>"
   },
-  "INP": {
-    "description": "Input field component",
-    "template": "<input data-dtech-id='{id}' type='{type}' placeholder='{placeholder}' />",
-    "required_fields": ["id", "type", "placeholder"]
-  },
-  "LNK": {
-    "description": "Hyperlink component",
-    "template": "<a data-dtech-id='{id}' href='{url}'>{text}</a>",
-    "required_fields": ["id", "url", "text"]
-  },
-  "SEC": {
-    "description": "Section wrapper component",
-    "template": "<section data-dtech-id='{id}' class='{class}'>{content}</section>",
-    "required_fields": ["id", "class", "content"]
-  },
-  "DIV": {
-    "description": "Generic div container",
-    "template": "<div data-dtech-id='{id}' class='{class}'>{content}</div>",
-    "required_fields": ["id", "class", "content"]
-  },
-  "VID": {
-    "description": "Video component",
-    "template": "<video data-dtech-id='{id}' controls src='{url}'></video>",
-    "required_fields": ["id", "url"]
-  },
-  "ICN": {
-    "description": "Icon span component",
-    "template": "<span data-dtech-id='{id}' class='icon-{name}'></span>",
-    "required_fields": ["id", "name"]
-  },
-  "LST": {
-    "description": "Unordered list component",
-    "template": "<ul data-dtech-id='{id}'>{items}</ul>",
-    "required_fields": ["id", "items"]
-  },
-  "ITM": {
-    "description": "List item component",
-    "template": "<li data-dtech-id='{id}'>{text}</li>",
-    "required_fields": ["id", "text"]
+  "LOGIN_LAYOUT": {
+    "description": "Login form",
+    "template": "<div style='width:200px;padding:10px;border:1px solid #ccc;'><h3 contenteditable='true'>Login</h3><input placeholder='User' style='width:100%;margin-bottom:5px;'/><input placeholder='Pass' type='password' style='width:100%;margin-bottom:5px;'/><button style='width:100%;'>Submit</button></div>"
   }
 }
