@@ -1,45 +1,1258 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>DTechML Editor (faqs.html)</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DTechML Builder</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    body { font-family: Arial, sans-serif; padding: 20px; }
-    textarea {
+    :root {
+      --primary: #4361ee;
+      --primary-light: #e0e7ff;
+      --secondary: #3f37c9;
+      --dark: #1e1e24;
+      --light: #f8f9fa;
+      --gray: #6c757d;
+      --success: #4cc9f0;
+      --danger: #f72585;
+      --warning: #f8961e;
+      --border-radius: 8px;
+      --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      --transition: all 0.3s ease;
+    }
+    
+    * { 
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body, html { 
+      height: 100%;
+      width: 100%;
+      font-family: 'Inter', sans-serif;
+      background-color: #f5f7fb;
+      color: var(--dark);
+    }
+    
+    #app-container {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+    
+    /* Header Styles */
+    #header {
+      background-color: white;
+      padding: 1rem 2rem;
+      box-shadow: var(--shadow);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 100;
+    }
+    
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-weight: 600;
+      font-size: 1.25rem;
+      color: var(--primary);
+    }
+    
+    .logo i {
+      font-size: 1.5rem;
+    }
+    
+    .nav-buttons {
+      display: flex;
+      gap: 0.75rem;
+    }
+    
+    /* Main Content Styles */
+    #main-content {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+    
+    /* Sidebar Styles */
+    #sidebar {
+      width: 280px;
+      background-color: white;
+      padding: 1.5rem;
+      border-right: 1px solid #e9ecef;
+      overflow-y: auto;
+      transition: var(--transition);
+    }
+    
+    .sidebar-section {
+      margin-bottom: 1.5rem;
+    }
+    
+    .sidebar-title {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--gray);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.75rem;
+    }
+    
+    /* Editor Section */
+    #editorSection, #previewSection, #codeSection {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 2rem;
+      overflow: auto;
+      background-color: white;
+    }
+    
+    #editorSection {
+      display: flex;
+    }
+    
+    .section-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+      color: var(--dark);
+    }
+    
+    /* Editor Styles */
+    #editor {
       width: 100%;
       height: 60vh;
-      font-family: monospace;
-      font-size: 16px;
-      padding: 10px;
-      border: 1px solid #ccc;
+      font-family: 'Fira Code', monospace;
+      padding: 1rem;
+      font-size: 0.9375rem;
+      border: 1px solid #e9ecef;
+      border-radius: var(--border-radius);
+      resize: none;
+      margin-bottom: 1rem;
+      transition: var(--transition);
     }
-    button {
-      margin-top: 10px;
-      padding: 10px 20px;
-      font-size: 16px;
-      background: #007bff;
-      color: #fff;
-      border: none;
-      border-radius: 5px;
+    
+    #editor:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px var(--primary-light);
+    }
+    
+    /* Button Styles */
+    .btn {
+      padding: 0.75rem 1.25rem;
+      border-radius: var(--border-radius);
+      font-size: 0.9375rem;
+      font-weight: 500;
       cursor: pointer;
+      transition: var(--transition);
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+    
+    .btn-primary {
+      background-color: var(--primary);
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background-color: var(--secondary);
+    }
+    
+    .btn-secondary {
+      background-color: white;
+      color: var(--primary);
+      border: 1px solid var(--primary);
+    }
+    
+    .btn-secondary:hover {
+      background-color: var(--primary-light);
+    }
+    
+    .btn-danger {
+      background-color: var(--danger);
+      color: white;
+    }
+    
+    .btn-danger:hover {
+      background-color: #d3166b;
+    }
+    
+    .btn-success {
+      background-color: var(--success);
+      color: white;
+    }
+    
+    .btn-success:hover {
+      background-color: #3ab0d6;
+    }
+    
+    /* Preview Section */
+    #previewSection {
+      display: none;
+    }
+    
+    #topBar {
+      background: white;
+      padding: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #e9ecef;
+      margin-bottom: 1rem;
+    }
+    
+    #topBar .mode-buttons {
+      display: flex;
+      gap: 0.75rem;
+    }
+    
+    #addBar {
+      background: white;
+      padding: 0.75rem 1rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      border-bottom: 1px solid #e9ecef;
+      margin-bottom: 1rem;
+    }
+    
+    #previewCanvas {
+      flex: 1;
+      position: relative;
+      background: #f8f9fa;
+      overflow: auto;
+      padding: 1rem;
+      border-radius: var(--border-radius);
+    }
+    
+    .draggable {
+      position: absolute;
+      padding: 1rem;
+      touch-action: none;
+      background: white;
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow);
+      cursor: move;
+      transition: var(--transition);
+    }
+    
+    .draggable:hover {
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    }
+    
+    .active-mode {
+      background-color: var(--primary) !important;
+      color: white !important;
+    }
+    
+    /* Style Popup */
+    #stylePopup {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      border: 1px solid #e9ecef;
+      padding: 1.5rem;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      display: none;
+      z-index: 2000;
+      width: 320px;
+      border-radius: var(--border-radius);
+    }
+    
+    .popup-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+    
+    .popup-title {
+      font-weight: 600;
+      font-size: 1.125rem;
+    }
+    
+    .popup-close {
+      background: none;
+      border: none;
+      font-size: 1.25rem;
+      cursor: pointer;
+      color: var(--gray);
+    }
+    
+    .form-group {
+      margin-bottom: 1rem;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+    }
+    
+    .form-control {
+      width: 100%;
+      padding: 0.5rem 0.75rem;
+      border: 1px solid #e9ecef;
+      border-radius: var(--border-radius);
+      font-size: 0.9375rem;
+      transition: var(--transition);
+    }
+    
+    .form-control:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px var(--primary-light);
+    }
+    
+    .popup-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.75rem;
+      margin-top: 1.5rem;
+    }
+    
+    /* Code Section */
+    #codeSection {
+      display: none;
+    }
+    
+    #codeView {
+      width: 100%;
+      height: 70vh;
+      font-family: 'Fira Code', monospace;
+      padding: 1rem;
+      font-size: 0.9375rem;
+      border: 1px solid #e9ecef;
+      border-radius: var(--border-radius);
+      resize: none;
+      margin-bottom: 1rem;
+      background: #f8f9fa;
+    }
+    
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      #main-content {
+        flex-direction: column;
+      }
+      
+      #sidebar {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid #e9ecef;
+      }
+      
+      #editor, #codeView {
+        height: 50vh;
+      }
+    }
+    
+    /* Help Tooltip */
+    .tooltip {
+      position: relative;
+      display: inline-block;
+    }
+    
+    .tooltip .tooltiptext {
+      visibility: hidden;
+      width: 200px;
+      background-color: var(--dark);
+      color: white;
+      text-align: center;
+      border-radius: var(--border-radius);
+      padding: 0.5rem;
+      position: absolute;
+      z-index: 1;
+      bottom: 125%;
+      left: 50%;
+      transform: translateX(-50%);
+      opacity: 0;
+      transition: opacity 0.3s;
+      font-size: 0.875rem;
+      font-weight: normal;
+    }
+    
+    .tooltip:hover .tooltiptext {
+      visibility: visible;
+      opacity: 1;
+    }
+    
+    /* Element Controls */
+    .element-controls {
+      position: absolute;
+      top: 0;
+      right: 0;
+      display: flex;
+      gap: 0.25rem;
+      padding: 0.25rem;
+      background: rgba(0,0,0,0.1);
+      border-bottom-left-radius: var(--border-radius);
+    }
+    
+    .element-control-btn {
+      background: white;
+      border: none;
+      width: 24px;
+      height: 24px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 0.75rem;
+    }
+    
+    .element-control-btn:hover {
+      background: var(--primary-light);
+      color: var(--primary);
+    }
+    
+    /* Color Picker */
+    .color-picker {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .color-preview {
+      width: 24px;
+      height: 24px;
+      border-radius: 4px;
+      border: 1px solid #e9ecef;
+    }
+    
+    /* Grid Layout */
+    .grid-layout {
+      display: grid;
+      gap: 1rem;
+      width: 100%;
+      height: 100%;
+    }
+    
+    .grid-2 {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .grid-3 {
+      grid-template-columns: repeat(3, 1fr);
+    }
+    
+    /* Loading Spinner */
+    .spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255,255,255,0.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 1s ease-in-out infinite;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
     }
   </style>
 </head>
 <body>
-  <h1>DTechML Editor (Phase 1)</h1>
-  <textarea id="editor" placeholder="Example commands:
-BTU=btn1,Click Here,https://example.com
-SIDEBAR_LAYOUT
-GRID2"></textarea>
-  <button onclick="saveAndNext()">Generate Preview</button>
+  <div id="app-container">
+    <header id="header">
+      <div class="logo">
+        <i class="fas fa-cube"></i>
+        <span>DTechML Builder</span>
+      </div>
+      <div class="nav-buttons">
+        <button id="helpBtn" class="btn btn-secondary tooltip">
+          <i class="fas fa-question-circle"></i>
+          <span class="tooltiptext">Need help? Click to view documentation</span>
+        </button>
+        <button id="exportBtn" class="btn btn-success" style="display: none;">
+          <i class="fas fa-file-export"></i> Export
+        </button>
+      </div>
+    </header>
+    
+    <div id="main-content">
+      <aside id="sidebar">
+        <div class="sidebar-section">
+          <h3 class="sidebar-title">Quick Start</h3>
+          <p style="font-size: 0.875rem; margin-bottom: 1rem; color: var(--gray);">
+            Start by writing commands in the editor or drag & drop elements from the sidebar.
+          </p>
+          <button id="showEditorBtn" class="btn btn-primary" style="width: 100%;">
+            <i class="fas fa-code"></i> Open Editor
+          </button>
+        </div>
+        
+        <div class="sidebar-section">
+          <h3 class="sidebar-title">UI Elements</h3>
+          <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem;">
+            <button onclick="addElement('BTU')" class="btn btn-secondary" style="font-size: 0.8125rem;">
+              <i class="fas fa-square"></i> Button
+            </button>
+            <button onclick="addElement('TXT')" class="btn btn-secondary" style="font-size: 0.8125rem;">
+              <i class="fas fa-text-width"></i> Text
+            </button>
+            <button onclick="addElement('IMG')" class="btn btn-secondary" style="font-size: 0.8125rem;">
+              <i class="fas fa-image"></i> Image
+            </button>
+            <button onclick="addElement('INP')" class="btn btn-secondary" style="font-size: 0.8125rem;">
+              <i class="fas fa-font"></i> Input
+            </button>
+            <button onclick="addElement('DRP')" class="btn btn-secondary" style="font-size: 0.8125rem;">
+              <i class="fas fa-caret-down"></i> Dropdown
+            </button>
+            <button onclick="addElement('CHK')" class="btn btn-secondary" style="font-size: 0.8125rem;">
+              <i class="fas fa-check-square"></i> Checkbox
+            </button>
+          </div>
+        </div>
+        
+        <div class="sidebar-section">
+          <h3 class="sidebar-title">Layouts</h3>
+          <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem;">
+            <button onclick="addElement('SIDEBAR_LAYOUT')" class="btn btn-secondary" style="font-size: 0.8125rem;">
+              <i class="fas fa-columns"></i> Sidebar
+            </button>
+            <button onclick="addElement('GRID2')" class="btn btn-secondary" style="font-size: 0.8125rem;">
+              <i class="fas fa-grip-horizontal"></i> 2 Columns
+            </button>
+            <button onclick="addElement('GRID3')" class="btn btn-secondary" style="font-size: 0.8125rem;">
+              <i class="fas fa-th"></i> 3 Columns
+            </button>
+            <button onclick="addElement('LOGIN_LAYOUT')" class="btn btn-secondary" style="font-size: 0.8125rem;">
+              <i class="fas fa-sign-in-alt"></i> Login
+            </button>
+            <button onclick="addElement('HEADER_NAV')" class="btn btn-secondary" style="font-size: 0.8125rem;">
+              <i class="fas fa-bars"></i> Header
+            </button>
+            <button onclick="addElement('FOOTER')" class="btn btn-secondary" style="font-size: 0.8125rem;">
+              <i class="fas fa-window-minimize"></i> Footer
+            </button>
+          </div>
+        </div>
+        
+        <div class="sidebar-section">
+          <h3 class="sidebar-title">Templates</h3>
+          <select class="form-control" id="templateSelect">
+            <option value="">-- Select Template --</option>
+            <option value="landing_page">Landing Page</option>
+            <option value="dashboard">Dashboard</option>
+            <option value="contact_form">Contact Form</option>
+            <option value="pricing">Pricing Page</option>
+          </select>
+          <button onclick="loadTemplate()" class="btn btn-secondary" style="width: 100%; margin-top: 0.75rem;">
+            <i class="fas fa-download"></i> Load Template
+          </button>
+        </div>
+      </aside>
+      
+      <main id="editorSection">
+        <h2 class="section-title">DTechML Editor</h2>
+        <textarea id="editor" placeholder="Write commands like:
+BTU=btn1,Click Me,https://example.com
+TXT=heading1,Welcome to DTechML
+IMG=banner1,https://example.com/image.jpg"></textarea>
+        <div style="display: flex; gap: 0.75rem;">
+          <button id="generateBtn" class="btn btn-primary">
+            <i class="fas fa-eye"></i> Generate Preview
+          </button>
+          <button id="clearBtn" class="btn btn-danger">
+            <i class="fas fa-trash"></i> Clear
+          </button>
+        </div>
+        
+        <div style="margin-top: 2rem;">
+          <h3 style="font-size: 1rem; margin-bottom: 0.75rem; color: var(--gray);">Command Reference</h3>
+          <div style="background: #f8f9fa; border-radius: var(--border-radius); padding: 1rem; font-size: 0.875rem;">
+            <p><strong>Button:</strong> BTU=id,text,link</p>
+            <p><strong>Text:</strong> TXT=id,content</p>
+            <p><strong>Image:</strong> IMG=id,src</p>
+            <p><strong>Input:</strong> INP=id,placeholder</p>
+            <p><strong>Layouts:</strong> Use the sidebar to add pre-built layouts</p>
+          </div>
+        </div>
+      </main>
+      
+      <div id="previewSection">
+        <div id="topBar">
+          <button onclick="goBack()" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Back to Editor
+          </button>
+          <div class="mode-buttons">
+            <button id="moveModeBtn" onclick="enableMoveMode()" class="btn btn-secondary active-mode">
+              <i class="fas fa-arrows-alt"></i> Move Mode
+            </button>
+            <button id="styleModeBtn" onclick="enableStyleMode()" class="btn btn-secondary">
+              <i class="fas fa-paint-brush"></i> Style Mode
+            </button>
+            <button id="phase3Btn" onclick="showCode()" class="btn btn-success">
+              <i class="fas fa-code"></i> View Code
+            </button>
+          </div>
+        </div>
+        
+        <div id="addBar">
+          <button onclick="addElement('BTU')" class="btn btn-secondary">
+            <i class="fas fa-plus"></i> Button
+          </button>
+          <button onclick="addElement('TXT')" class="btn btn-secondary">
+            <i class="fas fa-plus"></i> Text
+          </button>
+          <button onclick="addElement('IMG')" class="btn btn-secondary">
+            <i class="fas fa-plus"></i> Image
+          </button>
+          <button onclick="addElement('INP')" class="btn btn-secondary">
+            <i class="fas fa-plus"></i> Input
+          </button>
+          <button onclick="addElement('SIDEBAR_LAYOUT')" class="btn btn-secondary">
+            <i class="fas fa-plus"></i> Sidebar
+          </button>
+          <button onclick="addElement('GRID2')" class="btn btn-secondary">
+            <i class="fas fa-plus"></i> 2-Column Grid
+          </button>
+        </div>
+        
+        <div id="previewCanvas"></div>
+        
+        <div id="stylePopup">
+          <div class="popup-header">
+            <h4 class="popup-title">Element Styling</h4>
+            <button class="popup-close" onclick="closePopup()">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+          
+          <div class="form-group">
+            <label for="presetSelect">Preset Styles</label>
+            <select id="presetSelect" class="form-control">
+              <option value="">-- Select Preset --</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label for="fontSize">Font Size</label>
+            <input type="text" id="fontSize" class="form-control" placeholder="e.g. 16px or 1rem">
+          </div>
+          
+          <div class="form-group">
+            <label for="color">Text Color</label>
+            <div class="color-picker">
+              <div class="color-preview" id="colorPreview"></div>
+              <input type="text" id="color" class="form-control" placeholder="e.g. #333 or blue">
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="bgColor">Background Color</label>
+            <div class="color-picker">
+              <div class="color-preview" id="bgColorPreview"></div>
+              <input type="text" id="bgColor" class="form-control" placeholder="e.g. #fff or rgba(0,0,0,0.1)">
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="padding">Padding</label>
+            <input type="text" id="padding" class="form-control" placeholder="e.g. 10px or 1rem 0.5rem">
+          </div>
+          
+          <div class="form-group">
+            <label for="borderRadius">Border Radius</label>
+            <input type="text" id="borderRadius" class="form-control" placeholder="e.g. 4px or 50%">
+          </div>
+          
+          <div class="popup-footer">
+            <button onclick="closePopup()" class="btn btn-secondary">
+              Cancel
+            </button>
+            <button onclick="applyStyles()" class="btn btn-primary">
+              Apply Styles
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <div id="codeSection">
+        <h2 class="section-title">Exported HTML</h2>
+        <textarea id="codeView" readonly></textarea>
+        <div style="display: flex; gap: 0.75rem;">
+          <button id="downloadBtn" onclick="downloadCode()" class="btn btn-primary">
+            <i class="fas fa-download"></i> Download HTML
+          </button>
+          <button onclick="copyToClipboard()" class="btn btn-secondary">
+            <i class="fas fa-copy"></i> Copy to Clipboard
+          </button>
+          <button onclick="goBack()" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Back to Preview
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <script>
-    function saveAndNext() {
-      const code = document.getElementById('editor').value.trim();
-      localStorage.setItem('dtech_code', code);
-      window.location.href = 'preview.html';
+    // Global variables
+    let commands = {};
+    let cssPresets = {};
+    let selectedEl = null;
+    let mode = 'move';
+    let currentElementId = null;
+    
+    // DOM elements
+    const editorSection = document.getElementById('editorSection');
+    const previewSection = document.getElementById('previewSection');
+    const codeSection = document.getElementById('codeSection');
+    const canvas = document.getElementById('previewCanvas');
+    const popup = document.getElementById('stylePopup');
+    const moveBtn = document.getElementById('moveModeBtn');
+    const styleBtn = document.getElementById('styleModeBtn');
+    const exportBtn = document.getElementById('exportBtn');
+    const showEditorBtn = document.getElementById('showEditorBtn');
+    const colorPreview = document.getElementById('colorPreview');
+    const bgColorPreview = document.getElementById('bgColorPreview');
+    
+    // Initialize the app
+    function initApp() {
+      // Load commands and presets
+      fetch('html_commands.json')
+        .then(response => response.json())
+        .then(data => commands = data)
+        .catch(error => console.error('Error loading commands:', error));
+      
+      // Event listeners
+      document.getElementById('generateBtn').addEventListener('click', generatePreview);
+      document.getElementById('clearBtn').addEventListener('click', clearEditor);
+      document.getElementById('helpBtn').addEventListener('click', showHelp);
+      showEditorBtn.addEventListener('click', showEditor);
+      exportBtn.addEventListener('click', showCode);
+      
+      // Color input updates
+      document.getElementById('color').addEventListener('input', updateColorPreview);
+      document.getElementById('bgColor').addEventListener('input', updateBgColorPreview);
+      
+      // Set initial states
+      showEditor();
+      updateExportButton();
     }
+    
+    // Parse a single command line
+    function parseLine(line) {
+      const [cmd, rest] = line.split('=');
+      if (!cmd) return {};
+      
+      const vals = [];
+      let cur = '';
+      let inB = false;
+      
+      for (let c of rest) {
+        if (c === '{') inB = true;
+        else if (c === '}') inB = false;
+        
+        if (c === ',' && !inB) {
+          vals.push(cur.trim());
+          cur = '';
+        } else {
+          cur += c;
+        }
+      }
+      
+      if (cur) vals.push(cur.trim());
+      
+      return {
+        cmd: cmd.trim(),
+        values: vals
+      };
+    }
+    
+    // Generate preview from editor content
+    function generatePreview() {
+      const input = document.getElementById('editor').value.trim().split('\n');
+      canvas.innerHTML = '';
+      
+      input.forEach(line => {
+        const {cmd, values} = parseLine(line);
+        if (!cmd || !commands[cmd]) return;
+        
+        let html = commands[cmd].template;
+        commands[cmd].required_fields?.forEach((f, i) => {
+          html = html.replace(`{${f}}`, values[i] || '');
+        });
+        
+        createDraggableElement(html, cmd);
+      });
+      
+      showPreview();
+    }
+    
+    // Create a draggable element
+    function createDraggableElement(html, type) {
+      const wrapper = document.createElement('div');
+      wrapper.className = 'draggable';
+      wrapper.innerHTML = html;
+      wrapper.style.left = '20px';
+      wrapper.style.top = '20px';
+      wrapper.dataset.type = type;
+      
+      // Add element controls
+      const controls = document.createElement('div');
+      controls.className = 'element-controls';
+      controls.innerHTML = `
+        <button class="element-control-btn" onclick="deleteElement(this.parentElement.parentElement)"><i class="fas fa-trash"></i></button>
+        <button class="element-control-btn" onclick="duplicateElement(this.parentElement.parentElement)"><i class="fas fa-copy"></i></button>
+      `;
+      wrapper.appendChild(controls);
+      
+      // Click handler
+      wrapper.addEventListener('click', e => {
+        e.stopPropagation();
+        if (mode === 'style') {
+          selectedEl = wrapper.firstChild;
+          currentElementId = wrapper.dataset.id || generateId();
+          wrapper.dataset.id = currentElementId;
+          showPopup(type);
+        }
+      });
+      
+      makeDraggable(wrapper);
+      canvas.appendChild(wrapper);
+      return wrapper;
+    }
+    
+    // Add a new element
+    function addElement(key) {
+      const def = commands[key];
+      if (!def) return;
+      
+      let html = def.template;
+      const element = createDraggableElement(html, key);
+      
+      // Position new element below the last one
+      const elements = document.querySelectorAll('.draggable');
+      if (elements.length > 1) {
+        const lastElement = elements[elements.length - 2];
+        const lastRect = lastElement.getBoundingClientRect();
+        element.style.top = `${lastRect.top + lastRect.height + 20}px`;
+        element.style.left = `${lastRect.left}px`;
+      }
+    }
+    
+    // Make element draggable
+    function makeDraggable(el) {
+      let offX = 0, offY = 0;
+      
+      const rect = () => canvas.getBoundingClientRect();
+      
+      const start = (x, y) => {
+        const er = el.getBoundingClientRect();
+        const cr = rect();
+        offX = x - er.left + canvas.scrollLeft - cr.left;
+        offY = y - er.top + canvas.scrollTop - cr.top;
+      };
+      
+      const move = (x, y) => {
+        if (mode !== 'move') return;
+        
+        const cr = rect();
+        const rx = x - cr.left;
+        const ry = y - cr.top;
+        
+        el.style.left = `${rx - offX}px`;
+        el.style.top = `${ry - offY}px`;
+      };
+      
+      // Mouse events
+      el.addEventListener('mousedown', e => {
+        if (e.target.closest('.element-control-btn')) return;
+        if (mode !== 'move') return;
+        
+        start(e.pageX, e.pageY);
+        
+        const mm = e2 => move(e2.pageX, e2.pageY);
+        document.addEventListener('mousemove', mm);
+        
+        document.addEventListener('mouseup', () => {
+          document.removeEventListener('mousemove', mm);
+        }, { once: true });
+      });
+      
+      // Touch events
+      el.addEventListener('touchstart', e => {
+        if (e.target.closest('.element-control-btn')) return;
+        if (mode !== 'move') return;
+        
+        const t = e.touches[0];
+        e.preventDefault();
+        start(t.pageX, t.pageY);
+        
+        const tm = e2 => {
+          const t2 = e2.touches[0];
+          move(t2.pageX, t2.pageY);
+        };
+        
+        document.addEventListener('touchmove', tm, { passive: false });
+        
+        document.addEventListener('touchend', () => {
+          document.removeEventListener('touchmove', tm);
+        }, { once: true });
+      });
+    }
+    
+    // Enable move mode
+    function enableMoveMode() {
+      mode = 'move';
+      moveBtn.classList.add('active-mode');
+      styleBtn.classList.remove('active-mode');
+      popup.style.display = 'none';
+      
+      // Update cursor
+      canvas.style.cursor = 'move';
+      document.querySelectorAll('.draggable').forEach(el => {
+        el.style.cursor = 'move';
+      });
+    }
+    
+    // Enable style mode
+    function enableStyleMode() {
+      mode = 'style';
+      styleBtn.classList.add('active-mode');
+      moveBtn.classList.remove('active-mode');
+      
+      // Load CSS presets if not already loaded
+      if (Object.keys(cssPresets).length === 0) {
+        fetch('CSS.json')
+          .then(response => response.json())
+          .then(data => {
+            cssPresets = data;
+            showNotification('Style Mode ON - Click any element to style it');
+          })
+          .catch(error => {
+            console.error('Error loading CSS presets:', error);
+            showNotification('Error loading style presets', 'error');
+          });
+      } else {
+        showNotification('Style Mode ON - Click any element to style it');
+      }
+      
+      // Update cursor
+      canvas.style.cursor = 'pointer';
+      document.querySelectorAll('.draggable').forEach(el => {
+        el.style.cursor = 'pointer';
+      });
+    }
+    
+    // Show style popup
+    function showPopup(cmd) {
+      const presetSelect = document.getElementById('presetSelect');
+      presetSelect.innerHTML = '<option value="">-- Select Preset --</option>';
+      
+      // Load presets for this element type
+      if (cssPresets[cmd]) {
+        Object.entries(cssPresets[cmd]).forEach(([name, styles]) => {
+          let option = new Option(name, name);
+          presetSelect.add(option);
+        });
+      }
+      
+      presetSelect.onchange = () => {
+        const presetName = presetSelect.value;
+        if (presetName && cssPresets[cmd] && cssPresets[cmd][presetName]) {
+          Object.entries(cssPresets[cmd][presetName]).forEach(([key, value]) => {
+            selectedEl.style[key] = value;
+          });
+          
+          // Update preview colors
+          updateColorPreview();
+          updateBgColorPreview();
+        }
+      };
+      
+      // Clear input fields
+      ['fontSize', 'color', 'bgColor', 'padding', 'borderRadius'].forEach(id => {
+        document.getElementById(id).value = '';
+      });
+      
+      popup.style.display = 'block';
+    }
+    
+    // Apply styles from popup
+    function applyStyles() {
+      ['fontSize', 'color', 'bgColor', 'padding', 'borderRadius'].forEach(id => {
+        const value = document.getElementById(id).value;
+        if (value) {
+          const styleProp = id === 'bgColor' ? 'backgroundColor' : 
+                          id === 'fontSize' ? 'fontSize' : 
+                          id === 'borderRadius' ? 'borderRadius' : id;
+          selectedEl.style[styleProp] = value;
+        }
+      });
+      
+      closePopup();
+      showNotification('Styles applied successfully');
+    }
+    
+    // Close popup
+    function closePopup() {
+      popup.style.display = 'none';
+    }
+    
+    // Show editor section
+    function showEditor() {
+      editorSection.style.display = 'flex';
+      previewSection.style.display = 'none';
+      codeSection.style.display = 'none';
+      enableMoveMode();
+      updateExportButton();
+    }
+    
+    // Show preview section
+    function showPreview() {
+      editorSection.style.display = 'none';
+      previewSection.style.display = 'flex';
+      codeSection.style.display = 'none';
+      updateExportButton();
+    }
+    
+    // Show code section
+    function showCode() {
+      editorSection.style.display = 'none';
+      previewSection.style.display = 'none';
+      codeSection.style.display = 'flex';
+      
+      const html = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DTechML Export</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f5f7fb;
+    }
+    ${generateCSS()}
+  </style>
+</head>
+<body>
+  ${canvas.innerHTML}
+</body>
+</html>
+      `;
+      
+      document.getElementById('codeView').value = html;
+      updateExportButton();
+    }
+    
+    // Generate CSS from styled elements
+    function generateCSS() {
+      let css = '';
+      document.querySelectorAll('.draggable').forEach(el => {
+        if (el.dataset.id) {
+          const style = window.getComputedStyle(el.firstChild);
+          css += `#${el.dataset.id} {\n`;
+          
+          // Add relevant styles
+          if (style.fontSize !== '16px') css += `  font-size: ${style.fontSize};\n`;
+          if (style.color !== 'rgb(0, 0, 0)') css += `  color: ${style.color};\n`;
+          if (style.backgroundColor !== 'rgba(0, 0, 0, 0)') css += `  background-color: ${style.backgroundColor};\n`;
+          if (style.padding !== '0px') css += `  padding: ${style.padding};\n`;
+          if (style.borderRadius !== '0px') css += `  border-radius: ${style.borderRadius};\n`;
+          
+          css += '}\n\n';
+        }
+      });
+      return css;
+    }
+    
+    // Go back to previous view
+    function goBack() {
+      if (codeSection.style.display === 'flex') {
+        showPreview();
+      } else {
+        showEditor();
+      }
+    }
+    
+    // Download generated code
+    function downloadCode() {
+      const data = new Blob([document.getElementById('codeView').value], { type: 'text/html' });
+      const url = URL.createObjectURL(data);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'dtechml_export.html';
+      a.click();
+      URL.revokeObjectURL(url);
+      
+      showNotification('File downloaded successfully');
+    }
+    
+    // Copy code to clipboard
+    function copyToClipboard() {
+      const code = document.getElementById('codeView');
+      code.select();
+      document.execCommand('copy');
+      
+      showNotification('Code copied to clipboard');
+    }
+    
+    // Clear editor content
+    function clearEditor() {
+      if (confirm('Are you sure you want to clear the editor?')) {
+        document.getElementById('editor').value = '';
+        showNotification('Editor cleared');
+      }
+    }
+    
+    // Delete an element
+    function deleteElement(element) {
+      element.remove();
+      showNotification('Element deleted');
+    }
+    
+    // Duplicate an element
+    function duplicateElement(element) {
+      const clone = element.cloneNode(true);
+      const rect = element.getBoundingClientRect();
+      
+      clone.style.left = `${rect.left + 20}px`;
+      clone.style.top = `${rect.top + 20}px`;
+      clone.dataset.id = generateId();
+      
+      makeDraggable(clone);
+      canvas.appendChild(clone);
+      
+      showNotification('Element duplicated');
+    }
+    
+    // Load a template
+    function loadTemplate() {
+      const templateSelect = document.getElementById('templateSelect');
+      const template = templateSelect.value;
+      
+      if (!template) {
+        showNotification('Please select a template first', 'error');
+        return;
+      }
+      
+      // In a real app, you would fetch the template content
+      let templateContent = '';
+      
+      switch (template) {
+        case 'landing_page':
+          templateContent = `BTU=mainBtn,Get Started,#
+TXT=heading1,Welcome to Our Platform
+TXT=subheading,We provide the best services for your needs
+IMG=heroImg,https://example.com/hero.jpg`;
+          break;
+        case 'dashboard':
+          templateContent = `SIDEBAR_LAYOUT=sidebar1
+GRID3=stats1,Stat 1,100
+GRID3=stats2,Stat 2,200
+GRID3=stats3,Stat 3,300`;
+          break;
+        case 'contact_form':
+          templateContent = `TXT=contactHeading,Contact Us
+INP=nameInput,Your Name
+INP=emailInput,Your Email
+INP=messageInput,Your Message
+BTU=submitBtn,Send Message`;
+          break;
+        case 'pricing':
+          templateContent = `TXT=pricingHeading,Our Pricing Plans
+GRID3=plan1,Basic,$9
+GRID3=plan2,Pro,$19
+GRID3=plan3,Enterprise,$49`;
+          break;
+      }
+      
+      document.getElementById('editor').value = templateContent;
+      showNotification(`"${templateSelect.options[templateSelect.selectedIndex].text}" template loaded`);
+    }
+    
+    // Show help/documentation
+    function showHelp() {
+      alert(`DTechML Builder Help:
+
+1. Editor: Write commands in the format COMMAND=param1,param2,...
+   Example: BTU=myButton,Click Me,#
+
+2. Preview: See your elements and arrange them with drag & drop
+
+3. Style Mode: Click elements to customize their appearance
+
+4. Export: Get the final HTML code for your project
+
+Available commands:
+- BTU: Button (id, text, link)
+- TXT: Text (id, content)
+- IMG: Image (id, src)
+- INP: Input (id, placeholder)
+- Layouts: Use buttons in the sidebar`);
+    }
+    
+    // Update color preview
+    function updateColorPreview() {
+      const color = document.getElementById('color').value;
+      if (color) {
+        colorPreview.style.backgroundColor = color;
+      }
+    }
+    
+    // Update background color preview
+    function updateBgColorPreview() {
+      const bgColor = document.getElementById('bgColor').value;
+      if (bgColor) {
+        bgColorPreview.style.backgroundColor = bgColor;
+      }
+    }
+    
+    // Update export button visibility
+    function updateExportButton() {
+      exportBtn.style.display = previewSection.style.display === 'flex' ? 'block' : 'none';
+    }
+    
+    // Show notification
+    function showNotification(message, type = 'success') {
+      const notification = document.createElement('div');
+      notification.textContent = message;
+      notification.style.position = 'fixed';
+      notification.style.bottom = '20px';
+      notification.style.right = '20px';
+      notification.style.padding = '12px 24px';
+      notification.style.backgroundColor = type === 'error' ? var(--danger) : var(--success);
+      notification.style.color = 'white';
+      notification.style.borderRadius = 'var(--border-radius)';
+      notification.style.boxShadow = 'var(--shadow)';
+      notification.style.zIndex = '3000';
+      notification.style.animation = 'fadeIn 0.3s';
+      
+      document.body.appendChild(notification);
+      
+      setTimeout(() => {
+        notification.style.animation = 'fadeOut 0.3s';
+        setTimeout(() => notification.remove(), 300);
+      }, 3000);
+    }
+    
+    // Generate unique ID
+    function generateId() {
+      return 'el-' + Math.random().toString(36).substr(2, 9);
+    }
+    
+    // Initialize the app when DOM is loaded
+    document.addEventListener('DOMContentLoaded', initApp);
   </script>
 </body>
 </html>
