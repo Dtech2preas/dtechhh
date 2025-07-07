@@ -62,7 +62,6 @@
       color: white;
       border: none;
     }
-
   </style>
 </head>
 <body>
@@ -103,13 +102,11 @@
       return { cmd: cmd.trim(), values: vals };
     }
 
-    function showPopup(el, x, y) {
+    function showPopup(el, y) {
       const popup = document.getElementById('stylePopup');
-      popup.style.top = `${y}px`;
-      popup.style.left = `${x}px`;
+      popup.style.top = `${y + 20}px`;
       popup.style.display = 'block';
 
-      // Highlight selected element
       elements.forEach(e => e.classList.remove('highlight'));
       el.classList.add('highlight');
       currentElement = el;
@@ -125,6 +122,8 @@
     }
 
     function goToExport() {
+      const htmlContent = document.getElementById('previewArea').innerHTML;
+      localStorage.setItem('dtech_preview_html', htmlContent);
       window.location.href = 'export.html';
     }
 
@@ -148,19 +147,17 @@
           container.innerHTML = html;
           const element = container.firstElementChild;
 
-          // Add click event to show popup
           element.addEventListener('click', (e) => {
             e.stopPropagation();
             const rect = element.getBoundingClientRect();
-            const popupY = rect.top + window.scrollY + element.offsetHeight + 10;
-            showPopup(element, window.innerWidth / 2, popupY);
+            const popupY = rect.top + window.scrollY;
+            showPopup(element, popupY);
           });
 
           area.appendChild(element);
           elements.push(element);
         });
 
-        // Hide popup when clicking elsewhere
         document.addEventListener('click', () => {
           document.getElementById('stylePopup').style.display = 'none';
           elements.forEach(e => e.classList.remove('highlight'));
