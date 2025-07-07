@@ -64,13 +64,6 @@
       box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
     }
 
-    .button-group {
-      display: flex;
-      gap: 12px;
-      margin-top: 20px;
-      flex-wrap: wrap;
-    }
-
     button {
       padding: 12px 24px;
       font-size: 16px;
@@ -79,32 +72,6 @@
       border-radius: 6px;
       cursor: pointer;
       transition: all 0.2s ease;
-      flex: 1;
-      min-width: 120px;
-    }
-
-    #applyBtn {
-      background: var(--primary-color);
-      color: white;
-    }
-
-    #applyBtn:hover {
-      background: var(--primary-hover);
-      transform: translateY(-1px);
-    }
-
-    #exportBtn {
-      background: var(--success-color);
-      color: white;
-    }
-
-    #exportBtn:hover {
-      background: #218838;
-      transform: translateY(-1px);
-    }
-
-    button:active {
-      transform: translateY(0);
     }
 
     #previewArea {
@@ -125,11 +92,33 @@
       border-radius: 6px;
       background: var(--card-bg);
       transition: all 0.3s ease;
+      cursor: pointer;
     }
 
     .preview-element.selected {
       border: 2px solid var(--primary-color);
       box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+    }
+
+    /* Style Toolkit Popup */
+    .style-toolkit {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: var(--card-bg);
+      border-radius: 10px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+      padding: 25px;
+      width: 90%;
+      max-width: 600px;
+      z-index: 1000;
+      display: none;
+    }
+
+    .style-toolkit h3 {
+      margin-top: 0;
+      color: var(--primary-color);
     }
 
     .style-controls {
@@ -148,6 +137,59 @@
       margin-bottom: 8px;
       font-weight: 500;
       color: var(--text-color);
+    }
+
+    .toolkit-buttons {
+      display: flex;
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    #applyBtn {
+      background: var(--primary-color);
+      color: white;
+    }
+
+    #applyBtn:hover {
+      background: var(--primary-hover);
+      transform: translateY(-1px);
+    }
+
+    #closeToolkitBtn {
+      background: var(--secondary-color);
+      color: white;
+    }
+
+    #closeToolkitBtn:hover {
+      background: var(--secondary-hover);
+      transform: translateY(-1px);
+    }
+
+    #exportBtn {
+      background: var(--success-color);
+      color: white;
+      margin-top: 20px;
+      width: 100%;
+    }
+
+    #exportBtn:hover {
+      background: #218838;
+      transform: translateY(-1px);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 999;
+      display: none;
     }
 
     .status {
@@ -176,25 +218,25 @@
       .style-controls {
         grid-template-columns: 1fr;
       }
-      
-      button {
-        width: 100%;
-      }
     }
   </style>
 </head>
 <body>
   <div class="container">
     <h1>Style Editor</h1>
-    <p class="subtitle">Customize the appearance of your DTechML elements</p>
+    <p class="subtitle">Click on any element in the preview to style it</p>
 
-    <div class="control-group">
-      <label for="elementSelect">Select Element to Style</label>
-      <select id="elementSelect">
-        <option value="">— Select an Element —</option>
-      </select>
-    </div>
+    <h3>Preview</h3>
+    <div id="previewArea"></div>
 
+    <button id="exportBtn" onclick="goToExport()">Export Design</button>
+  </div>
+
+  <!-- Style Toolkit Popup -->
+  <div class="overlay" id="overlay"></div>
+  <div class="style-toolkit" id="styleToolkit">
+    <h3>Style Element</h3>
+    
     <div class="style-controls">
       <div class="control-group">
         <label for="fontSize">Font Size</label>
@@ -218,13 +260,10 @@
       </div>
     </div>
 
-    <div class="button-group">
+    <div class="toolkit-buttons">
       <button id="applyBtn" onclick="applyStyle()">Apply Style</button>
-      <button id="exportBtn" onclick="goToExport()">Next: Export</button>
+      <button id="closeToolkitBtn" onclick="closeToolkit()">Close</button>
     </div>
-
-    <h3>Preview</h3>
-    <div id="previewArea"></div>
   </div>
 
   <div id="status" class="status">Style applied successfully!</div>
@@ -238,18 +277,12 @@
       try {
         const [cmds] = await Promise.all([
           fetch('html_commands.json').then(r => r.json()),
-          new Promise(resolve => setTimeout(resolve, 300)) // Small delay for better UX
+          new Promise(resolve => setTimeout(resolve, 300))
         ]);
         
         commands = cmds;
         const code = localStorage.getItem('dtech_code') || '';
         const area = document.getElementById('previewArea');
-        const select = document.getElementById('elementSelect');
-        
-        // Clear any existing options except the first one
-        while (select.options.length > 1) {
-          select.remove(1);
-        }
         
         elements = []; // Reset elements array
         
@@ -266,18 +299,15 @@
           div.className = 'preview-element';
           div.dataset.index = i;
           div.innerHTML = html;
+          
+          // Add click event to show toolkit
+          div.addEventListener('click', function() {
+            selectElement(i);
+            showToolkit();
+          });
+          
           area.appendChild(div);
           elements.push(div);
-          
-          // Add to dropdown
-          const option = new Option(`${cmd} #${i + 1}`, i);
-          select.add(option);
-        });
-        
-        // Add event listener for select change
-        select.addEventListener('change', function() {
-          const idx = this.value;
-          updateSelectedElement(idx);
         });
         
         if (elements.length > 0) {
@@ -315,28 +345,35 @@
       return { cmd: cmd.trim(), values: vals };
     }
 
-    function updateSelectedElement(idx) {
+    function selectElement(index) {
       // Remove selected class from all elements
       elements.forEach(el => el.classList.remove('selected'));
       
-      if (idx && idx >= 0 && idx < elements.length) {
-        selectedElementIndex = idx;
-        const selectedElement = elements[idx];
+      if (index >= 0 && index < elements.length) {
+        selectedElementIndex = index;
+        const selectedElement = elements[index];
         selectedElement.classList.add('selected');
         
         // Scroll to the selected element
         selectedElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        
-        showStatus(`Selected element ${parseInt(idx) + 1}`, 1000);
       } else {
         selectedElementIndex = -1;
       }
     }
 
+    function showToolkit() {
+      document.getElementById('overlay').style.display = 'block';
+      document.getElementById('styleToolkit').style.display = 'block';
+    }
+
+    function closeToolkit() {
+      document.getElementById('overlay').style.display = 'none';
+      document.getElementById('styleToolkit').style.display = 'none';
+    }
+
     function applyStyle() {
-      const idx = document.getElementById('elementSelect').value;
-      if (!idx || idx === "" || selectedElementIndex < 0) {
-        showStatus("Please select an element first", 2000);
+      if (selectedElementIndex < 0) {
+        showStatus("No element selected", 2000);
         return;
       }
       
@@ -356,6 +393,7 @@
       if (borderRadius) el.style.borderRadius = borderRadius;
       
       showStatus("Style applied successfully!", 2000);
+      closeToolkit();
     }
 
     function showStatus(message, duration = 2000) {
