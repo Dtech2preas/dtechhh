@@ -13,5 +13,50 @@
     "description": "Heading component",
     "template": "<h2 data-dtech-id='{id}'>{text}</h2>",
     "required_fields": ["id", "text"]
+  },
+  "PAR": {
+    "description": "Paragraph component",
+    "template": "<p data-dtech-id='{id}'>{text}</p>",
+    "required_fields": ["id", "text"]
+  },
+  "INP": {
+    "description": "Input field component",
+    "template": "<input data-dtech-id='{id}' type='{type}' placeholder='{placeholder}' />",
+    "required_fields": ["id", "type", "placeholder"]
+  },
+  "LNK": {
+    "description": "Hyperlink component",
+    "template": "<a data-dtech-id='{id}' href='{url}'>{text}</a>",
+    "required_fields": ["id", "url", "text"]
+  },
+  "SEC": {
+    "description": "Section wrapper component",
+    "template": "<section data-dtech-id='{id}' class='{class}'>{content}</section>",
+    "required_fields": ["id", "class", "content"]
+  },
+  "DIV": {
+    "description": "Generic div container",
+    "template": "<div data-dtech-id='{id}' class='{class}'>{content}</div>",
+    "required_fields": ["id", "class", "content"]
+  },
+  "VID": {
+    "description": "Video component",
+    "template": "<video data-dtech-id='{id}' controls src='{url}'></video>",
+    "required_fields": ["id", "url"]
+  },
+  "ICN": {
+    "description": "Icon span component",
+    "template": "<span data-dtech-id='{id}' class='icon-{name}'></span>",
+    "required_fields": ["id", "name"]
+  },
+  "LST": {
+    "description": "Unordered list component",
+    "template": "<ul data-dtech-id='{id}'>{items}</ul>",
+    "required_fields": ["id", "items"]
+  },
+  "ITM": {
+    "description": "List item component",
+    "template": "<li data-dtech-id='{id}'>{text}</li>",
+    "required_fields": ["id", "text"]
   }
 }
