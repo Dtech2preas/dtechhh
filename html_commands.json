@@ -1,32 +1,97 @@
 {
-  "SIDEBAR_LAYOUT": {
-    "description": "Sidebar + Main layout",
-    "template": "<div style='display:flex;width:300px;height:200px;'><aside contenteditable='true' style='width:80px;background:#ddd;padding:5px;'>Menu</aside><main contenteditable='true' style='flex:1;padding:5px;'>Content</main></div>",
-    "required_fields": []
+  "BTU": {
+    "description": "Button component",
+    "template": "<button data-dtech-id='{id}' class='dtech-btn' data-href='{url}'>{text}</button>",
+    "required_fields": ["id", "text", "url"]
   },
-  "GRID2": {
-    "description": "Two-column layout",
-    "template": "<div style='display:grid;grid-template-columns:1fr 1fr;gap:10px;width:300px;'><div contenteditable='true' style='background:#f0f0f0;padding:10px;'>Left</div><div contenteditable='true' style='background:#f0f0f0;padding:10px;'>Right</div></div>",
-    "required_fields": []
+  "IMG": {
+    "description": "Image component",
+    "template": "<img data-dtech-id='{id}' src='{url}' alt='{text}' class='{class}'>",
+    "required_fields": ["id", "url", "text"]
   },
-  "GRID3": {
-    "description": "Three-column layout",
-    "template": "<div style='display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;width:360px;'><div contenteditable='true' style='background:#eee;padding:10px;'>Col 1</div><div contenteditable='true' style='background:#eee;padding:10px;'>Col 2</div><div contenteditable='true' style='background:#eee;padding:10px;'>Col 3</div></div>",
-    "required_fields": []
+  "HED": {
+    "description": "Heading component",
+    "template": "<h2 data-dtech-id='{id}'>{text}</h2>",
+    "required_fields": ["id", "text"]
   },
-  "LOGIN_LAYOUT": {
-    "description": "Login form layout",
-    "template": "<div style='width:200px;padding:10px;border:1px solid #ccc;background:#f9f9f9;'><h3 contenteditable='true'>Login</h3><input placeholder='Username' style='width:100%;margin-bottom:5px;'/><input placeholder='Password' type='password' style='width:100%;margin-bottom:5px;'/><button style='width:100%;'>Submit</button></div>",
-    "required_fields": []
+  "PAR": {
+    "description": "Paragraph component",
+    "template": "<p data-dtech-id='{id}'>{text}</p>",
+    "required_fields": ["id", "text"]
   },
-  "HEADER_NAV": {
-    "description": "Header with nav bar",
-    "template": "<header style='background:#333;color:#fff;padding:10px;'><h1 contenteditable='true'>My Website</h1><nav style='margin-top:5px;'><a href='#' style='color:#fff;margin-right:10px;'>Home</a><a href='#' style='color:#fff;'>About</a></nav></header>",
-    "required_fields": []
+  "INP": {
+    "description": "Input field component",
+    "template": "<input data-dtech-id='{id}' type='{type}' placeholder='{placeholder}' />",
+    "required_fields": ["id", "type", "placeholder"]
   },
-  "FOOTER": {
-    "description": "Basic footer",
-    "template": "<footer style='background:#222;color:#fff;text-align:center;padding:10px;'>© 2025 DTech</footer>",
-    "required_fields": []
+  "LNK": {
+    "description": "Hyperlink component",
+    "template": "<a data-dtech-id='{id}' href='{url}'>{text}</a>",
+    "required_fields": ["id", "url", "text"]
+  },
+  "SEC": {
+    "description": "Section wrapper component",
+    "template": "<section data-dtech-id='{id}' class='{class}'>{content}</section>",
+    "required_fields": ["id", "class", "content"]
+  },
+  "DIV": {
+    "description": "Generic div container",
+    "template": "<div data-dtech-id='{id}' class='{class}'>{content}</div>",
+    "required_fields": ["id", "class", "content"]
+  },
+  "VID": {
+    "description": "Video component",
+    "template": "<video data-dtech-id='{id}' controls src='{url}'></video>",
+    "required_fields": ["id", "url"]
+  },
+  "ICN": {
+    "description": "Icon span component",
+    "template": "<span data-dtech-id='{id}' class='icon-{name}'></span>",
+    "required_fields": ["id", "name"]
+  },
+  "LST": {
+    "description": "Unordered list component",
+    "template": "<ul data-dtech-id='{id}'>{items}</ul>",
+    "required_fields": ["id", "items"]
+  },
+  "ITM": {
+    "description": "List item component",
+    "template": "<li data-dtech-id='{id}'>{text}</li>",
+    "required_fields": ["id", "text"]
+  },
+  "TXT": {
+    "description": "Textarea component",
+    "template": "<textarea data-dtech-id='{id}' placeholder='{placeholder}' rows='{rows}'></textarea>",
+    "required_fields": ["id", "placeholder", "rows"]
+  },
+  "HRL": {
+    "description": "Horizontal line component",
+    "template": "<hr data-dtech-id='{id}' />",
+    "required_fields": ["id"]
+  },
+  "LBL": {
+    "description": "Label for form input",
+    "template": "<label data-dtech-id='{id}' for='{for}'>{text}</label>",
+    "required_fields": ["id", "for", "text"]
+  },
+  "SEL": {
+    "description": "Dropdown select component",
+    "template": "<select data-dtech-id='{id}'>{options}</select>",
+    "required_fields": ["id", "options"]
+  },
+  "OPT": {
+    "description": "Option in a select dropdown",
+    "template": "<option data-dtech-id='{id}' value='{value}'>{text}</option>",
+    "required_fields": ["id", "value", "text"]
+  },
+  "SPN": {
+    "description": "Inline span element",
+    "template": "<span data-dtech-id='{id}'>{text}</span>",
+    "required_fields": ["id", "text"]
+  },
+  "IFR": {
+    "description": "iFrame embed component",
+    "template": "<iframe data-dtech-id='{id}' src='{url}' width='{width}' height='{height}'></iframe>",
+    "required_fields": ["id", "url", "width", "height"]
   }
 }
