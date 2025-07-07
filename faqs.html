@@ -47,6 +47,7 @@
   position: absolute;
   cursor: move;
   padding: 5px;
+  touch-action: none;
 }
 
 #overlay, #stylePopup {
@@ -206,17 +207,41 @@
     }
 
     function makeDraggable(el) {
-      let offsetX, offsetY;
-      el.onmousedown = function(e) {
-        offsetX = e.offsetX;
-        offsetY = e.offsetY;
-        function moveAt(ev) {
-          el.style.left = ev.pageX - offsetX + 'px';
-          el.style.top = ev.pageY - offsetY + 'px';
-        }
-        document.onmousemove = moveAt;
-        document.onmouseup = () => document.onmousemove = null;
+      let offsetX = 0, offsetY = 0;
+
+      const startDrag = (x, y) => {
+        const rect = el.getBoundingClientRect();
+        offsetX = x - rect.left;
+        offsetY = y - rect.top;
       };
+
+      const moveDrag = (x, y) => {
+        el.style.left = (x - offsetX) + 'px';
+        el.style.top = (y - offsetY) + 'px';
+      };
+
+      el.addEventListener('mousedown', (e) => {
+        startDrag(e.pageX, e.pageY);
+        const onMouseMove = (e) => moveDrag(e.pageX, e.pageY);
+        document.addEventListener('mousemove', onMouseMove);
+        document.addEventListener('mouseup', () => {
+          document.removeEventListener('mousemove', onMouseMove);
+        }, { once: true });
+      });
+
+      el.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        const touch = e.touches[0];
+        startDrag(touch.pageX, touch.pageY);
+        const onTouchMove = (e) => {
+          const touch = e.touches[0];
+          moveDrag(touch.pageX, touch.pageY);
+        };
+        document.addEventListener('touchmove', onTouchMove, { passive: false });
+        document.addEventListener('touchend', () => {
+          document.removeEventListener('touchmove', onTouchMove);
+        }, { once: true });
+      });
     }
 
     document.getElementById('layoutMode').addEventListener('change', function () {
