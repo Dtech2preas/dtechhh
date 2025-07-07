@@ -27,7 +27,7 @@
   <div id="editorSection">
     <div style="flex:1; display:flex; flex-direction:column;">
       <h2>DTechML Editor</h2>
-      <textarea id="editor" placeholder="Write commands or leave blank to use Add Element in next phase"></textarea>
+      <textarea id="editor" placeholder="Write commands like: BTU=btn1,Click Me,https://example.com"></textarea>
       <button id="generateBtn">Generate Preview</button>
     </div>
   </div>
@@ -41,12 +41,12 @@
       </div>
     </div>
     <div id="addBar">
-      <button onclick="addElement('TEXT')">Text</button>
-      <button onclick="addElement('BTU')">Button</button>
-      <button onclick="addElement('IMG')">Image</button>
       <button onclick="addElement('SIDEBAR_LAYOUT')">Sidebar</button>
-      <button onclick="addElement('GRID2')">Grid 2-col</button>
-      <button onclick="addElement('LOGIN_LAYOUT')">Login Page</button>
+      <button onclick="addElement('GRID2')">2-Column Grid</button>
+      <button onclick="addElement('GRID3')">3-Column Grid</button>
+      <button onclick="addElement('LOGIN_LAYOUT')">Login Form</button>
+      <button onclick="addElement('HEADER_NAV')">Header + Nav</button>
+      <button onclick="addElement('FOOTER')">Footer</button>
     </div>
     <div id="previewCanvas"></div>
     <div id="stylePopup">
@@ -72,8 +72,8 @@
     const moveBtn=document.getElementById('moveModeBtn'),styleBtn=document.getElementById('styleModeBtn');
     fetch('html_commands.json').then(r=>r.json()).then(d=>commands=d);
     function parseLine(line){const [cmd,rest]=line.split('=');if(!cmd) return{};const vals=[];let cur='',inB=false;for(let c of rest){if(c==='{')inB=true;else if(c==='}')inB=false;if(c===','&&!inB){vals.push(cur.trim());cur='';}else cur+=c;}if(cur)vals.push(cur.trim());return{cmd:cmd.trim(),values:vals};}
-    document.getElementById('generateBtn').onclick=()=>{editorSection.style.display='none';previewSection.style.display='flex';enableMoveMode();};
-    function addElement(key){const def=commands[key];if(!def) return;let html=def.template;def.required_fields?.forEach((f,i)=>html=html.replace(`{${f}}`,def.placeholders?.[i]||''));const w=document.createElement('div');w.className='draggable';w.innerHTML=html;w.style.left='10px';w.style.top='10px';w.onclick=e=>{e.stopPropagation();if(mode==='style'){selectedEl=w.firstChild;showPopup(key);}};makeDraggable(w);canvas.appendChild(w);}    
+    document.getElementById('generateBtn').onclick=()=>{editorSection.style.display='none';previewSection.style.display='flex';enableMoveMode();const input=document.getElementById('editor').value.trim().split('\n');input.forEach(line=>{const {cmd,values}=parseLine(line);if(!cmd||!commands[cmd])return;let html=commands[cmd].template;commands[cmd].required_fields?.forEach((f,i)=>html=html.replace(`{${f}}`,values[i]||''));const d=document.createElement('div');d.className='draggable';d.innerHTML=html;d.style.left='10px';d.style.top='10px';d.onclick=e=>{e.stopPropagation();if(mode==='style'){selectedEl=d.firstChild;showPopup(cmd);}};makeDraggable(d);canvas.appendChild(d);});};
+    function addElement(key){const def=commands[key];if(!def) return;let html=def.template;const w=document.createElement('div');w.className='draggable';w.innerHTML=html;w.style.left='10px';w.style.top='10px';w.onclick=e=>{e.stopPropagation();if(mode==='style'){selectedEl=w.firstChild;showPopup(key);}};makeDraggable(w);canvas.appendChild(w);}
     function enableMoveMode(){mode='move';moveBtn.classList.add('active-mode');styleBtn.classList.remove('active-mode');popup.style.display='none';}
     function enableStyleMode(){mode='style';styleBtn.classList.add('active-mode');moveBtn.classList.remove('active-mode');fetch('CSS.json').then(r=>r.json()).then(d=>cssPresets=d);alert('Style Mode ON');}
     function showPopup(cmd){const ps=document.getElementById('presetSelect');ps.innerHTML='<option>-- Preset --</option>';cssPresets[cmd]&&Object.entries(cssPresets[cmd]).forEach(([n,s])=>{let o=new Option(n,n);ps.add(o);});ps.onchange=()=>Object.entries(cssPresets[cmd][ps.value]).forEach(([k,v])=>selectedEl.style[k]=v);
