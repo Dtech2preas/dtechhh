@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DTechML Style Editor</title>
+  <style>
+    body { font-family:Arial,sans-serif; padding:20px; }
+    select,input,button {
+      width:100%; margin-bottom:10px; padding:8px; font-size:16px;
+    }
+    #previewArea {
+      border:1px solid #ccc; padding:10px;
+      min-height:300px; background:#f4f4f4;
+    }
+  </style>
+</head>
+<body>
+  <h1>Style Editor</h1>
+  <select id="elementSelect">
+    <option value="">— Select Element —</option>
+  </select>
+  <input id="fontSize" placeholder="Font size (e.g. 16px)" />
+  <input id="color" placeholder="Text color" />
+  <input id="bgColor" placeholder="Background color" />
+  <input id="padding" placeholder="Padding (e.g. 10px)" />
+  <input id="borderRadius" placeholder="Border radius (e.g. 5px)" />
+  <button onclick="applyStyle()">Apply Style</button>
+  <button onclick="goToExport()">Next: Export</button>
+
+  <div id="previewArea"></div>
+
+  <script>
+    let commands={}, elements=[];
+    function parseLine(line) {
+      const [cmd, rest]=line.split('=');
+      if(!cmd) return{};
+      const vals=[]; let cur='',inB=false;
+      for(let c of (rest||'')){
+        if(c==='{' ) inB=true; else if(c==='}') inB=false;
+        if(c===','&&!inB){vals.push(cur.trim());cur='';}
+        else cur+=c;
+      }
+      if(cur) vals.push(cur.trim());
+      return {cmd:cmd.trim(),values:vals};
+    }
+    fetch('html_commands.json').then(r=>r.json()).then(cmds=>{
+      commands=cmds;
+      const code=localStorage.getItem('dtech_code')||'';
+      const area=document.getElementById('previewArea'),
+            sel=document.getElementById('elementSelect');
+      code.split('\n').forEach((line,i)=>{
+        const {cmd,values}=parseLine(line);
+        if(!commands[cmd]) return;
+        let html=commands[cmd].template;
+        (commands[cmd].required_fields||[]).forEach((f,idx)=>{
+          html=html.replace(`{${f}}`,values[idx]||'');
+        });
+        const div=document.createElement('div');
+        div.innerHTML=html;
+        area.appendChild(div);
+        elements.push(div);
+        sel.add(new Option(`${cmd} ${i+1}`, i));
+      });
+    });
+
+    function applyStyle(){
+      const idx=document.getElementById('elementSelect').value;
+      const el=elements[idx];
+      if(!el) return;
+      el.style.fontSize=document.getElementById('fontSize').value;
+      el.style.color=document.getElementById('color').value;
+      el.style.backgroundColor=document.getElementById('bgColor').value;
+      el.style.padding=document.getElementById('padding').value;
+      el.style.borderRadius=document.getElementById('borderRadius').value;
+    }
+    function goToExport(){ window.location.href='export.html'; }
+  </script>
+</body>
+</html>
