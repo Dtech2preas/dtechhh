@@ -3,334 +3,95 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Drag & Drop Component Generator</title>
+  <title>DTechML Builder</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      max-width: 1000px;
-      margin: 0 auto;
-      padding: 20px;
-      background: #f5f5f5;
-    }
-    #editor {
-      width: 100%;
-      height: 200px;
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    #editor { 
+      width: 100%; 
+      height: 100px;
       padding: 10px;
-      font-family: monospace;
       border: 1px solid #ddd;
-      border-radius: 5px;
       margin-bottom: 10px;
+      font-family: monospace;
     }
     #preview {
-      margin-top: 20px;
+      border: 1px solid #eee;
       padding: 20px;
-      background: white;
-      border: 1px solid #ddd;
-      border-radius: 5px;
-      min-height: 300px;
+      min-height: 200px;
     }
-    .component {
-      margin-bottom: 15px;
-      padding: 15px;
-      background: #fff;
-      border: 1px solid #ddd;
-      border-radius: 5px;
-      cursor: move;
-      position: relative;
-    }
-    .component.dragging {
-      opacity: 0.5;
-      border: 2px dashed #0074d9;
-    }
-    .button {
-      display: inline-block;
-      padding: 10px 20px;
-      background: #0074d9;
-      color: white;
-      text-decoration: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    .alert-box {
-      padding: 15px;
-      background: #fff3cd;
-      border-left: 5px solid #ffc107;
-      margin: 10px 0;
-      border-radius: 4px;
-    }
-    .color-box {
-      display: inline-block;
-      width: 50px;
-      height: 50px;
-      margin: 5px;
-      border: 1px solid #ddd;
-    }
-    .delete-btn {
-      position: absolute;
-      top: 5px;
-      right: 5px;
-      background: #ff4444;
-      color: white;
-      border: none;
-      width: 20px;
-      height: 20px;
-      border-radius: 50%;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 12px;
-    }
-    .controls {
-      margin-bottom: 15px;
-      display: flex;
-      gap: 10px;
-    }
-    #export-html {
-      background: #28a745;
+    .error {
+      color: red;
+      margin-top: 10px;
     }
   </style>
 </head>
 <body>
-  <h1>Drag & Drop Component Generator</h1>
-  <p>Type commands like <code>BTU=DOWNLOAD=https://example.com</code> to generate components</p>
-  
-  <textarea id="editor" placeholder="Enter your component commands here...
-Example:
-BTU=DOWNLOAD=https://example.com/file.zip
-COL=PRIMARY=#0074d9
-BOX=ALERT=Warning message"></textarea>
-  
-  <div class="controls">
-    <button id="generate">Generate Components</button>
-    <button id="export-html">Export HTML</button>
-    <button id="clear-all">Clear All</button>
-  </div>
-  
-  <div id="preview">
-    <p>Drag and drop components to rearrange them</p>
-  </div>
+  <h1>DTechML Builder</h1>
+  <textarea id="editor" placeholder="Enter commands like:
+BTU=submit-btn=Click Me=#
+IMG=hero=Main Banner=banner.jpg"></textarea>
+  <button id="generate">Generate HTML</button>
+  <div id="preview"></div>
 
   <script>
-    const componentLibrary = {
-      // Button generator
-      BTU: (type, value) => {
-        const types = {
-          DOWNLOAD: {
-            text: 'Download Now',
-            class: 'download-btn',
-            icon: '⬇️'
-          },
-          LINK: {
-            text: 'Visit Site',
-            class: 'link-btn',
-            icon: '🔗'
-          }
-        };
-        
-        const btnType = types[type] || types.LINK;
-        return `
-          <div class="component" draggable="true">
-            <span class="delete-btn">×</span>
-            <a href="${value}" class="button ${btnType.class}">
-              ${btnType.icon} ${btnType.text}
-            </a>
-            <p><small>Link: ${value}</small></p>
-          </div>
-        `;
-      },
-      
-      // Color generator
-      COL: (type, value) => {
-        return `
-          <div class="component" draggable="true">
-            <span class="delete-btn">×</span>
-            <h4>${type} Color</h4>
-            <div class="color-box" style="background: ${value};"></div>
-            <p><code>${value}</code></p>
-          </div>
-        `;
-      },
-      
-      // Box generator
-      BOX: (type, value) => {
-        const boxStyles = {
-          ALERT: 'background: #fff3cd; border-left: 5px solid #ffc107;',
-          INFO: 'background: #d1ecf1; border-left: 5px solid #17a2b8;',
-          ERROR: 'background: #f8d7da; border-left: 5px solid #dc3545;'
-        };
-        
-        const style = boxStyles[type] || boxStyles.INFO;
-        return `
-          <div class="component" draggable="true">
-            <span class="delete-btn">×</span>
-            <div class="alert-box" style="${style}">
-              <strong>${type}:</strong> ${value}
-            </div>
-          </div>
-        `;
-      }
-    };
+    // Load commands from JSON file
+    fetch('html_commands.json')
+      .then(response => response.json())
+      .then(commands => {
+        document.getElementById('generate').addEventListener('click', () => {
+          const input = document.getElementById('editor').value;
+          const lines = input.split('\n');
+          let htmlOutput = '';
+          let errors = [];
 
-    // Initialize drag and drop functionality
-    function initDragAndDrop() {
-      const components = document.querySelectorAll('#preview .component');
-      let draggedItem = null;
+          lines.forEach(line => {
+            if (line.trim() === '') return;
 
-      components.forEach(component => {
-        // Drag start
-        component.addEventListener('dragstart', function() {
-          draggedItem = this;
-          setTimeout(() => {
-            this.classList.add('dragging');
-          }, 0);
-        });
+            // Parse COMMAND=id=text=url
+            const parts = line.trim().split('=');
+            const command = parts[0];
+            
+            if (commands[command]) {
+              const fieldValues = {
+                id: parts[1] || '',
+                text: parts[2] || '',
+                url: parts[3] || '#'
+              };
 
-        // Drag end
-        component.addEventListener('dragend', function() {
-          this.classList.remove('dragging');
-          draggedItem = null;
-        });
+              // Validate required fields
+              const missingFields = commands[command].required_fields.filter(
+                field => !fieldValues[field]
+              );
 
-        // Delete button
-        const deleteBtn = component.querySelector('.delete-btn');
-        if (deleteBtn) {
-          deleteBtn.addEventListener('click', function(e) {
-            e.stopPropagation();
-            component.remove();
+              if (missingFields.length > 0) {
+                errors.push(`Missing fields for ${command}: ${missingFields.join(', ')}`);
+              } else {
+                // Generate HTML from template
+                let componentHtml = commands[command].template;
+                for (const [key, value] of Object.entries(fieldValues)) {
+                  componentHtml = componentHtml.replace(`{${key}}`, value);
+                }
+                htmlOutput += componentHtml + '\n';
+              }
+            } else {
+              errors.push(`Unknown command: ${command}`);
+            }
           });
-        }
-      });
 
-      const preview = document.getElementById('preview');
-      
-      // Dragover
-      preview.addEventListener('dragover', function(e) {
-        e.preventDefault();
-        const afterElement = getDragAfterElement(preview, e.clientY);
-        if (afterElement == null) {
-          preview.appendChild(draggedItem);
-        } else {
-          preview.insertBefore(draggedItem, afterElement);
-        }
-      });
-    }
-
-    // Helper function to determine drop position
-    function getDragAfterElement(container, y) {
-      const draggableElements = [...container.querySelectorAll('.component:not(.dragging)')];
-      
-      return draggableElements.reduce((closest, child) => {
-        const box = child.getBoundingClientRect();
-        const offset = y - box.top - box.height / 2;
-        if (offset < 0 && offset > closest.offset) {
-          return { offset: offset, element: child };
-        } else {
-          return closest;
-        }
-      }, { offset: Number.NEGATIVE_INFINITY }).element;
-    }
-
-    // Generate components
-    document.getElementById('generate').addEventListener('click', function() {
-      const input = document.getElementById('editor').value;
-      const lines = input.split('\n');
-      let output = '';
-      
-      lines.forEach(line => {
-        if (line.trim() === '') return;
-        
-        const parts = line.split('=');
-        if (parts.length >= 3) {
-          const command = parts[0];
-          const type = parts[1];
-          const value = parts.slice(2).join('='); // In case value contains '='
-          
-          if (componentLibrary[command]) {
-            output += componentLibrary[command](type, value);
-          } else {
-            output += `<div class="component"><p>Unknown command: ${command}</p></div>`;
+          document.getElementById('preview').innerHTML = htmlOutput;
+          if (errors.length > 0) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error';
+            errorDiv.innerHTML = errors.join('<br>');
+            document.getElementById('preview').appendChild(errorDiv);
           }
-        }
+        });
+      })
+      .catch(error => {
+        console.error("Error loading commands:", error);
+        document.getElementById('preview').innerHTML = 
+          '<div class="error">Failed to load component library</div>';
       });
-      
-      if (output) {
-        document.getElementById('preview').insertAdjacentHTML('beforeend', output);
-        initDragAndDrop();
-      }
-    });
-
-    // Export HTML
-    document.getElementById('export-html').addEventListener('click', function() {
-      const preview = document.getElementById('preview').cloneNode(true);
-      // Remove delete buttons and drag attributes from exported version
-      preview.querySelectorAll('.delete-btn').forEach(btn => btn.remove());
-      preview.querySelectorAll('.component').forEach(comp => {
-        comp.removeAttribute('draggable');
-        comp.classList.remove('dragging');
-      });
-      
-      const html = `<!DOCTYPE html>
-<html>
-<head>
-  <title>Generated Page</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      max-width: 800px;
-      margin: 0 auto;
-      padding: 20px;
-    }
-    .button {
-      display: inline-block;
-      padding: 10px 20px;
-      background: #0074d9;
-      color: white;
-      text-decoration: none;
-      border-radius: 5px;
-    }
-    .alert-box {
-      padding: 15px;
-      background: #fff3cd;
-      border-left: 5px solid #ffc107;
-      margin: 10px 0;
-      border-radius: 4px;
-    }
-    .color-box {
-      display: inline-block;
-      width: 50px;
-      height: 50px;
-      margin: 5px;
-      border: 1px solid #ddd;
-    }
-  </style>
-</head>
-<body>
-  ${preview.innerHTML}
-</body>
-</html>`;
-      
-      const blob = new Blob([html], { type: 'text/html' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'generated-page.html';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-    });
-
-    // Clear all components
-    document.getElementById('clear-all').addEventListener('click', function() {
-      document.getElementById('preview').innerHTML = '<p>Drag and drop components to rearrange them</p>';
-    });
-
-    // Initialize with some sample components if empty
-    if (document.getElementById('preview').children.length <= 1) {
-      document.getElementById('editor').value = `BTU=DOWNLOAD=https://example.com/file.zip
-COL=PRIMARY=#0074d9
-BOX=ALERT=This is an important message!`;
-    }
   </script>
 </body>
 </html>
