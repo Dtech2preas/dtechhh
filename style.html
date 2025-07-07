@@ -21,7 +21,7 @@
 
     .style-popup {
       position: fixed;
-      top: 100px;
+      top: 120px;
       left: 50%;
       transform: translateX(-50%);
       background: white;
@@ -110,6 +110,13 @@
       elements.forEach(e => e.classList.remove('highlight'));
       el.classList.add('highlight');
       currentElement = el;
+
+      // Prefill current styles
+      document.getElementById('fontSize').value = el.style.fontSize || '';
+      document.getElementById('color').value = el.style.color || '';
+      document.getElementById('bgColor').value = el.style.backgroundColor || '';
+      document.getElementById('padding').value = el.style.padding || '';
+      document.getElementById('borderRadius').value = el.style.borderRadius || '';
     }
 
     function applyStyle() {
