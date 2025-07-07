@@ -1,56 +1,63 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>DTechML Export</title>
   <style>
-    body { font-family:Arial,sans-serif; padding:20px; }
-    textarea {
-      width:100%; height:60vh; font-family:monospace;
-      padding:10px; border:1px solid #ccc; margin-bottom:10px;
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background: #f9f9f9;
+    }
+    h1 {
+      margin-bottom: 10px;
+    }
+    #exportedContent {
+      background: white;
+      padding: 20px;
+      border: 1px solid #ccc;
+      min-height: 300px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
     button {
-      padding:10px 20px; font-size:16px; margin-right:10px;
-      border:none; border-radius:5px; cursor:pointer;
+      padding: 10px 20px;
+      font-size: 16px;
+      margin-right: 10px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
     }
-    #downloadBtn { background:#28a745; color:#fff; }
-    #backBtn { background:#007bff; color:#fff; }
+    #downloadBtn { background: #28a745; color: #fff; }
+    #backBtn { background: #007bff; color: #fff; }
   </style>
 </head>
 <body>
-  <h1>Export HTML</h1>
-  <textarea id="exportedCode"></textarea>
+  <h1>Exported HTML</h1>
+  <div id="exportedContent"></div>
   <button id="downloadBtn" onclick="downloadCode()">Download .html</button>
   <button id="backBtn" onclick="goBack()">⬅ Edit Again</button>
 
   <script>
-    const commandsFetch = fetch('html_commands.json').then(r=>r.json());
-    const code = localStorage.getItem('dtech_code')||'';
-    Promise.all([commandsFetch]).then(([commands])=>{
-      let out = '';
-      code.split('\n').forEach(line=>{
-        const [cmd,rest]=line.split('=');
-        if(!commands[cmd]) return;
-        const vals = (rest||'').split(',');
-        let snip=commands[cmd].template;
-        (commands[cmd].required_fields||[]).forEach((f,i)=>{
-          snip=snip.replace(`{${f}}`,vals[i]||'');
-        });
-        out+=snip+"\n";
-      });
-      document.getElementById('exportedCode').value = out;
-    });
+    const html = localStorage.getItem('dtech_preview_html') || "<p>No content found.</p>";
+    document.getElementById('exportedContent').innerHTML = html;
 
-    function downloadCode(){
-      const text = document.getElementById('exportedCode').value;
-      const blob = new Blob([text],{type:'text/html'});
+    function downloadCode() {
+      const fullHTML = `<!DOCTYPE html>
+<html><head><meta charset="UTF-8"><title>DTech Export</title></head><body>${html}</body></html>`;
+      const blob = new Blob([fullHTML], { type: 'text/html' });
       const url = URL.createObjectURL(blob);
-      const a=document.createElement('a');
-      a.href=url; a.download='dtechml_output.html'; a.click();
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'dtechml_output.html';
+      a.click();
       URL.revokeObjectURL(url);
     }
-    function goBack(){ location.href='faqs.html'; }
+
+    function goBack() {
+      location.href = 'style.html';
+    }
   </script>
 </body>
 </html>
