@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>DTechML Builder with Styling</title>
+  <title>DTechML Builder</title>
   <style>
     body { font-family: Arial, sans-serif; margin: 20px; }
     #editor { width: 100%; height: 150px; padding: 10px; font-family: monospace; border: 1px solid #ccc; margin-bottom: 10px; }
@@ -26,7 +26,7 @@
       display: none;
     }
 
-    #stylePopup input[type="text"] {
+    #stylePopup input[type="text"], #presetSelect {
       width: 100%;
       margin-bottom: 8px;
     }
@@ -44,7 +44,7 @@
 
   <h1>DTechML Builder</h1>
 
-  <textarea id="editor" placeholder="Write your DTechML code here..."></textarea>
+  <textarea id="editor" placeholder="BTU=btn1,Download,https://youtube.com"></textarea>
   <br />
   <button id="generate">Generate HTML</button>
   <button id="styleMode">Phase 2: Style Mode</button>
@@ -55,6 +55,9 @@
   <div id="overlay"></div>
   <div id="stylePopup">
     <h3>Style Component</h3>
+    <label>Presets:</label>
+    <select id="presetSelect"></select>
+
     <label>Font Size:</label>
     <input type="text" id="fontSize" placeholder="e.g. 18px" />
     <label>Text Color:</label>
@@ -70,36 +73,21 @@
   </div>
 
   <script>
-    const commands = {
-      BTU: {
-        template: "<button data-dtech-id='{id}' class='dtech-btn' data-href='{url}'>{text}</button>",
-        required_fields: ["id", "text", "url"]
-      },
-      IMG: {
-        template: "<img data-dtech-id='{id}' src='{url}' alt='{text}' />",
-        required_fields: ["id", "url", "text"]
-      },
-      HED: {
-        template: "<h2 data-dtech-id='{id}'>{text}</h2>",
-        required_fields: ["id", "text"]
-      },
-      PAR: {
-        template: "<p data-dtech-id='{id}'>{text}</p>",
-        required_fields: ["id", "text"]
-      },
-      LNK: {
-        template: "<a data-dtech-id='{id}' href='{url}'>{text}</a>",
-        required_fields: ["id", "text", "url"]
-      }
-    };
-
-    let styleMode = false;
+    let commands = {};
+    let cssPresets = {};
     let selectedElement = null;
+    let styleMode = false;
 
+    // Load html_commands.json
+    fetch('html_commands.json')
+      .then(res => res.json())
+      .then(data => commands = data)
+      .catch(err => console.error("Failed to load html_commands.json", err));
+
+    // Split respecting braces
     function parseLine(line) {
       const [cmd, rest] = line.split('=');
       if (!cmd || !rest) return { error: 'Invalid format' };
-
       const values = [];
       let current = '';
       let inBraces = false;
@@ -116,7 +104,6 @@
         }
       }
       if (current) values.push(current.trim());
-
       return { cmd: cmd.trim(), values };
     }
 
@@ -127,7 +114,6 @@
 
       lines.forEach(line => {
         if (line.trim() === '') return;
-
         const parsed = parseLine(line.trim());
         if (parsed.error) {
           errors.push(parsed.error + ': ' + line);
@@ -136,7 +122,6 @@
 
         const { cmd, values } = parsed;
         const component = commands[cmd];
-
         if (!component) {
           errors.push(`Unknown command: ${cmd}`);
           return;
@@ -164,16 +149,43 @@
     });
 
     document.getElementById('styleMode').addEventListener('click', () => {
-      styleMode = !styleMode;
-      alert(styleMode ? 'Style Mode ON. Click any component to edit styles.' : 'Style Mode OFF.');
+      styleMode = true;
+      fetch('CSS.json')
+        .then(res => res.json())
+        .then(data => {
+          cssPresets = data;
+          alert('Style mode ON. Click on any component to edit.');
+        })
+        .catch(err => {
+          console.error('Failed to load CSS.json', err);
+          alert('Could not load CSS presets.');
+        });
     });
 
     document.getElementById('preview').addEventListener('click', (e) => {
-      if (!styleMode || !e.target.matches('[data-dtech-id]')) return;
+      if (!styleMode || !e.target.hasAttribute('data-dtech-id')) return;
 
       selectedElement = e.target;
+      const tag = selectedElement.tagName;
 
-      // Pre-fill values
+      let componentType = Object.keys(commands).find(key => {
+        const template = commands[key].template;
+        return template.startsWith(`<${tag.toLowerCase()}`);
+      });
+
+      // Build preset options
+      const select = document.getElementById('presetSelect');
+      select.innerHTML = '<option value="">-- Select Preset --</option>';
+      if (cssPresets[componentType]) {
+        for (const presetName in cssPresets[componentType]) {
+          const opt = document.createElement('option');
+          opt.value = presetName;
+          opt.textContent = presetName;
+          select.appendChild(opt);
+        }
+      }
+
+      // Fill inputs with current style
       document.getElementById('fontSize').value = selectedElement.style.fontSize || '';
       document.getElementById('color').value = selectedElement.style.color || '';
       document.getElementById('bgColor').value = selectedElement.style.backgroundColor || '';
@@ -182,6 +194,15 @@
 
       document.getElementById('overlay').style.display = 'block';
       document.getElementById('stylePopup').style.display = 'block';
+
+      select.onchange = () => {
+        const preset = cssPresets[componentType]?.[select.value];
+        if (preset) {
+          for (const [k, v] of Object.entries(preset)) {
+            selectedElement.style[k] = v;
+          }
+        }
+      };
     });
 
     function applyStyles() {
@@ -191,7 +212,6 @@
       selectedElement.style.backgroundColor = document.getElementById('bgColor').value;
       selectedElement.style.padding = document.getElementById('padding').value;
       selectedElement.style.borderRadius = document.getElementById('borderRadius').value;
-
       closePopup();
     }
 
