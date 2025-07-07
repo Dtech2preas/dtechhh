@@ -5,301 +5,84 @@
   <title>DTechML Builder</title>
   <style>
     * { box-sizing: border-box; }
-    body, html {
-      margin: 0;
-      padding: 0;
-      font-family: Arial, sans-serif;
-      height: 100%;
-      width: 100%;
-    }#editorSection, #previewSection {
-  width: 100vw;
-  height: 100vh;
-  display: none;
-  flex-direction: column;
-  padding: 20px;
-}
-
-#editorSection { display: flex; }
-
-#editor {
-  width: 100%;
-  height: 60vh;
-  font-family: monospace;
-  padding: 10px;
-  font-size: 16px;
-  border: 1px solid #ccc;
-}
-
-#generateBtn {
-  padding: 10px 15px;
-  margin-top: 10px;
-  width: 100%;
-  background: #007bff;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  font-size: 16px;
-}
-
-#previewSection {
-  display: none;
-  flex-direction: column;
-  height: 100vh;
-  overflow: hidden;
-}
-
-#topBar {
-  background: #222;
-  color: white;
-  padding: 10px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-#topBar button {
-  background: #444;
-  color: white;
-  border: none;
-  padding: 8px 15px;
-  margin: 0 5px;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.active-mode {
-  background: #007bff !important;
-}
-
-#previewCanvas {
-  flex: 1;
-  width: 100%;
-  position: relative;
-  background: #f9f9f9;
-  overflow: auto;
-}
-
-.draggable {
-  position: absolute;
-  padding: 5px;
-  touch-action: none;
-}
-
-#stylePopup {
-  position: fixed;
-  top: 60px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: white;
-  border: 1px solid #ccc;
-  padding: 15px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.3);
-  display: none;
-  z-index: 2000;
-  width: 250px;
-}
-#stylePopup input, #presetSelect {
-  width: 100%;
-  margin-bottom: 8px;
-  padding: 5px;
-}
-
+    body, html { margin:0; padding:0; height:100%; width:100%; font-family:Arial,sans-serif; }
+    #editorSection, #previewSection, #codeSection { width:100vw; height:100vh; display:none; flex-direction:column; padding:20px; }
+    #editorSection { display:flex; }
+    #editor { width:100%; height:60vh; font-family:monospace; padding:10px; font-size:16px; border:1px solid #ccc; }
+    #generateBtn, #phase3Btn, #downloadBtn { padding:10px 15px; margin-top:10px; width:100%; background:#007bff; color:#fff; border:none; border-radius:4px; font-size:16px; cursor:pointer; }
+    #previewSection { display:flex; flex-direction:column; overflow:hidden; }
+    #topBar { background:#222; color:#fff; padding:10px; display:flex; justify-content:space-between; align-items:center; }
+    #topBar button { background:#444; color:#fff; border:none; padding:8px 15px; margin-right:5px; border-radius:5px; cursor:pointer; }
+    .active-mode { background:#007bff !important; }
+    #addBar { background:#eee; padding:8px; display:flex; flex-wrap:wrap; gap:8px; }
+    #addBar button { padding:6px 12px; border:1px solid #ccc; background:#fff; cursor:pointer; border-radius:4px; }
+    #previewCanvas { flex:1; position:relative; background:#f9f9f9; overflow:auto; }
+    .draggable { position:absolute; padding:5px; touch-action:none; }
+    #stylePopup { position:fixed; top:60px; left:50%; transform:translateX(-50%); background:#fff; border:1px solid #ccc; padding:15px; box-shadow:0 0 10px rgba(0,0,0,0.3); display:none; z-index:2000; width:260px; }
+    #stylePopup input, #presetSelect { width:100%; margin-bottom:8px; padding:5px; }
+    #codeSection textarea { flex:1; width:100%; font-family:monospace; padding:10px; border:1px solid #ccc; }
   </style>
 </head>
-<body>  <div id="editorSection">
-    <div style="flex: 1; display: flex; flex-direction: column;">
+<body>
+  <div id="editorSection">
+    <div style="flex:1; display:flex; flex-direction:column;">
       <h2>DTechML Editor</h2>
-      <textarea id="editor" placeholder="BTU=btn1,Download,https://youtube.com"></textarea>
+      <textarea id="editor" placeholder="Write commands or leave blank to use Add Element in next phase"></textarea>
       <button id="generateBtn">Generate Preview</button>
     </div>
-  </div>  <div id="previewSection">
+  </div>
+  <div id="previewSection">
     <div id="topBar">
       <div>
-        <button onclick="goBack()">⬅ Back to Editor</button>
+        <button onclick="goBack()">⬅ Back</button>
         <button id="moveModeBtn" onclick="enableMoveMode()">🖱 Move Mode</button>
         <button id="styleModeBtn" onclick="enableStyleMode()">🎨 Style Mode</button>
+        <button id="phase3Btn" onclick="showCode()">📝 View Code</button>
       </div>
     </div>
+    <div id="addBar">
+      <button onclick="addElement('TEXT')">Text</button>
+      <button onclick="addElement('BTU')">Button</button>
+      <button onclick="addElement('IMG')">Image</button>
+      <button onclick="addElement('SIDEBAR_LAYOUT')">Sidebar</button>
+      <button onclick="addElement('GRID2')">Grid 2-col</button>
+      <button onclick="addElement('LOGIN_LAYOUT')">Login Page</button>
+    </div>
     <div id="previewCanvas"></div>
-  </div>  <div id="stylePopup">
-    <select id="presetSelect"><option value="">-- Choose Preset --</option></select>
-    <input id="fontSize" type="text" placeholder="Font size (e.g. 20px)" />
-    <input id="color" type="text" placeholder="Text color" />
-    <input id="bgColor" type="text" placeholder="Background color" />
-    <input id="padding" type="text" placeholder="Padding" />
-    <input id="borderRadius" type="text" placeholder="Border radius" />
-    <button onclick="applyStyles()">Apply</button>
-    <button onclick="closePopup()">Close</button>
-  </div>  <script>
-    let commands = {}, cssPresets = {}, selectedElement = null;
-    let mode = 'move';
-
-    const editorSection = document.getElementById('editorSection');
-    const previewSection = document.getElementById('previewSection');
-    const canvas = document.getElementById('previewCanvas');
-    const popup = document.getElementById('stylePopup');
-    const moveBtn = document.getElementById('moveModeBtn');
-    const styleBtn = document.getElementById('styleModeBtn');
-
-    fetch('html_commands.json').then(res => res.json()).then(data => commands = data);
-
-    function parseLine(line) {
-      const [cmd, rest] = line.split('=');
-      if (!cmd || !rest) return { error: 'Invalid format' };
-      const values = [];
-      let current = '', inBraces = false;
-      for (let i = 0; i < rest.length; i++) {
-        const char = rest[i];
-        if (char === '{') inBraces = true;
-        else if (char === '}') inBraces = false;
-        if (char === ',' && !inBraces) {
-          values.push(current.trim()); current = '';
-        } else current += char;
-      }
-      if (current) values.push(current.trim());
-      return { cmd: cmd.trim(), values };
-    }
-
-    document.getElementById('generateBtn').addEventListener('click', () => {
-      const lines = document.getElementById('editor').value.trim().split('\n');
-      canvas.innerHTML = '';
-      lines.forEach(line => {
-        if (!line.trim()) return;
-        const { cmd, values } = parseLine(line);
-        const def = commands[cmd];
-        if (!def) return;
-
-        let html = def.template;
-        def.required_fields.forEach((field, i) => {
-          html = html.replace(`{${field}}`, values[i]?.replace(/[{}]/g, '') || '');
-        });
-
-        const wrapper = document.createElement('div');
-        wrapper.className = 'draggable';
-        wrapper.innerHTML = html;
-        wrapper.style.left = '10px';
-        wrapper.style.top = '10px';
-
-        wrapper.addEventListener('click', (e) => {
-          e.stopPropagation();
-          if (mode === 'style') {
-            selectedElement = wrapper.firstChild;
-            showPopup(cmd);
-          }
-        });
-
-        makeDraggable(wrapper);
-        canvas.appendChild(wrapper);
-      });
-      editorSection.style.display = 'none';
-      previewSection.style.display = 'flex';
-      enableMoveMode();
-    });
-
-    function enableMoveMode() {
-      mode = 'move';
-      popup.style.display = 'none';
-      moveBtn.classList.add('active-mode');
-      styleBtn.classList.remove('active-mode');
-    }
-
-    function enableStyleMode() {
-      mode = 'style';
-      moveBtn.classList.remove('active-mode');
-      styleBtn.classList.add('active-mode');
-      fetch('CSS.json').then(res => res.json()).then(data => {
-        cssPresets = data;
-        alert("Style mode ON. Tap elements to style them.");
-      });
-    }
-
-    function showPopup(cmd) {
-      const preset = document.getElementById('presetSelect');
-      preset.innerHTML = '<option value="">-- Choose Preset --</option>';
-      if (cssPresets[cmd]) {
-        Object.keys(cssPresets[cmd]).forEach(name => {
-          const opt = document.createElement('option');
-          opt.value = name;
-          opt.textContent = name;
-          preset.appendChild(opt);
-        });
-        preset.onchange = () => {
-          const styleObj = cssPresets[cmd][preset.value];
-          for (const [key, val] of Object.entries(styleObj)) {
-            selectedElement.style[key] = val;
-          }
-        };
-      }
-      document.getElementById('fontSize').value = selectedElement.style.fontSize || '';
-      document.getElementById('color').value = selectedElement.style.color || '';
-      document.getElementById('bgColor').value = selectedElement.style.backgroundColor || '';
-      document.getElementById('padding').value = selectedElement.style.padding || '';
-      document.getElementById('borderRadius').value = selectedElement.style.borderRadius || '';
-      popup.style.display = 'block';
-    }
-
-    function applyStyles() {
-      if (!selectedElement) return;
-      selectedElement.style.fontSize = document.getElementById('fontSize').value;
-      selectedElement.style.color = document.getElementById('color').value;
-      selectedElement.style.backgroundColor = document.getElementById('bgColor').value;
-      selectedElement.style.padding = document.getElementById('padding').value;
-      selectedElement.style.borderRadius = document.getElementById('borderRadius').value;
-      closePopup();
-    }
-
-    function closePopup() {
-      popup.style.display = 'none';
-    }
-
-    function goBack() {
-      previewSection.style.display = 'none';
-      editorSection.style.display = 'flex';
-    }
-
-    function makeDraggable(el) {
-      let offsetX = 0, offsetY = 0;
-      const getOffset = (x, y) => {
-        const rect = canvas.getBoundingClientRect();
-        return {
-          x: x - rect.left,
-          y: y - rect.top
-        };
-      };
-      const startDrag = (x, y) => {
-        const elRect = el.getBoundingClientRect();
-        const canvasRect = canvas.getBoundingClientRect();
-        offsetX = x - elRect.left + canvas.scrollLeft - canvasRect.left;
-        offsetY = y - elRect.top + canvas.scrollTop - canvasRect.top;
-      };
-      const moveDrag = (x, y) => {
-        const { x: relX, y: relY } = getOffset(x, y);
-        el.style.left = (relX - offsetX) + 'px';
-        el.style.top = (relY - offsetY) + 'px';
-      };
-      el.addEventListener('mousedown', (e) => {
-        if (mode !== 'move') return;
-        startDrag(e.pageX, e.pageY);
-        const onMouseMove = (e) => moveDrag(e.pageX, e.pageY);
-        document.addEventListener('mousemove', onMouseMove);
-        document.addEventListener('mouseup', () => {
-          document.removeEventListener('mousemove', onMouseMove);
-        }, { once: true });
-      });
-      el.addEventListener('touchstart', (e) => {
-        if (mode !== 'move') return;
-        e.preventDefault();
-        const touch = e.touches[0];
-        startDrag(touch.pageX, touch.pageY);
-        const onTouchMove = (e) => {
-          const touch = e.touches[0];
-          moveDrag(touch.pageX, touch.pageY);
-        };
-        document.addEventListener('touchmove', onTouchMove, { passive: false });
-        document.addEventListener('touchend', () => {
-          document.removeEventListener('touchmove', onTouchMove);
-        }, { once: true });
-      });
-    }
-  </script></body>
+    <div id="stylePopup">
+      <select id="presetSelect"><option value="">-- Preset --</option></select>
+      <input id="fontSize" placeholder="Font size (e.g. 20px)" />
+      <input id="color" placeholder="Text color" />
+      <input id="bgColor" placeholder="Background color" />
+      <input id="padding" placeholder="Padding" />
+      <input id="borderRadius" placeholder="Border radius" />
+      <button onclick="applyStyles()">Apply</button>
+      <button onclick="closePopup()">Close</button>
+    </div>
+  </div>
+  <div id="codeSection">
+    <h2>Exported HTML</h2>
+    <textarea id="codeView"></textarea>
+    <button id="downloadBtn" onclick="downloadCode()">Download</button>
+  </div>
+  <script>
+    let commands={},cssPresets={},selectedEl=null,mode='move';
+    const editorSection=document.getElementById('editorSection'),previewSection=document.getElementById('previewSection'),codeSection=document.getElementById('codeSection');
+    const canvas=document.getElementById('previewCanvas'),popup=document.getElementById('stylePopup');
+    const moveBtn=document.getElementById('moveModeBtn'),styleBtn=document.getElementById('styleModeBtn');
+    fetch('html_commands.json').then(r=>r.json()).then(d=>commands=d);
+    function parseLine(line){const [cmd,rest]=line.split('=');if(!cmd) return{};const vals=[];let cur='',inB=false;for(let c of rest){if(c==='{')inB=true;else if(c==='}')inB=false;if(c===','&&!inB){vals.push(cur.trim());cur='';}else cur+=c;}if(cur)vals.push(cur.trim());return{cmd:cmd.trim(),values:vals};}
+    document.getElementById('generateBtn').onclick=()=>{editorSection.style.display='none';previewSection.style.display='flex';enableMoveMode();};
+    function addElement(key){const def=commands[key];if(!def) return;let html=def.template;def.required_fields?.forEach((f,i)=>html=html.replace(`{${f}}`,def.placeholders?.[i]||''));const w=document.createElement('div');w.className='draggable';w.innerHTML=html;w.style.left='10px';w.style.top='10px';w.onclick=e=>{e.stopPropagation();if(mode==='style'){selectedEl=w.firstChild;showPopup(key);}};makeDraggable(w);canvas.appendChild(w);}    
+    function enableMoveMode(){mode='move';moveBtn.classList.add('active-mode');styleBtn.classList.remove('active-mode');popup.style.display='none';}
+    function enableStyleMode(){mode='style';styleBtn.classList.add('active-mode');moveBtn.classList.remove('active-mode');fetch('CSS.json').then(r=>r.json()).then(d=>cssPresets=d);alert('Style Mode ON');}
+    function showPopup(cmd){const ps=document.getElementById('presetSelect');ps.innerHTML='<option>-- Preset --</option>';cssPresets[cmd]&&Object.entries(cssPresets[cmd]).forEach(([n,s])=>{let o=new Option(n,n);ps.add(o);});ps.onchange=()=>Object.entries(cssPresets[cmd][ps.value]).forEach(([k,v])=>selectedEl.style[k]=v);
+      ['fontSize','color','bgColor','padding','borderRadius'].forEach(id=>document.getElementById(id).value='');popup.style.display='block';}
+    function applyStyles(){['fontSize','color','bgColor','padding','borderRadius'].forEach(id=>selectedEl.style[id]=document.getElementById(id).value);closePopup();}
+    function closePopup(){popup.style.display='none';}
+    function makeDraggable(el){let offX=0,offY=0;const rect=()=>canvas.getBoundingClientRect();const start=(x,y)=>{const er=el.getBoundingClientRect(),cr=rect();offX=x-er.left+canvas.scrollLeft-cr.left;offY=y-er.top+canvas.scrollTop-cr.top;};const move=(x,y)=>{const cr=rect(),rx=x-cr.left,ry=y-cr.top;el.style.left=rx-offX+'px';el.style.top=ry-offY+'px';};el.addEventListener('mousedown',e=>{if(mode!=='move')return;start(e.pageX,e.pageY);const mm=e2=>move(e2.pageX,e2.pageY);document.addEventListener('mousemove',mm);document.addEventListener('mouseup',()=>document.removeEventListener('mousemove',mm),{once:true});});el.addEventListener('touchstart',e=>{if(mode!=='move')return;const t=e.touches[0];e.preventDefault();start(t.pageX,t.pageY);const tm=e2=>{const t2=e2.touches[0];move(t2.pageX,t2.pageY);};document.addEventListener('touchmove',tm,{passive:false});document.addEventListener('touchend',()=>document.removeEventListener('touchmove',tm),{once:true});});}
+    function showCode(){previewSection.style.display='none';codeSection.style.display='flex';const html=canvas.innerHTML;document.getElementById('codeView').value=html;}
+    function goBack(){if(codeSection.style.display==='flex'){codeSection.style.display='none';previewSection.style.display='flex';}else{previewSection.style.display='none';editorSection.style.display='flex';}}    
+    function downloadCode(){const data=new Blob([document.getElementById('codeView').value],{type:'text/html'});const url=URL.createObjectURL(data);const a=document.createElement('a');a.href=url;a.download='dtechml_export.html';a.click();URL.revokeObjectURL(url);}  </script>
+</body>
 </html>
