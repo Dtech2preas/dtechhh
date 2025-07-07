@@ -2,116 +2,337 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>DTechML Preview</title>
   <style>
-    body { margin:0; font-family: Arial, sans-serif; }
+    :root {
+      --primary-color: #4361ee;
+      --primary-hover: #3a56d4;
+      --secondary-color: #6c757d;
+      --secondary-hover: #5a6268;
+      --dark-bg: #222;
+      --toolbar-bg: #2b2d42;
+      --canvas-bg: #f8f9fa;
+      --element-bg: #ffffff;
+      --element-border: #e0e0e0;
+      --element-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      --transition: all 0.2s ease;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #333;
+      overflow-x: hidden;
+    }
+
     #toolbar {
-      display:flex; justify-content:space-between;
-      background:#222; color:#fff; padding:10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--toolbar-bg);
+      color: white;
+      padding: 12px 20px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      position: sticky;
+      top: 0;
+      z-index: 100;
     }
+
+    .toolbar-group {
+      display: flex;
+      gap: 10px;
+    }
+
     #toolbar button {
-      background:#444; color:#fff;
-      border:none; padding:8px 16px;
-      margin-right:5px; border-radius:4px;
-      cursor:pointer;
+      background: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: var(--transition);
     }
+
+    #toolbar button:hover {
+      background: var(--primary-hover);
+      transform: translateY(-1px);
+    }
+
+    #toolbar button:active {
+      transform: translateY(0);
+    }
+
+    #toolbar button svg {
+      width: 16px;
+      height: 16px;
+    }
+
     #canvas {
-      position:relative; padding:20px;
-      min-height:calc(100vh - 50px);
-      background:#f9f9f9; overflow:auto;
+      position: relative;
+      padding: 30px;
+      min-height: calc(100vh - 56px);
+      background: var(--canvas-bg);
+      overflow: auto;
+      background-image: 
+        linear-gradient(45deg, #efefef 25%, transparent 25%),
+        linear-gradient(-45deg, #efefef 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #efefef 75%),
+        linear-gradient(-45deg, transparent 75%, #efefef 75%);
+      background-size: 20px 20px;
+      background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
     }
+
     .draggable {
-      position:absolute; padding:10px;
-      background:#fff; border:1px solid #ccc;
-      touch-action:none; cursor:move;
+      position: absolute;
+      padding: 15px;
+      background: var(--element-bg);
+      border: 1px solid var(--element-border);
+      border-radius: 8px;
+      box-shadow: var(--element-shadow);
+      touch-action: none;
+      cursor: move;
+      transition: var(--transition);
+      min-width: 100px;
+      min-height: 50px;
+    }
+
+    .draggable:hover {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      z-index: 10;
+    }
+
+    .draggable:active {
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    .status {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      padding: 12px 20px;
+      background: #28a745;
+      color: white;
+      border-radius: 6px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      z-index: 1000;
+    }
+
+    .status.visible {
+      opacity: 1;
+    }
+
+    @media (max-width: 768px) {
+      #toolbar {
+        padding: 10px 15px;
+      }
+      
+      #toolbar button {
+        padding: 6px 12px;
+        font-size: 14px;
+      }
+      
+      #canvas {
+        padding: 15px;
+      }
     }
   </style>
 </head>
 <body>
   <div id="toolbar">
-    <div><button onclick="goBack()">⬅ Editor</button></div>
-    <div>
-      <button onclick="goToStyle()">🎨 Style</button>
-      <button onclick="goToExport()">📝 Export</button>
+    <div class="toolbar-group">
+      <button onclick="goBack()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="19" y1="12" x2="5" y2="12"></line>
+          <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+        Editor
+      </button>
+    </div>
+    <div class="toolbar-group">
+      <button onclick="goToStyle()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+          <circle cx="12" cy="12" r="3"></circle>
+        </svg>
+        Style
+      </button>
+      <button onclick="goToExport()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="7 10 12 15 17 10"></polyline>
+          <line x1="12" y1="15" x2="12" y2="3"></line>
+        </svg>
+        Export
+      </button>
     </div>
   </div>
+
   <div id="canvas"></div>
 
+  <div id="status" class="status">Preview loaded successfully!</div>
+
   <script>
-    let commands = {};
+    document.addEventListener('DOMContentLoaded', async function() {
+      try {
+        const [commands] = await Promise.all([
+          fetch('html_commands.json').then(r => r.json()),
+          new Promise(resolve => setTimeout(resolve, 300)) // Small delay for better UX
+        ]);
+        
+        const code = localStorage.getItem('dtech_code') || '';
+        const canvas = document.getElementById('canvas');
+        let elementsCount = 0;
+        let topPosition = 30;
+        
+        code.split('\n').forEach(line => {
+          const trimmedLine = line.trim();
+          if (!trimmedLine) return;
+          
+          const {cmd, values} = parseLine(trimmedLine);
+          if (!commands[cmd]) return;
+          
+          let html = commands[cmd].template;
+          (commands[cmd].required_fields || []).forEach((f, i) => {
+            html = html.replace(`{${f}}`, values[i] || '');
+          });
+          
+          const element = document.createElement('div');
+          element.className = 'draggable';
+          element.innerHTML = html;
+          element.style.left = '30px';
+          element.style.top = `${topPosition}px`;
+          makeDraggable(element);
+          canvas.appendChild(element);
+          
+          elementsCount++;
+          topPosition += 120; // Stagger elements vertically
+        });
+        
+        if (elementsCount > 0) {
+          showStatus(`Loaded ${elementsCount} elements`, 3000);
+        } else {
+          showStatus("No elements to display", 3000);
+        }
+      } catch (error) {
+        showStatus(`Error: ${error.message}`, 5000);
+        console.error("Error loading preview:", error);
+      }
+    });
+
     function parseLine(line) {
       const [cmd, rest] = line.split('=');
-      if (!cmd) return {};
+      if (!cmd) return { cmd: '', values: [] };
+      
       const vals = [];
-      let cur='', inB=false;
-      for (let c of (rest||'')) {
-        if (c==='{' ) inB=true;
-        else if (c==='}') inB=false;
-        if (c===',' && !inB) { vals.push(cur.trim()); cur=''; }
-        else cur+=c;
+      let current = '';
+      let inBrackets = false;
+      
+      for (let char of (rest || '')) {
+        if (char === '{') inBrackets = true;
+        else if (char === '}') inBrackets = false;
+        
+        if (char === ',' && !inBrackets) {
+          vals.push(current.trim());
+          current = '';
+        } else {
+          current += char;
+        }
       }
-      if (cur) vals.push(cur.trim());
+      
+      if (current) vals.push(current.trim());
       return { cmd: cmd.trim(), values: vals };
     }
-    fetch('html_commands.json')
-      .then(r=>r.json())
-      .then(data=>{
-        commands=data;
-        const code=localStorage.getItem('dtech_code')||'';
-        const canvas=document.getElementById('canvas');
-        code.split('\n').forEach(line=>{
-          const {cmd,values}=parseLine(line);
-          if (!commands[cmd]) return;
-          let html=commands[cmd].template;
-          (commands[cmd].required_fields||[]).forEach((f,i)=>{
-            html=html.replace(`{${f}}`, values[i]||'');
-          });
-          const d=document.createElement('div');
-          d.className='draggable';
-          d.innerHTML=html;
-          d.style.left='10px'; d.style.top='10px';
-          makeDraggable(d);
-          canvas.appendChild(d);
-        });
-      });
-    function goToStyle(){ location.href='style.html'; }
-    function goToExport(){ location.href='export.html'; }
-    function goBack(){ location.href='faqs.html'; }
 
-    function makeDraggable(el) {
-      let offX=0,offY=0,cr=0;
-      const container=document.getElementById('canvas');
-      const rect=()=>container.getBoundingClientRect();
-      const start=(x,y)=>{
-        const er=el.getBoundingClientRect(), rc=rect();
-        offX= x - er.left + container.scrollLeft - rc.left;
-        offY= y - er.top  + container.scrollTop  - rc.top;
+    function makeDraggable(element) {
+      let offsetX = 0, offsetY = 0;
+      const container = document.getElementById('canvas');
+      
+      const getContainerRect = () => container.getBoundingClientRect();
+      
+      const startDrag = (clientX, clientY) => {
+        const elementRect = element.getBoundingClientRect();
+        const containerRect = getContainerRect();
+        
+        offsetX = clientX - elementRect.left + container.scrollLeft - containerRect.left;
+        offsetY = clientY - elementRect.top + container.scrollTop - containerRect.top;
+        
+        element.style.zIndex = '100';
+        element.style.opacity = '0.9';
       };
-      const move=(x,y)=>{
-        const rc=rect();
-        const rx=x-rc.left, ry=y-rc.top;
-        el.style.left=(rx-offX)+'px';
-        el.style.top =(ry-offY)+'px';
+      
+      const drag = (clientX, clientY) => {
+        const containerRect = getContainerRect();
+        const relativeX = clientX - containerRect.left;
+        const relativeY = clientY - containerRect.top;
+        
+        element.style.left = `${relativeX - offsetX}px`;
+        element.style.top = `${relativeY - offsetY}px`;
       };
-      el.onmousedown = e=>{
-        start(e.pageX,e.pageY);
-        const mm=e2=>move(e2.pageX,e2.pageY);
-        document.addEventListener('mousemove',mm);
-        document.addEventListener('mouseup',()=>document.removeEventListener('mousemove',mm),{once:true});
+      
+      const endDrag = () => {
+        element.style.zIndex = '';
+        element.style.opacity = '';
+        showStatus("Element moved", 1000);
       };
-      el.addEventListener('touchstart',e=>{
+      
+      // Mouse events
+      element.addEventListener('mousedown', (e) => {
         e.preventDefault();
-        const t=e.touches[0];
-        start(t.pageX,t.pageY);
-        const tm=e2=>{
-          const t2=e2.touches[0];
-          move(t2.pageX,t2.pageY);
+        startDrag(e.clientX, e.clientY);
+        
+        const mouseMove = (e) => drag(e.clientX, e.clientY);
+        const mouseUp = () => {
+          document.removeEventListener('mousemove', mouseMove);
+          document.removeEventListener('mouseup', mouseUp);
+          endDrag();
         };
-        document.addEventListener('touchmove',tm,{passive:false});
-        document.addEventListener('touchend',()=>document.removeEventListener('touchmove',tm),{once:true});
+        
+        document.addEventListener('mousemove', mouseMove);
+        document.addEventListener('mouseup', mouseUp);
+      });
+      
+      // Touch events
+      element.addEventListener('touchstart', (e) => {
+        const touch = e.touches[0];
+        startDrag(touch.clientX, touch.clientY);
+        
+        const touchMove = (e) => {
+          e.preventDefault();
+          const touch = e.touches[0];
+          drag(touch.clientX, touch.clientY);
+        };
+        
+        const touchEnd = () => {
+          document.removeEventListener('touchmove', touchMove);
+          document.removeEventListener('touchend', touchEnd);
+          endDrag();
+        };
+        
+        document.addEventListener('touchmove', touchMove, { passive: false });
+        document.addEventListener('touchend', touchEnd);
       });
     }
+
+    function showStatus(message, duration = 2000) {
+      const status = document.getElementById('status');
+      status.textContent = message;
+      status.classList.add('visible');
+      
+      setTimeout(() => {
+        status.classList.remove('visible');
+      }, duration);
+    }
+
+    function goToStyle() { window.location.href = 'style.html'; }
+    function goToExport() { window.location.href = 'export.html'; }
+    function goBack() { window.location.href = 'faqs.html'; }
   </script>
 </body>
 </html>
