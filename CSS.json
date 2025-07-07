@@ -1,94 +1,30 @@
 {
+  "TEXT": {
+    "description": "Editable text block",
+    "template": "<p contenteditable='true'>Edit me</p>"
+  },
   "BTU": {
-    "default": {
-      "background-color": "#007bff",
-      "color": "#ffffff",
-      "padding": "10px 20px",
-      "border": "none",
-      "border-radius": "5px",
-      "cursor": "pointer"
-    },
-    "outlined": {
-      "background-color": "transparent",
-      "color": "#007bff",
-      "border": "2px solid #007bff",
-      "padding": "10px 20px",
-      "border-radius": "5px",
-      "cursor": "pointer"
-    },
-    "danger": {
-      "background-color": "#dc3545",
-      "color": "#ffffff",
-      "padding": "10px 20px",
-      "border": "none",
-      "border-radius": "5px"
-    },
-    "success": {
-      "background-color": "#28a745",
-      "color": "#ffffff",
-      "padding": "10px 20px",
-      "border": "none",
-      "border-radius": "5px"
-    }
-  },
-  "PAR": {
-    "default": {
-      "font-size": "16px",
-      "color": "#333333",
-      "line-height": "1.5",
-      "margin-bottom": "12px"
-    },
-    "muted": {
-      "color": "#888888",
-      "font-size": "15px"
-    },
-    "large": {
-      "font-size": "20px",
-      "color": "#222222"
-    }
-  },
-  "HED": {
-    "default": {
-      "font-size": "24px",
-      "font-weight": "bold",
-      "color": "#000000",
-      "margin-bottom": "10px"
-    },
-    "highlight": {
-      "font-size": "28px",
-      "color": "#ff6600"
-    }
+    "description": "Button component",
+    "template": "<button data-dtech-id='{id}' class='dtech-btn'>{text}</button>",
+    "required_fields": ["id","text"],
+    "placeholders": ["btn1","Click Me"]
   },
   "IMG": {
-    "default": {
-      "max-width": "100%",
-      "border-radius": "8px"
-    },
-    "rounded": {
-      "border-radius": "50%",
-      "border": "2px solid #ccc"
-    },
-    "shadow": {
-      "box-shadow": "0 4px 8px rgba(0,0,0,0.1)",
-      "border-radius": "8px"
-    }
+    "description": "Image component",
+    "template": "<img src='{url}' alt='{alt}' style='max-width:150px;' />",
+    "required_fields": ["url","alt"],
+    "placeholders": ["https://via.placeholder.com/150","Placeholder"]
   },
-  "LNK": {
-    "default": {
-      "color": "#007bff",
-      "text-decoration": "none"
-    },
-    "hover": {
-      "color": "#0056b3",
-      "text-decoration": "underline"
-    },
-    "button-style": {
-      "display": "inline-block",
-      "padding": "10px 15px",
-      "background-color": "#007bff",
-      "color": "#fff",
-      "border-radius": "5px",
-      "text-decoration": "none"
-    }
+  "SIDEBAR_LAYOUT": {
+    "description": "Sidebar + Main",
+    "template": "<div style='display:flex; width:300px; height:200px;'><aside contenteditable='true' style='width:80px; background:#ddd; padding:5px;'>Menu</aside><main contenteditable='true' style='flex:1; padding:5px;'>Content</main></div>"
+  },
+  "GRID2": {
+    "description": "Two-column grid",
+    "template": "<div style='display:grid; grid-template-columns:1fr 1fr; gap:5px; width:200px;'><div contenteditable='true' style='background:#eee;padding:5px;'>Col 1</div><div contenteditable='true' style='background:#eee;padding:5px;'>Col 2</div></div>"
+  },
+  "LOGIN_LAYOUT": {
+    "description": "Login form",
+    "template": "<div style='width:200px;padding:10px;border:1px solid #ccc;'><h3 contenteditable='true'>Login</h3><input placeholder='User' style='width:100%;margin-bottom:5px;'/><input placeholder='Pass' type='password' style='width:100%;margin-bottom:5px;'/><button style='width:100%;'>Submit</button></div>"
   }
 }
