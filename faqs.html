@@ -1,192 +1,106 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>DTECH Static HTML Snapshot Generator</title>
-<style>
-  body {
-    font-family: Arial, sans-serif;
-    margin: 0; padding: 0;
-    display: flex; flex-direction: column; height: 100vh;
-  }
-  header {
-    background: #0078d7;
-    color: white;
-    padding: 12px 20px;
-    font-size: 1.3em;
-    text-align: center;
-  }
-  main {
-    display: flex;
-    flex: 1;
-    gap: 10px;
-    padding: 10px;
-    box-sizing: border-box;
-  }
-  textarea {
-    flex: 1;
-    font-family: monospace;
-    font-size: 14px;
-    padding: 10px;
-    border: 1px solid #ccc;
-    resize: none;
-    height: 100%;
-  }
-  #preview-container {
-    flex: 1;
-    border: 1px solid #ccc;
-    position: relative;
-  }
-  iframe {
-    width: 100%;
-    height: 100%;
-    border: none;
-  }
-  #output-container {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-  }
-  #output {
-    flex: 1;
-    font-family: monospace;
-    font-size: 14px;
-    padding: 10px;
-    border: 1px solid #ccc;
-    white-space: pre-wrap;
-    overflow: auto;
-    background: #f5f5f5;
-  }
-  #buttons {
-    margin-top: 10px;
-    display: flex;
-    gap: 10px;
-  }
-  button {
-    background: #0078d7;
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    cursor: pointer;
-    font-weight: bold;
-    border-radius: 3px;
-  }
-  button:hover {
-    background: #005ea1;
-  }
-</style>
+  <meta charset="UTF-8">
+  <title>UL Self Help iEnabler (Recreated)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      margin: 0;
+      font-family: "Segoe UI", sans-serif;
+      background-color: #f2f2f2;
+    }
+
+    .header {
+      background-color: #004d40;
+      color: white;
+      padding: 15px 20px;
+      text-align: left;
+      font-size: 22px;
+      font-weight: bold;
+    }
+
+    .sub-header {
+      background-color: #e0f2f1;
+      padding: 10px 20px;
+      font-size: 14px;
+      color: #333;
+    }
+
+    .login-container {
+      max-width: 400px;
+      margin: 40px auto;
+      background-color: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .login-container h2 {
+      text-align: center;
+      color: #004d40;
+      margin-bottom: 30px;
+    }
+
+    label {
+      font-weight: bold;
+      display: block;
+      margin-top: 15px;
+      color: #333;
+    }
+
+    input[type="text"],
+    input[type="password"] {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+
+    button {
+      width: 100%;
+      margin-top: 25px;
+      padding: 12px;
+      background-color: #004d40;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #00695c;
+    }
+
+    .footer {
+      text-align: center;
+      font-size: 13px;
+      margin-top: 20px;
+      color: #888;
+    }
+  </style>
 </head>
 <body>
 
-<header>DTECH Static HTML Snapshot Generator</header>
+  <div class="header">UNIVERSITY OF LIMPOPO</div>
+  <div class="sub-header">Self Help iEnabler System</div>
 
-<main>
-  <textarea id="html-input" placeholder="Paste your full HTML code here (including &lt;html&gt; &lt;body&gt;)"></textarea>
+  <div class="login-container">
+    <h2>Login</h2>
+    <form action="#" method="POST">
+      <label for="studentNumber">Student Number</label>
+      <input type="text" id="studentNumber" name="studentNumber" required>
 
-  <div id="preview-container">
-    <iframe id="preview-frame" sandbox="allow-scripts allow-same-origin"></iframe>
+      <label for="pin">PIN</label>
+      <input type="password" id="pin" name="pin" required>
+
+      <button type="submit">Login</button>
+    </form>
+    <div class="footer">© 2025 UL Student Portal. Recreated Version</div>
   </div>
-
-  <div id="output-container">
-    <div id="output" title="Generated static snapshot with inline styles"></div>
-    <div id="buttons">
-      <button id="generate-btn">Generate Snapshot</button>
-      <button id="copy-btn">Copy to Clipboard</button>
-      <button id="download-btn">Download .html</button>
-    </div>
-  </div>
-</main>
-
-<script>
-  const htmlInput = document.getElementById('html-input');
-  const iframe = document.getElementById('preview-frame');
-  const output = document.getElementById('output');
-  const generateBtn = document.getElementById('generate-btn');
-  const copyBtn = document.getElementById('copy-btn');
-  const downloadBtn = document.getElementById('download-btn');
-
-  // Load the HTML input into the iframe live
-  htmlInput.addEventListener('input', () => {
-    const html = htmlInput.value;
-    const blob = new Blob([html], { type: 'text/html' });
-    const url = URL.createObjectURL(blob);
-    iframe.src = url;
-  });
-
-  // Utility: copy styles from computed style to inline style recursively
-  function inlineAllStyles(element) {
-    const computed = getComputedStyle(element);
-
-    for (let i = 0; i < computed.length; i++) {
-      const prop = computed[i];
-      // Avoid some default styles that cause huge inline style bloat
-      if (
-        prop.startsWith('webkit') || 
-        prop.startsWith('moz') || 
-        prop.startsWith('ms') || 
-        prop === 'cssText' || 
-        prop === 'length' ||
-        prop === 'parentRule'
-      ) continue;
-
-      // Copy all styles except default like 'auto' for margin/padding etc.
-      const val = computed.getPropertyValue(prop);
-      if (val && val !== 'initial' && val !== 'auto' && val !== 'normal' && val !== '') {
-        element.style.setProperty(prop, val, computed.getPropertyPriority(prop));
-      }
-    }
-
-    // Recurse for children
-    for (const child of element.children) {
-      inlineAllStyles(child);
-    }
-  }
-
-  // Generate snapshot with inline styles
-  generateBtn.addEventListener('click', () => {
-    try {
-      const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
-      if (!iframeDoc) throw new Error('Preview not loaded or cross-origin restriction.');
-
-      // Clone full document element (<html>)
-      const clone = iframeDoc.documentElement.cloneNode(true);
-
-      // Inline all computed styles recursively
-      inlineAllStyles(clone);
-
-      // Serialize clone to string
-      const serializer = new XMLSerializer();
-      const snapshotHTML = '<!DOCTYPE html>\n' + serializer.serializeToString(clone);
-
-      output.textContent = snapshotHTML;
-    } catch (err) {
-      output.textContent = 'Error generating snapshot:\n' + err.message;
-    }
-  });
-
-  // Copy snapshot to clipboard
-  copyBtn.addEventListener('click', () => {
-    if (!output.textContent) return alert('Generate snapshot first!');
-    navigator.clipboard.writeText(output.textContent).then(() => {
-      alert('Snapshot copied to clipboard!');
-    }).catch(() => {
-      alert('Failed to copy. Please copy manually.');
-    });
-  });
-
-  // Download snapshot as .html file
-  downloadBtn.addEventListener('click', () => {
-    if (!output.textContent) return alert('Generate snapshot first!');
-    const blob = new Blob([output.textContent], { type: 'text/html' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'dtech_snapshot.html';
-    a.click();
-    URL.revokeObjectURL(url);
-  });
-</script>
 
 </body>
 </html>
