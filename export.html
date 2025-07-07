@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DTechML Export</title>
+  <style>
+    body { font-family:Arial,sans-serif; padding:20px; }
+    textarea {
+      width:100%; height:60vh; font-family:monospace;
+      padding:10px; border:1px solid #ccc; margin-bottom:10px;
+    }
+    button {
+      padding:10px 20px; font-size:16px; margin-right:10px;
+      border:none; border-radius:5px; cursor:pointer;
+    }
+    #downloadBtn { background:#28a745; color:#fff; }
+    #backBtn { background:#007bff; color:#fff; }
+  </style>
+</head>
+<body>
+  <h1>Export HTML</h1>
+  <textarea id="exportedCode"></textarea>
+  <button id="downloadBtn" onclick="downloadCode()">Download .html</button>
+  <button id="backBtn" onclick="goBack()">⬅ Edit Again</button>
+
+  <script>
+    const commandsFetch = fetch('html_commands.json').then(r=>r.json());
+    const code = localStorage.getItem('dtech_code')||'';
+    Promise.all([commandsFetch]).then(([commands])=>{
+      let out = '';
+      code.split('\n').forEach(line=>{
+        const [cmd,rest]=line.split('=');
+        if(!commands[cmd]) return;
+        const vals = (rest||'').split(',');
+        let snip=commands[cmd].template;
+        (commands[cmd].required_fields||[]).forEach((f,i)=>{
+          snip=snip.replace(`{${f}}`,vals[i]||'');
+        });
+        out+=snip+"\n";
+      });
+      document.getElementById('exportedCode').value = out;
+    });
+
+    function downloadCode(){
+      const text = document.getElementById('exportedCode').value;
+      const blob = new Blob([text],{type:'text/html'});
+      const url = URL.createObjectURL(blob);
+      const a=document.createElement('a');
+      a.href=url; a.download='dtechml_output.html'; a.click();
+      URL.revokeObjectURL(url);
+    }
+    function goBack(){ location.href='faqs.html'; }
+  </script>
+</body>
+</html>
