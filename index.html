@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Tool to copy a webpage and inline all CSS and images, with local folder support">
-  <title>Mini HTTrack - Webpage Copier with Local Resource Support</title>
+  <title>Mini HTTrack - Webpage Copier with Download</title>
   <style>
     :root {
       --primary-color: #2563eb;
@@ -14,6 +14,7 @@
       --border-color: #e5e7eb;
       --error-color: #dc2626;
       --success-color: #16a34a;
+      --download-color: #059669;
     }
     
     body {
@@ -58,7 +59,6 @@
     }
     
     button {
-      background-color: var(--primary-color);
       color: white;
       border: none;
       padding: 0.75rem 1.5rem;
@@ -69,8 +69,21 @@
       transition: background-color 0.2s;
     }
     
-    button:hover {
+    #copyButton {
+      background-color: var(--primary-color);
+    }
+    
+    #copyButton:hover {
       background-color: var(--secondary-color);
+    }
+    
+    #downloadButton {
+      background-color: var(--download-color);
+      margin-left: 0.5rem;
+    }
+    
+    #downloadButton:hover {
+      background-color: #047857;
     }
     
     button:disabled {
@@ -149,6 +162,12 @@
       margin-bottom: 0.5rem;
     }
     
+    .button-group {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+    
     footer {
       margin-top: 2rem;
       text-align: center;
@@ -170,8 +189,17 @@
         width: 100%;
       }
       
+      .button-group {
+        flex-direction: column;
+      }
+      
       button {
         width: 100%;
+      }
+      
+      #downloadButton {
+        margin-left: 0;
+        margin-top: 0.5rem;
       }
     }
   </style>
@@ -183,7 +211,7 @@
       <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
       <line x1="12" y1="22.08" x2="12" y2="12"></line>
     </svg>
-    Mini HTTrack - Local Resource Support
+    Mini HTTrack - Webpage Copier with Download
   </h1>
   
   <p>Download a complete copy of any webpage with all CSS inlined and images converted to base64. Supports local folder structures.</p>
@@ -232,6 +260,10 @@
   
   <textarea id="output" placeholder="Copied HTML will appear here..." spellcheck="false"></textarea>
   
+  <div class="button-group">
+    <button id="downloadButton" onclick="downloadHTML()" disabled>Download HTML</button>
+  </div>
+  
   <footer>
     Note: For local files, you may need to disable CORS in your browser or use a local server.
   </footer>
@@ -239,6 +271,7 @@
   <script>
     const proxy = "https://api.allorigins.win/raw?url=";
     let abortController = new AbortController();
+    let currentHTML = "";
     
     function showStatus(message, type = 'error') {
       const statusElement = document.getElementById('statusMessage');
@@ -438,10 +471,60 @@
       });
     }
     
+    function downloadHTML() {
+      if (!currentHTML) {
+        showStatus('No HTML content to download', 'error');
+        return;
+      }
+      
+      try {
+        const blob = new Blob([currentHTML], { type: 'text/html' });
+        const url = URL.createObjectURL(blob);
+        
+        const filename = getDownloadFilename();
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+        showStatus(`Downloaded ${filename} successfully!`, 'success');
+      } catch (e) {
+        showStatus('Failed to create download: ' + e.message, 'error');
+        console.error(e);
+      }
+    }
+    
+    function getDownloadFilename() {
+      const urlInput = document.getElementById('urlInput').value.trim();
+      if (!urlInput) return 'downloaded_page.html';
+      
+      // Try to extract filename from URL
+      try {
+        if (isLocalFile(urlInput)) {
+          const lastSlash = urlInput.lastIndexOf('/');
+          const filename = lastSlash >= 0 ? urlInput.substring(lastSlash + 1) : urlInput;
+          return filename.endsWith('.html') ? filename : filename + '.html';
+        }
+        
+        const url = new URL(urlInput);
+        const hostname = url.hostname.replace('www.', '');
+        const pathParts = url.pathname.split('/').filter(part => part);
+        const lastPart = pathParts.length > 0 ? pathParts[pathParts.length - 1] : 'index';
+        
+        return lastPart.endsWith('.html') ? lastPart : `${hostname}_${lastPart}.html`;
+      } catch (e) {
+        return 'downloaded_page.html';
+      }
+    }
+    
     async function copySite() {
       const urlInput = document.getElementById('urlInput').value.trim();
       const output = document.getElementById('output');
       const copyButton = document.getElementById('copyButton');
+      const downloadButton = document.getElementById('downloadButton');
       
       if (!urlInput) {
         showStatus('Please enter a valid URL');
@@ -453,7 +536,9 @@
         abortController.abort();
         abortController = new AbortController();
         copyButton.disabled = true;
+        downloadButton.disabled = true;
         output.value = "";
+        currentHTML = "";
         showStatus('Starting download...', 'success');
         updateProgress(5);
         
@@ -547,7 +632,9 @@
           finalHTML = minifyHTML(finalHTML);
         }
         
+        currentHTML = finalHTML;
         output.value = finalHTML;
+        downloadButton.disabled = false;
         updateProgress(100);
         showStatus('Webpage copied successfully!', 'success');
       } catch (err) {
