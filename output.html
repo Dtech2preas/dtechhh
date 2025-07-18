@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Mini HTTrack (One Page Copier with CORS Fix)</title>
+  <title>Mini HTTrack (Full CSS Inliner)</title>
   <style>
     body { font-family: monospace; padding: 1rem; }
     input, button { font-size: 1rem; }
@@ -9,8 +9,8 @@
   </style>
 </head>
 <body>
-  <h2>🕸️ One-Page Website Copier (with CORS Proxy)</h2>
-  <input id="urlInput" placeholder="Enter site URL (e.g. https://example.com)" size="60">
+  <h2>🕸️ One-Page Website Copier with Full CSS Inlining</h2>
+  <input id="urlInput" placeholder="Enter full site URL (e.g. https://example.com)" size="60">
   <button onclick="copySite()">Copy Homepage</button>
   <br>
   <textarea id="output" placeholder="Copied HTML will appear here..."></textarea>
@@ -20,15 +20,26 @@
 
     async function inlineCSS(doc, baseUrl) {
       const links = Array.from(doc.querySelectorAll('link[rel="stylesheet"]'));
+      const fetched = new Set();
+
       for (const link of links) {
         try {
-          const cssUrl = new URL(link.getAttribute('href'), baseUrl).href;
+          const href = link.getAttribute('href');
+          if (!href) continue;
+
+          const cssUrl = new URL(href, baseUrl).href;
+          if (fetched.has(cssUrl)) {
+            link.remove();
+            continue;
+          }
+
           const cssText = await (await fetch(proxy + encodeURIComponent(cssUrl))).text();
           const style = document.createElement('style');
-          style.textContent = cssText;
+          style.textContent = `/* Inlined from ${cssUrl} */\n` + cssText;
           link.replaceWith(style);
+          fetched.add(cssUrl);
         } catch (e) {
-          console.warn("Failed to inline CSS:", link.href);
+          console.warn("Failed to inline CSS:", e);
         }
       }
     }
@@ -37,14 +48,19 @@
       const images = Array.from(doc.querySelectorAll('img'));
       for (const img of images) {
         try {
-          const imgUrl = new URL(img.getAttribute('src'), baseUrl).href;
+          const src = img.getAttribute('src');
+          if (!src) continue;
+
+          const imgUrl = new URL(src, baseUrl).href;
           const response = await fetch(proxy + encodeURIComponent(imgUrl));
           const blob = await response.blob();
+
           const base64 = await new Promise((resolve) => {
             const reader = new FileReader();
             reader.onloadend = () => resolve(reader.result);
             reader.readAsDataURL(blob);
           });
+
           img.src = base64;
         } catch (e) {
           console.warn("Failed to inline image:", img.src);
@@ -55,7 +71,7 @@
     async function copySite() {
       const url = document.getElementById('urlInput').value;
       const output = document.getElementById('output');
-      output.value = "Fetching...";
+      output.value = "Fetching and inlining...";
 
       try {
         const res = await fetch(proxy + encodeURIComponent(url));
