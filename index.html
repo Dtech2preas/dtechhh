@@ -2,660 +2,232 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Tool to copy a webpage and inline all CSS and images, with local folder support">
-  <title>Mini HTTrack - Webpage Copier with Download</title>
+  <title>Webpage Copier with Local Support</title>
   <style>
-    :root {
-      --primary-color: #2563eb;
-      --secondary-color: #1e40af;
-      --text-color: #1f2937;
-      --bg-color: #f9fafb;
-      --border-color: #e5e7eb;
-      --error-color: #dc2626;
-      --success-color: #16a34a;
-      --download-color: #059669;
-    }
-    
-    body {
-      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-      line-height: 1.6;
-      color: var(--text-color);
-      background-color: var(--bg-color);
-      padding: 2rem;
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-    
-    h1 {
-      color: var(--primary-color);
-      margin-bottom: 1.5rem;
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-    }
-    
-    .input-group {
-      display: flex;
-      gap: 0.5rem;
-      margin-bottom: 1.5rem;
-      flex-wrap: wrap;
-    }
-    
-    input {
-      flex: 1;
-      min-width: 300px;
-      padding: 0.75rem 1rem;
-      border: 1px solid var(--border-color);
-      border-radius: 6px;
-      font-size: 1rem;
-      transition: border-color 0.2s;
-    }
-    
-    input:focus {
-      outline: none;
-      border-color: var(--primary-color);
-      box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
-    }
-    
-    button {
-      color: white;
-      border: none;
-      padding: 0.75rem 1.5rem;
-      border-radius: 6px;
-      font-size: 1rem;
-      font-weight: 500;
-      cursor: pointer;
-      transition: background-color 0.2s;
-    }
-    
-    #copyButton {
-      background-color: var(--primary-color);
-    }
-    
-    #copyButton:hover {
-      background-color: var(--secondary-color);
-    }
-    
-    #downloadButton {
-      background-color: var(--download-color);
-      margin-left: 0.5rem;
-    }
-    
-    #downloadButton:hover {
-      background-color: #047857;
-    }
-    
-    button:disabled {
-      background-color: #9ca3af;
-      cursor: not-allowed;
-    }
-    
-    textarea {
-      width: 100%;
-      height: 500px;
-      padding: 1rem;
-      border: 1px solid var(--border-color);
-      border-radius: 6px;
-      font-family: 'Consolas', 'Courier New', monospace;
-      font-size: 0.875rem;
-      resize: vertical;
-      margin-top: 1rem;
-    }
-    
-    .status {
-      margin-top: 1rem;
-      padding: 0.75rem;
-      border-radius: 6px;
-      display: none;
-    }
-    
-    .error {
-      background-color: #fee2e2;
-      color: var(--error-color);
-      display: block;
-    }
-    
-    .success {
-      background-color: #dcfce7;
-      color: var(--success-color);
-      display: block;
-    }
-    
-    .progress-container {
-      width: 100%;
-      background-color: #e5e7eb;
-      border-radius: 6px;
-      margin: 1rem 0;
-      display: none;
-    }
-    
-    .progress-bar {
-      height: 8px;
-      background-color: var(--primary-color);
-      border-radius: 6px;
-      width: 0%;
-      transition: width 0.3s ease;
-    }
-    
-    .options {
-      margin: 1rem 0;
-      display: flex;
-      gap: 1rem;
-      flex-wrap: wrap;
-    }
-    
-    .option-checkbox {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-    
-    .path-options {
-      background-color: #f3f4f6;
-      padding: 1rem;
-      border-radius: 6px;
-      margin: 1rem 0;
-    }
-    
-    .path-option {
-      margin-bottom: 0.5rem;
-    }
-    
-    .button-group {
-      display: flex;
-      gap: 0.5rem;
-      margin-top: 1rem;
-    }
-    
-    footer {
-      margin-top: 2rem;
-      text-align: center;
-      color: #6b7280;
-      font-size: 0.875rem;
-    }
-    
-    @media (max-width: 768px) {
-      body {
-        padding: 1rem;
-      }
-      
-      .input-group {
-        flex-direction: column;
-      }
-      
-      input {
-        min-width: auto;
-        width: 100%;
-      }
-      
-      .button-group {
-        flex-direction: column;
-      }
-      
-      button {
-        width: 100%;
-      }
-      
-      #downloadButton {
-        margin-left: 0;
-        margin-top: 0.5rem;
-      }
-    }
+    /* Basic styling for the tool interface */
+    body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+    textarea { width: 100%; height: 300px; font-family: monospace; }
+    button { padding: 8px 15px; margin: 5px; }
+    .status { margin: 10px 0; padding: 10px; border-radius: 4px; }
+    .success { background: #d4edda; color: #155724; }
+    .error { background: #f8d7da; color: #721c24; }
   </style>
 </head>
 <body>
-  <h1>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
-      <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
-      <line x1="12" y1="22.08" x2="12" y2="12"></line>
-    </svg>
-    Mini HTTrack - Webpage Copier with Download
-  </h1>
+  <h1>Webpage Copier</h1>
+  <input type="text" id="urlInput" placeholder="Enter URL or local path (e.g. /Sports.html)" size="50">
+  <button onclick="fetchPage()">Fetch Page</button>
+  <button id="downloadBtn" disabled onclick="downloadHTML()">Download HTML</button>
   
-  <p>Download a complete copy of any webpage with all CSS inlined and images converted to base64. Supports local folder structures.</p>
+  <div id="status" class="status"></div>
   
-  <div class="input-group">
-    <input id="urlInput" type="url" placeholder="Enter full website URL (e.g. https://example.com or /Sports.html)" size="60">
-    <button id="copyButton" onclick="copySite()">Copy Webpage</button>
-  </div>
-  
-  <div class="path-options">
-    <h3>Local Path Options</h3>
-    <div class="path-option">
-      <label for="baseFolder">Base Folder Path:</label>
-      <input type="text" id="baseFolder" placeholder="e.g. /project/assets/">
-    </div>
-    <div class="path-option">
-      <label for="hardcodePaths">Hardcode Paths:</label>
-      <select id="hardcodePaths">
-        <option value="keep">Keep relative paths</option>
-        <option value="absolute">Convert to absolute paths</option>
-        <option value="hardcode">Hardcode local paths (e.g., css/styles.css)</option>
-      </select>
-    </div>
-  </div>
-  
-  <div class="options">
-    <label class="option-checkbox">
-      <input type="checkbox" id="inlineCSS" checked>
-      Inline CSS
-    </label>
-    <label class="option-checkbox">
-      <input type="checkbox" id="inlineImages" checked>
-      Inline Images
-    </label>
-    <label class="option-checkbox">
-      <input type="checkbox" id="minifyHTML" checked>
-      Minify HTML
-    </label>
-  </div>
-  
-  <div class="progress-container" id="progressContainer">
-    <div class="progress-bar" id="progressBar"></div>
-  </div>
-  
-  <div class="status" id="statusMessage"></div>
-  
-  <textarea id="output" placeholder="Copied HTML will appear here..." spellcheck="false"></textarea>
-  
-  <div class="button-group">
-    <button id="downloadButton" onclick="downloadHTML()" disabled>Download HTML</button>
-  </div>
-  
-  <footer>
-    Note: For local files, you may need to disable CORS in your browser or use a local server.
-  </footer>
+  <textarea id="output" placeholder="Processed HTML will appear here..."></textarea>
 
   <script>
+    let processedHTML = '';
     const proxy = "https://api.allorigins.win/raw?url=";
-    let abortController = new AbortController();
-    let currentHTML = "";
-    
-    function showStatus(message, type = 'error') {
-      const statusElement = document.getElementById('statusMessage');
-      statusElement.textContent = message;
-      statusElement.className = 'status ' + type;
-    }
-    
-    function updateProgress(percentage) {
-      const progressBar = document.getElementById('progressBar');
-      const progressContainer = document.getElementById('progressContainer');
-      
-      progressBar.style.width = `${percentage}%`;
-      progressContainer.style.display = percentage > 0 ? 'block' : 'none';
-    }
-    
-    async function fetchWithTimeout(resource, options = {}) {
-      const { timeout = 8000 } = options;
-      
-      const controller = new AbortController();
-      const id = setTimeout(() => controller.abort(), timeout);
-      
+
+    async function fetchPage() {
+      const url = document.getElementById('urlInput').value.trim();
+      if (!url) {
+        showStatus('Please enter a URL', 'error');
+        return;
+      }
+
       try {
-        const response = await fetch(resource, {
-          ...options,
-          signal: controller.signal  
-        });
-        clearTimeout(id);
-        return response;
+        showStatus('Fetching page...', 'success');
+        
+        // Get the HTML content
+        const html = await fetchContent(url);
+        
+        // Process the HTML
+        const finalHTML = await processHTML(html, url);
+        
+        // Display and enable download
+        document.getElementById('output').value = finalHTML;
+        processedHTML = finalHTML;
+        document.getElementById('downloadBtn').disabled = false;
+        showStatus('Page processed successfully!', 'success');
+        
+      } catch (err) {
+        showStatus('Error: ' + err.message, 'error');
+        console.error(err);
+      }
+    }
+
+    async function fetchContent(url) {
+      try {
+        // Try direct fetch first (works for local files if CORS allows)
+        const response = await fetch(url);
+        return await response.text();
       } catch (e) {
-        clearTimeout(id);
-        throw e;
-      }
-    }
-    
-    function isLocalFile(url) {
-      return !url.startsWith('http://') && !url.startsWith('https://');
-    }
-    
-    function resolveLocalPath(baseUrl, relativePath, hardcodeOption) {
-      if (hardcodeOption === 'hardcode') {
-        // Return the path as-is for hardcoding
-        return relativePath;
-      }
-      
-      if (hardcodeOption === 'absolute') {
-        // Convert to absolute path based on the base folder
-        const baseFolder = document.getElementById('baseFolder').value.trim();
-        if (baseFolder) {
-          return new URL(relativePath, baseFolder).href;
+        // Fall back to proxy for remote URLs if direct fetch fails
+        if (!url.startsWith('http')) {
+          throw new Error('Local file access blocked by CORS. Try running this tool locally.');
         }
+        const proxyUrl = proxy + encodeURIComponent(url);
+        const response = await fetch(proxyUrl);
+        return await response.text();
       }
-      
-      // Default: keep relative paths
-      return new URL(relativePath, baseUrl).href;
     }
-    
-    async function inlineCSS(doc, baseUrl) {
-      const links = Array.from(doc.querySelectorAll('link[rel="stylesheet"]'));
-      const fetched = new Set();
-      let processed = 0;
-      const hardcodeOption = document.getElementById('hardcodePaths').value;
+
+    async function processHTML(html, baseUrl) {
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(html, 'text/html');
       
-      updateProgress(10);
+      // Get base path for relative URLs
+      const basePath = getBasePath(baseUrl);
       
-      for (const link of links) {
+      // Process CSS
+      await processCSS(doc, basePath);
+      
+      // Process images
+      await processImages(doc, basePath);
+      
+      // Process other resources (scripts, etc.)
+      processScripts(doc, basePath);
+      
+      // Ensure proper HTML structure
+      return buildFinalHTML(doc);
+    }
+
+    function getBasePath(url) {
+      if (url.startsWith('http')) {
+        return new URL(url).origin;
+      }
+      // For local paths, get directory path
+      const lastSlash = url.lastIndexOf('/');
+      return lastSlash > 0 ? url.substring(0, lastSlash + 1) : './';
+    }
+
+    async function processCSS(doc, basePath) {
+      const stylesheets = Array.from(doc.querySelectorAll('link[rel="stylesheet"]'));
+      
+      for (const link of stylesheets) {
+        const href = link.getAttribute('href');
+        if (!href) continue;
+        
         try {
-          const href = link.getAttribute('href');
-          if (!href) continue;
-
-          const cssUrl = isLocalFile(baseUrl) 
-            ? resolveLocalPath(baseUrl, href, hardcodeOption)
-            : new URL(href, baseUrl).href;
-            
-          if (fetched.has(cssUrl)) {
-            link.remove();
-            continue;
-          }
-
-          showStatus(`Fetching CSS: ${cssUrl}`, 'success');
-          let cssText;
+          const cssUrl = href.startsWith('http') ? href : basePath + href;
+          const cssContent = await fetchContent(cssUrl);
           
-          if (isLocalFile(cssUrl)) {
-            // For local files, try to fetch directly
-            try {
-              const response = await fetchWithTimeout(cssUrl, {
-                signal: abortController.signal
-              });
-              cssText = await response.text();
-            } catch (e) {
-              // Fall back to proxy if direct fetch fails
-              cssText = await (await fetchWithTimeout(proxy + encodeURIComponent(cssUrl), {
-                signal: abortController.signal
-              })).text();
-            }
-          } else {
-            cssText = await (await fetchWithTimeout(proxy + encodeURIComponent(cssUrl), {
-              signal: abortController.signal
-            })).text();
-          }
-          
+          // Create style tag with the CSS content
           const style = document.createElement('style');
-          style.textContent = `/* Inlined from ${cssUrl} */\n` + cssText;
+          style.textContent = cssContent;
           link.replaceWith(style);
-          fetched.add(cssUrl);
-          
-          processed++;
-          updateProgress(10 + (processed / links.length * 40));
         } catch (e) {
-          console.warn("Failed to inline CSS:", e);
-          showStatus(`Failed to fetch CSS: ${link.href}`, 'error');
+          console.warn('Failed to load CSS:', href, e);
+          link.remove();
         }
       }
     }
-    
-    async function inlineImages(doc, baseUrl) {
+
+    async function processImages(doc, basePath) {
       const images = Array.from(doc.querySelectorAll('img'));
-      let processed = 0;
-      const total = images.length;
-      const hardcodeOption = document.getElementById('hardcodePaths').value;
-      
-      updateProgress(50);
       
       for (const img of images) {
+        const src = img.getAttribute('src');
+        if (!src) continue;
+        
         try {
-          const src = img.getAttribute('src');
-          if (!src) continue;
-
-          const imgUrl = isLocalFile(baseUrl)
-            ? resolveLocalPath(baseUrl, src, hardcodeOption)
-            : new URL(src, baseUrl).href;
-            
-          showStatus(`Processing image: ${imgUrl} (${processed+1}/${total})`, 'success');
-          
-          let response;
-          if (isLocalFile(imgUrl)) {
-            // Try direct fetch first for local files
-            try {
-              response = await fetchWithTimeout(imgUrl, {
-                signal: abortController.signal
-              });
-            } catch (e) {
-              // Fall back to proxy if direct fetch fails
-              response = await fetchWithTimeout(proxy + encodeURIComponent(imgUrl), {
-                signal: abortController.signal
-              });
-            }
-          } else {
-            response = await fetchWithTimeout(proxy + encodeURIComponent(imgUrl), {
-              signal: abortController.signal
-            });
-          }
-          
+          const imgUrl = src.startsWith('http') ? src : basePath + src;
+          const response = await fetch(imgUrl);
           const blob = await response.blob();
-
-          const base64 = await new Promise((resolve) => {
+          
+          // Convert to base64 data URL
+          const dataUrl = await new Promise(resolve => {
             const reader = new FileReader();
-            reader.onloadend = () => resolve(reader.result);
+            reader.onload = () => resolve(reader.result);
             reader.readAsDataURL(blob);
           });
-
-          img.src = base64;
           
-          processed++;
-          updateProgress(50 + (processed / total * 40));
+          img.src = dataUrl;
         } catch (e) {
-          console.warn("Failed to inline image:", img.src);
-          showStatus(`Failed to fetch image: ${img.src}`, 'error');
+          console.warn('Failed to load image:', src, e);
         }
       }
     }
-    
-    function minifyHTML(html) {
-      return html
-        .replace(/\s+/g, ' ')
-        .replace(/>\s+</g, '><')
-        .trim();
-    }
-    
-    function processLocalLinks(doc, baseUrl) {
-      const hardcodeOption = document.getElementById('hardcodePaths').value;
-      const baseFolder = document.getElementById('baseFolder').value.trim();
+
+    function processScripts(doc, basePath) {
+      const scripts = Array.from(doc.querySelectorAll('script[src]'));
       
-      // Process all links (a tags)
-      doc.querySelectorAll('a').forEach(link => {
-        const href = link.getAttribute('href');
-        if (href && !href.startsWith('http') && !href.startsWith('#')) {
-          link.setAttribute('href', resolveLocalPath(baseUrl, href, hardcodeOption));
-        }
-      });
-      
-      // Process script tags
-      doc.querySelectorAll('script[src]').forEach(script => {
+      for (const script of scripts) {
         const src = script.getAttribute('src');
         if (src && !src.startsWith('http')) {
-          script.setAttribute('src', resolveLocalPath(baseUrl, src, hardcodeOption));
+          script.src = basePath + src;
         }
-      });
+      }
     }
-    
+
+    function buildFinalHTML(doc) {
+      // Ensure proper HTML structure
+      const html = `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>${doc.title || 'Downloaded Page'}</title>
+  ${getHeadContent(doc)}
+</head>
+<body>
+  ${getBodyContent(doc)}
+</body>
+</html>`;
+      
+      return html;
+    }
+
+    function getHeadContent(doc) {
+      const head = doc.head;
+      let content = '';
+      
+      // Copy all elements except title (we handle that separately)
+      for (const child of head.children) {
+        if (child.tagName !== 'TITLE') {
+          content += child.outerHTML + '\n';
+        }
+      }
+      
+      return content;
+    }
+
+    function getBodyContent(doc) {
+      return doc.body.innerHTML;
+    }
+
     function downloadHTML() {
-      if (!currentHTML) {
-        showStatus('No HTML content to download', 'error');
-        return;
-      }
+      if (!processedHTML) return;
       
-      try {
-        const blob = new Blob([currentHTML], { type: 'text/html' });
-        const url = URL.createObjectURL(blob);
-        
-        const filename = getDownloadFilename();
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = filename;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-        
-        showStatus(`Downloaded ${filename} successfully!`, 'success');
-      } catch (e) {
-        showStatus('Failed to create download: ' + e.message, 'error');
-        console.error(e);
-      }
+      const blob = new Blob([processedHTML], { type: 'text/html' });
+      const url = URL.createObjectURL(blob);
+      
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = getDownloadFilename();
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
     }
-    
+
     function getDownloadFilename() {
-      const urlInput = document.getElementById('urlInput').value.trim();
-      if (!urlInput) return 'downloaded_page.html';
+      const url = document.getElementById('urlInput').value.trim();
+      if (!url) return 'page.html';
       
-      // Try to extract filename from URL
-      try {
-        if (isLocalFile(urlInput)) {
-          const lastSlash = urlInput.lastIndexOf('/');
-          const filename = lastSlash >= 0 ? urlInput.substring(lastSlash + 1) : urlInput;
-          return filename.endsWith('.html') ? filename : filename + '.html';
-        }
-        
-        const url = new URL(urlInput);
-        const hostname = url.hostname.replace('www.', '');
-        const pathParts = url.pathname.split('/').filter(part => part);
-        const lastPart = pathParts.length > 0 ? pathParts[pathParts.length - 1] : 'index';
-        
-        return lastPart.endsWith('.html') ? lastPart : `${hostname}_${lastPart}.html`;
-      } catch (e) {
-        return 'downloaded_page.html';
+      if (url.startsWith('http')) {
+        const domain = new URL(url).hostname.replace('www.', '');
+        return `${domain}.html`;
       }
+      
+      // For local paths
+      const filename = url.split('/').pop();
+      return filename.endsWith('.html') ? filename : `${filename}.html`;
     }
-    
-    async function copySite() {
-      const urlInput = document.getElementById('urlInput').value.trim();
-      const output = document.getElementById('output');
-      const copyButton = document.getElementById('copyButton');
-      const downloadButton = document.getElementById('downloadButton');
-      
-      if (!urlInput) {
-        showStatus('Please enter a valid URL');
-        return;
-      }
-      
-      try {
-        // Reset state
-        abortController.abort();
-        abortController = new AbortController();
-        copyButton.disabled = true;
-        downloadButton.disabled = true;
-        output.value = "";
-        currentHTML = "";
-        showStatus('Starting download...', 'success');
-        updateProgress(5);
-        
-        // Determine if this is a local file request
-        const isLocal = isLocalFile(urlInput);
-        let baseUrl = urlInput;
-        
-        if (isLocal) {
-          // For local files, use the directory path as base URL
-          const lastSlash = urlInput.lastIndexOf('/');
-          baseUrl = lastSlash > 0 ? urlInput.substring(0, lastSlash + 1) : './';
-        } else {
-          // Validate URL for remote resources
-          new URL(urlInput);
-        }
-        
-        const shouldInlineCSS = document.getElementById('inlineCSS').checked;
-        const shouldInlineImages = document.getElementById('inlineImages').checked;
-        const shouldMinify = document.getElementById('minifyHTML').checked;
-        
-        showStatus('Fetching HTML content...', 'success');
-        let html;
-        
-        if (isLocal) {
-          // Try direct fetch first for local files
-          try {
-            const response = await fetchWithTimeout(urlInput, {
-              signal: abortController.signal
-            });
-            html = await response.text();
-          } catch (e) {
-            // Fall back to proxy if direct fetch fails
-            html = await (await fetchWithTimeout(proxy + encodeURIComponent(urlInput), {
-              signal: abortController.signal
-            })).text();
-          }
-        } else {
-          const response = await fetchWithTimeout(proxy + encodeURIComponent(urlInput), {
-            signal: abortController.signal
-          });
-          
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-          }
-          
-          html = await response.text();
-        }
-        
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(html, 'text/html');
-        
-        // Process local links first
-        if (isLocal) {
-          processLocalLinks(doc, baseUrl);
-        }
-        
-        if (shouldInlineCSS) {
-          await inlineCSS(doc, baseUrl);
-        } else {
-          // Convert CSS links to appropriate paths
-          doc.querySelectorAll('link[rel="stylesheet"]').forEach(link => {
-            const href = link.getAttribute('href');
-            if (href && !href.startsWith('http')) {
-              link.setAttribute('href', isLocal
-                ? resolveLocalPath(baseUrl, href, document.getElementById('hardcodePaths').value)
-                : new URL(href, baseUrl).href);
-            }
-          });
-        }
-        
-        if (shouldInlineImages) {
-          await inlineImages(doc, baseUrl);
-        } else {
-          // Convert image src to appropriate paths
-          doc.querySelectorAll('img').forEach(img => {
-            const src = img.getAttribute('src');
-            if (src && !src.startsWith('http')) {
-              img.setAttribute('src', isLocal
-                ? resolveLocalPath(baseUrl, src, document.getElementById('hardcodePaths').value)
-                : new URL(src, baseUrl).href);
-            }
-          });
-        }
-        
-        updateProgress(95);
-        showStatus('Finalizing document...', 'success');
-        
-        let finalHTML = "<!DOCTYPE html>\n" + doc.documentElement.outerHTML;
-        
-        if (shouldMinify) {
-          finalHTML = minifyHTML(finalHTML);
-        }
-        
-        currentHTML = finalHTML;
-        output.value = finalHTML;
-        downloadButton.disabled = false;
-        updateProgress(100);
-        showStatus('Webpage copied successfully!', 'success');
-      } catch (err) {
-        if (err.name === 'AbortError') {
-          showStatus('Request was aborted', 'error');
-        } else {
-          output.value = '❌ Error: ' + err.message;
-          showStatus('Error: ' + err.message, 'error');
-          console.error(err);
-        }
-      } finally {
-        copyButton.disabled = false;
-      }
+
+    function showStatus(message, type) {
+      const statusEl = document.getElementById('status');
+      statusEl.textContent = message;
+      statusEl.className = `status ${type}`;
     }
-    
-    // Add event listener for Enter key
-    document.getElementById('urlInput').addEventListener('keypress', function(e) {
-      if (e.key === 'Enter') {
-        copySite();
-      }
-    });
   </script>
 </body>
 </html>
