@@ -1,43 +1,53 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Free HTML Uploader (Catbox)</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>HTML Uploader (Uguu)</title>
   <style>
     body {
       font-family: sans-serif;
-      max-width: 700px;
-      margin: 50px auto;
       padding: 20px;
+      background: #f8f9fa;
     }
     textarea {
       width: 100%;
-      height: 250px;
+      height: 300px;
       font-family: monospace;
+      margin-bottom: 10px;
     }
     button {
       padding: 10px 20px;
-      margin-top: 10px;
+      background: #0069d9;
+      color: white;
+      border: none;
+      cursor: pointer;
       font-size: 16px;
+      border-radius: 5px;
+    }
+    button:hover {
+      background: #0056b3;
     }
     #result {
       margin-top: 20px;
-      word-break: break-word;
+      background: #fff;
+      padding: 15px;
+      border-radius: 6px;
+      box-shadow: 0 0 10px #ccc;
     }
   </style>
 </head>
 <body>
 
-  <h1>📄 Free HTML Uploader</h1>
-  <p>Paste your HTML code below and get a live shareable link:</p>
-
-  <textarea id="htmlInput" placeholder="Paste your HTML code here..."></textarea><br>
-  <button onclick="uploadToCatbox()">🚀 Upload to Catbox</button>
+  <h2>Paste Your HTML Code</h2>
+  <textarea id="htmlInput" placeholder="Paste your full HTML code here..."></textarea>
+  <br/>
+  <button onclick="uploadToUguu()">Upload</button>
 
   <div id="result"></div>
 
   <script>
-    async function uploadToCatbox() {
+    async function uploadToUguu() {
       const html = document.getElementById("htmlInput").value.trim();
       const resultDiv = document.getElementById("result");
       resultDiv.innerHTML = "⏳ Uploading...";
@@ -50,25 +60,21 @@
       try {
         const blob = new Blob([html], { type: "text/html" });
         const formData = new FormData();
-        formData.append("reqtype", "fileupload");
-        formData.append("fileToUpload", blob, "page.html");
+        formData.append("files[]", blob, "index.html");
 
-        const response = await fetch("https://catbox.moe/user/api.php", {
+        const response = await fetch("https://uguu.se/upload.php", {
           method: "POST",
           body: formData
         });
 
-        const url = await response.text();
+        const json = await response.json();
+        const url = json.files[0].url;
 
-        if (url.startsWith("https://")) {
-          resultDiv.innerHTML = `
-            ✅ Uploaded!<br>
-            <a href="${url}" target="_blank">${url}</a><br>
-            <iframe src="${url}" width="100%" height="400" style="border:1px solid #ccc; margin-top:10px;"></iframe>
-          `;
-        } else {
-          throw new Error("Upload failed: " + url);
-        }
+        resultDiv.innerHTML = `
+          ✅ <strong>Uploaded!</strong><br>
+          <a href="${url}" target="_blank">${url}</a><br><br>
+          <iframe src="${url}" width="100%" height="400" style="border:1px solid #ccc;"></iframe>
+        `;
       } catch (err) {
         resultDiv.innerHTML = "❌ Upload failed: " + err.message;
       }
