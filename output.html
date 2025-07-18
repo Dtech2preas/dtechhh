@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Mini HTTrack (One Page Copier)</title>
+  <title>Mini HTTrack (One Page Copier with CORS Fix)</title>
   <style>
     body { font-family: monospace; padding: 1rem; }
     input, button { font-size: 1rem; }
@@ -9,18 +9,21 @@
   </style>
 </head>
 <body>
-  <h2>🕸️ One-Page Website Copier (HTML + JS)</h2>
+  <h2>🕸️ One-Page Website Copier (with CORS Proxy)</h2>
   <input id="urlInput" placeholder="Enter site URL (e.g. https://example.com)" size="60">
   <button onclick="copySite()">Copy Homepage</button>
   <br>
   <textarea id="output" placeholder="Copied HTML will appear here..."></textarea>
 
   <script>
-    async function inlineCSS(doc) {
+    const proxy = "https://api.allorigins.win/raw?url=";
+
+    async function inlineCSS(doc, baseUrl) {
       const links = Array.from(doc.querySelectorAll('link[rel="stylesheet"]'));
       for (const link of links) {
         try {
-          const cssText = await (await fetch(link.href)).text();
+          const cssUrl = new URL(link.getAttribute('href'), baseUrl).href;
+          const cssText = await (await fetch(proxy + encodeURIComponent(cssUrl))).text();
           const style = document.createElement('style');
           style.textContent = cssText;
           link.replaceWith(style);
@@ -30,11 +33,12 @@
       }
     }
 
-    async function inlineImages(doc) {
+    async function inlineImages(doc, baseUrl) {
       const images = Array.from(doc.querySelectorAll('img'));
       for (const img of images) {
         try {
-          const response = await fetch(img.src);
+          const imgUrl = new URL(img.getAttribute('src'), baseUrl).href;
+          const response = await fetch(proxy + encodeURIComponent(imgUrl));
           const blob = await response.blob();
           const base64 = await new Promise((resolve) => {
             const reader = new FileReader();
@@ -54,14 +58,14 @@
       output.value = "Fetching...";
 
       try {
-        const res = await fetch(url);
+        const res = await fetch(proxy + encodeURIComponent(url));
         const html = await res.text();
 
         const parser = new DOMParser();
         const doc = parser.parseFromString(html, 'text/html');
 
-        await inlineCSS(doc);
-        await inlineImages(doc);
+        await inlineCSS(doc, url);
+        await inlineImages(doc, url);
 
         output.value = "<!DOCTYPE html>\n" + doc.documentElement.outerHTML;
       } catch (err) {
