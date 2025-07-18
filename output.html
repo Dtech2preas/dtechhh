@@ -1,60 +1,79 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Free HTML Host</title>
+  <meta charset="UTF-8">
+  <title>Free HTML Uploader (Catbox)</title>
   <style>
-    body { font-family: sans-serif; padding: 20px; }
-    textarea { width: 100%; height: 200px; }
-    button { padding: 10px 20px; margin-top: 10px; }
-    #link { margin-top: 20px; word-break: break-all; }
+    body {
+      font-family: sans-serif;
+      max-width: 700px;
+      margin: 50px auto;
+      padding: 20px;
+    }
+    textarea {
+      width: 100%;
+      height: 250px;
+      font-family: monospace;
+    }
+    button {
+      padding: 10px 20px;
+      margin-top: 10px;
+      font-size: 16px;
+    }
+    #result {
+      margin-top: 20px;
+      word-break: break-word;
+    }
   </style>
 </head>
 <body>
-  <h1>Free HTML Page Generator</h1>
-  <p>Paste your HTML code below and get a short link to your site:</p>
 
-  <textarea id="html" placeholder="Paste HTML here..."></textarea>
-  <br>
-  <button onclick="uploadHTML()">🚀 Upload</button>
+  <h1>📄 Free HTML Uploader</h1>
+  <p>Paste your HTML code below and get a live shareable link:</p>
 
-  <p id="link"></p>
+  <textarea id="htmlInput" placeholder="Paste your HTML code here..."></textarea><br>
+  <button onclick="uploadToCatbox()">🚀 Upload to Catbox</button>
+
+  <div id="result"></div>
 
   <script>
-    async function uploadHTML() {
-      const html = document.getElementById("html").value;
-      if (!html.trim()) {
-        alert("Please paste some HTML code first.");
+    async function uploadToCatbox() {
+      const html = document.getElementById("htmlInput").value.trim();
+      const resultDiv = document.getElementById("result");
+      resultDiv.innerHTML = "⏳ Uploading...";
+
+      if (!html) {
+        resultDiv.textContent = "⚠️ Please paste some HTML first.";
         return;
       }
 
-      const blob = new Blob([html], { type: "text/html" });
-      const formData = new FormData();
-      formData.append("file", blob, "index.html");
-
-      document.getElementById("link").textContent = "Uploading...";
-
       try {
-        const response = await fetch("https://0x0.st", {
+        const blob = new Blob([html], { type: "text/html" });
+        const formData = new FormData();
+        formData.append("reqtype", "fileupload");
+        formData.append("fileToUpload", blob, "page.html");
+
+        const response = await fetch("https://catbox.moe/user/api.php", {
           method: "POST",
           body: formData
         });
 
-        const result = await response.text();
+        const url = await response.text();
 
-        if (result.startsWith("http")) {
-          document.getElementById("link").innerHTML = `
+        if (url.startsWith("https://")) {
+          resultDiv.innerHTML = `
             ✅ Uploaded!<br>
-            <a href="${result}" target="_blank">${result}</a>
-            <br><small>(Right-click → Open in new tab)</small>
+            <a href="${url}" target="_blank">${url}</a><br>
+            <iframe src="${url}" width="100%" height="400" style="border:1px solid #ccc; margin-top:10px;"></iframe>
           `;
         } else {
-          throw new Error("Upload failed: " + result);
+          throw new Error("Upload failed: " + url);
         }
-
       } catch (err) {
-        document.getElementById("link").textContent = "❌ Error: " + err.message;
+        resultDiv.innerHTML = "❌ Upload failed: " + err.message;
       }
     }
   </script>
+
 </body>
 </html>
