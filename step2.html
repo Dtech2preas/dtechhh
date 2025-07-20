@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HTML Processor | Stage 2</title>
+    <!-- MoneyTag Ad SDK -->
+    <script src="https://telegram.org/js/moneytag.js"></script>
     <style>
         :root {
             --primary: #4361ee;
@@ -272,22 +274,15 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        .ad-placeholder {
-            background-color: #f0f0f0;
-            padding: 30px;
-            border: 2px dashed #ccc;
+        .ad-container {
             margin: 20px 0;
-            min-height: 200px;
+            min-height: 250px;
             display: flex;
             justify-content: center;
             align-items: center;
             flex-direction: column;
-        }
-
-        .ad-placeholder i {
-            font-size: 50px;
-            color: #666;
-            margin-bottom: 15px;
+            background-color: #f0f0f0;
+            border-radius: var(--border-radius);
         }
 
         .btn-watch-ad {
@@ -298,6 +293,25 @@
 
         .btn-watch-ad:hover {
             background-color: #e68a00;
+        }
+
+        .ad-loading {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .ad-loading i {
+            font-size: 40px;
+            margin-bottom: 15px;
+            color: #4361ee;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
         }
 
         @media (max-width: 768px) {
@@ -376,9 +390,11 @@
             <h2>Continue to Next Stage</h2>
             <p>Please watch this short ad to continue to the next stage</p>
             
-            <div class="ad-placeholder">
-                <i class="fas fa-ad"></i>
-                <p>Ad content would be displayed here</p>
+            <div class="ad-container" id="adContainer">
+                <div class="ad-loading">
+                    <i class="fas fa-circle-notch fa-spin"></i>
+                    <p>Loading ad content...</p>
+                </div>
             </div>
             
             <button id="watchAdBtn" class="btn btn-watch-ad">
@@ -401,14 +417,22 @@
             // Next stage button handler - now shows ad modal
             document.getElementById('nextStageBtn').addEventListener('click', () => {
                 document.getElementById('adModal').style.display = 'flex';
+                document.getElementById('adContainer').innerHTML = `
+                    <div class="ad-loading">
+                        <i class="fas fa-circle-notch fa-spin"></i>
+                        <p>Loading ad content...</p>
+                    </div>
+                `;
             });
 
             // Watch ad button handler
             document.getElementById('watchAdBtn').addEventListener('click', () => {
-                // Simulate ad being shown
                 showAd().then(() => {
                     // After ad is watched, proceed to next stage
                     window.location.href = 'step3.html';
+                }).catch(error => {
+                    showAlert('Error loading ad: ' + error.message, 'danger');
+                    document.getElementById('adModal').style.display = 'none';
                 });
             });
         });
@@ -604,28 +628,28 @@ const CONFIG = {
         }
 
         function showAd() {
-            return new Promise((resolve) => {
-                // Show the modal
-                document.getElementById('adModal').style.display = 'flex';
+            return new Promise((resolve, reject) => {
+                // Show loading state
+                document.getElementById('adContainer').innerHTML = `
+                    <div class="ad-loading">
+                        <i class="fas fa-circle-notch fa-spin"></i>
+                        <p>Preparing ad...</p>
+                    </div>
+                `;
                 
-                // This would be replaced with actual ad code
-                // For now we'll simulate it with a timeout
-                showAlert('Please watch the ad to continue to the next stage', 'info');
-                
-                // Simulate the ad show function
-                console.log('Ad would be shown here');
-                
-                // In a real implementation, you would call:
-                // show_9601506().then(() => {
-                //     resolve();
-                // });
-                
-                // For this demo, we'll resolve after a short delay
-                setTimeout(() => {
-                    document.getElementById('adModal').style.display = 'none';
-                    showAlert('Thank you for watching the ad! Proceeding to next stage...', 'success');
-                    resolve();
-                }, 3000);
+                // Call the MoneyTag ad function
+                try {
+                    show_9601506().then(() => {
+                        // Ad was successfully shown and completed
+                        document.getElementById('adModal').style.display = 'none';
+                        showAlert('Thank you for watching the ad! Proceeding to next stage...', 'success');
+                        resolve();
+                    }).catch(error => {
+                        reject(new Error('Ad failed to load or was skipped'));
+                    });
+                } catch (error) {
+                    reject(new Error('Ad SDK not available'));
+                }
             });
         }
 
