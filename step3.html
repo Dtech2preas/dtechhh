@@ -21,7 +21,7 @@
 <input type="password" id="token" placeholder="Enter your GitHub token" autocomplete="off" />
 
 <div id="htmlPreview">
-  <h3>HTML loaded from localStorage (data3step):</h3>
+  <h3>HTML loaded from localStorage (data2step):</h3>
   <div id="htmlContentPreview" style="max-height: 200px; overflow: auto; border: 1px solid #eee; padding: 0.5rem; background: white;"></div>
 </div>
 
@@ -36,7 +36,7 @@ const htmlContentPreview = document.getElementById("htmlContentPreview");
 
 // Load HTML from localStorage on page load
 document.addEventListener('DOMContentLoaded', () => {
-  const savedHtml = localStorage.getItem('data3step');
+  const savedHtml = localStorage.getItem('data2step');
   
   if (!savedHtml) {
     htmlContentPreview.textContent = "No HTML found in localStorage at key 'data3step'";
@@ -51,7 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 uploadBtn.addEventListener("click", async () => {
   const token = document.getElementById("token").value.trim();
-  const html = localStorage.getItem('data3step');
+  const html = localStorage.getItem('data2step');
 
   if (!token) {
     alert("Please enter your GitHub token.");
