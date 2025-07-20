@@ -203,32 +203,6 @@
   .step.completed .step-number {
     background-color: var(--success);
   }
-  
-  .history-item {
-    border: 1px solid var(--border);
-    border-radius: 0.375rem;
-    padding: 1rem;
-    margin-bottom: 1rem;
-  }
-  
-  .history-item-header {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 0.5rem;
-  }
-  
-  .commit-sha {
-    font-family: monospace;
-    background-color: var(--bg);
-    padding: 0.25rem 0.5rem;
-    border-radius: 0.25rem;
-    font-size: 0.875rem;
-  }
-  
-  .timestamp {
-    color: var(--text-light);
-    font-size: 0.875rem;
-  }
 </style>
 </head>
 <body>
@@ -258,8 +232,8 @@
     </div>
     
     <div class="status" id="htmlStatus">
-      <div class="spinner" id="htmlSpinner"></div>
-      <span id="htmlStatusText">Checking HTML content...</span>
+      <div class="spinner"></div>
+      <span>Checking HTML content...</span>
     </div>
   </div>
   
@@ -301,21 +275,11 @@
     </div>
     
     <div class="url-container">
-      <span class="url-label">Commit SHA (for version tracking):</span>
-      <span id="commitSha" class="commit-sha"></span>
-    </div>
-    
-    <div class="url-container">
-      <span class="url-label">Live Website URL (commit-specific):</span>
+      <span class="url-label">Live Website URL:</span>
       <a href="#" class="url-link" id="liveUrl" target="_blank"></a>
     </div>
     
     <button id="copyLiveUrl" style="background-color: var(--success);">Copy Live URL</button>
-  </div>
-  
-  <div class="card" id="historyContainer" style="display: none;">
-    <h2>Upload History</h2>
-    <div id="historyList"></div>
   </div>
 </div>
 
@@ -325,28 +289,19 @@ document.addEventListener('DOMContentLoaded', async () => {
   const htmlPreview = document.getElementById('htmlPreview');
   const htmlLength = document.getElementById('html-length');
   const htmlStatus = document.getElementById('htmlStatus');
-  const htmlStatusText = document.getElementById('htmlStatusText');
-  const htmlSpinner = document.getElementById('htmlSpinner');
   const uploadBtn = document.getElementById('uploadBtn');
   const uploadStatus = document.getElementById('uploadStatus');
   const uploadStatusText = document.getElementById('uploadStatusText');
   const resultContainer = document.getElementById('resultContainer');
   const gistUrl = document.getElementById('gistUrl');
   const liveUrl = document.getElementById('liveUrl');
-  const commitSha = document.getElementById('commitSha');
   const copyLiveUrl = document.getElementById('copyLiveUrl');
-  const historyContainer = document.getElementById('historyContainer');
-  const historyList = document.getElementById('historyList');
-  
-  // Load upload history from localStorage
-  let uploadHistory = JSON.parse(localStorage.getItem('gistUploadHistory') || [];
   
   // Load HTML from localStorage
   const savedHtml = localStorage.getItem('data2step');
   
   if (!savedHtml) {
-    htmlSpinner.style.display = 'none';
-    htmlStatusText.innerHTML = `<span style="color: ${getComputedStyle(document.documentElement).getPropertyValue('--error')}">❌ No HTML found in localStorage at key 'data2step'</span>`;
+    htmlStatus.innerHTML = `<span style="color: ${getComputedStyle(document.documentElement).getPropertyValue('--error')}">❌ No HTML found in localStorage at key 'data2step'</span>`;
     uploadBtn.disabled = true;
     return;
   }
@@ -355,19 +310,14 @@ document.addEventListener('DOMContentLoaded', async () => {
   htmlPreview.textContent = savedHtml;
   htmlLength.textContent = `${savedHtml.length} characters`;
   
-  // Immediately validate HTML content (no setTimeout needed)
-  htmlSpinner.style.display = 'none';
-  if (savedHtml.includes('<html') && savedHtml.includes('</html>')) {
-    htmlStatusText.innerHTML = `<span style="color: ${getComputedStyle(document.documentElement).getPropertyValue('--success')}">✓ Valid HTML document loaded</span>`;
-  } else {
-    htmlStatusText.innerHTML = `<span style="color: ${getComputedStyle(document.documentElement).getPropertyValue('--error')}">⚠ This doesn't look like a complete HTML document (missing html tags)</span>`;
-  }
-  
-  // Render upload history if any exists
-  if (uploadHistory.length > 0) {
-    historyContainer.style.display = 'block';
-    renderHistory();
-  }
+  // Validate HTML content
+  setTimeout(() => {
+    if (savedHtml.includes('<html') && savedHtml.includes('</html>')) {
+      htmlStatus.innerHTML = `<span style="color: ${getComputedStyle(document.documentElement).getPropertyValue('--success')}">✓ Valid HTML document loaded</span>`;
+    } else {
+      htmlStatus.innerHTML = `<span style="color: ${getComputedStyle(document.documentElement).getPropertyValue('--error')}">⚠ This doesn't look like a complete HTML document</span>`;
+    }
+  }, 1000);
   
   // Upload button click handler
   uploadBtn.addEventListener('click', async () => {
@@ -393,7 +343,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          description: 'Live website created via HTML Converter - ' + new Date().toLocaleString(),
+          description: 'Live website created via HTML Converter',
           public: true,
           files: {
             'index.html': {
@@ -409,49 +359,19 @@ document.addEventListener('DOMContentLoaded', async () => {
         throw new Error(gistData.message || 'Failed to create gist');
       }
       
-      // Step 2: Get the specific commit SHA
-      uploadStatusText.textContent = 'Getting commit details...';
-      const commitsResponse = await fetch(`https://api.github.com/gists/${gistData.id}/commits`, {
-        headers: {
-          'Authorization': `token ${token}`,
-          'Accept': 'application/vnd.github.v3+json'
-        }
-      });
-      
-      const commitsData = await commitsResponse.json();
-      const latestCommit = commitsData[0];
-      const commitShaValue = latestCommit.version;
-      
-      // Step 3: Generate URLs
+      // Step 2: Get URLs
       uploadStatusText.textContent = 'Generating live URL...';
       const gistUrlValue = gistData.html_url;
-      const liveUrlValue = `https://gist.githack.com/${gistData.owner.login}/${gistData.id}/raw/${commitShaValue}/index.html`;
+      const liveUrlValue = `https://gist.githack.com/${gistData.owner.login}/${gistData.id}/raw/index.html`;
       
       // Display results
       gistUrl.textContent = gistUrlValue;
       gistUrl.href = gistUrlValue;
       liveUrl.textContent = liveUrlValue;
       liveUrl.href = liveUrlValue;
-      commitSha.textContent = commitShaValue;
       
-      // Add to history
-      const historyItem = {
-        gistId: gistData.id,
-        commitSha: commitShaValue,
-        gistUrl: gistUrlValue,
-        liveUrl: liveUrlValue,
-        timestamp: new Date().toISOString(),
-        htmlPreview: savedHtml.length > 100 ? savedHtml.substring(0, 100) + '...' : savedHtml
-      };
-      
-      uploadHistory.unshift(historyItem);
-      localStorage.setItem('gistUploadHistory', JSON.stringify(uploadHistory));
-      
-      // Show results and history
       resultContainer.style.display = 'block';
-      historyContainer.style.display = 'block';
       uploadStatus.style.display = 'none';
-      renderHistory();
       
       // Scroll to results
       setTimeout(() => {
@@ -474,51 +394,6 @@ document.addEventListener('DOMContentLoaded', async () => {
       copyLiveUrl.textContent = originalText;
     }, 2000);
   });
-  
-  // Render upload history
-  function renderHistory() {
-    historyList.innerHTML = '';
-    uploadHistory.forEach((item, index) => {
-      const historyItem = document.createElement('div');
-      historyItem.className = 'history-item';
-      
-      const date = new Date(item.timestamp);
-      const formattedDate = date.toLocaleString();
-      
-      historyItem.innerHTML = `
-        <div class="history-item-header">
-          <strong>Upload #${uploadHistory.length - index}</strong>
-          <span class="timestamp">${formattedDate}</span>
-        </div>
-        <div style="margin-bottom: 0.5rem;">
-          <span class="url-label">Commit SHA:</span>
-          <span class="commit-sha">${item.commitSha}</span>
-        </div>
-        <div style="margin-bottom: 0.5rem;">
-          <span class="url-label">Live URL:</span>
-          <a href="${item.liveUrl}" class="url-link" target="_blank">${item.liveUrl}</a>
-        </div>
-        <details>
-          <summary>HTML Preview</summary>
-          <div style="max-height: 100px; overflow: auto; border: 1px solid var(--border); padding: 0.5rem; margin-top: 0.5rem; background: white; font-family: monospace;">
-            ${escapeHtml(item.htmlPreview)}
-          </div>
-        </details>
-      `;
-      
-      historyList.appendChild(historyItem);
-    });
-  }
-  
-  // Helper function to escape HTML
-  function escapeHtml(unsafe) {
-    return unsafe
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#039;");
-  }
 });
 </script>
 
