@@ -203,6 +203,31 @@
   .step.completed .step-number {
     background-color: var(--success);
   }
+  
+  /* New ad container styles */
+  .ad-container {
+    display: none;
+    background-color: var(--card);
+    border-radius: 0.5rem;
+    padding: 2rem;
+    margin: 1rem 0;
+    text-align: center;
+    border: 1px solid var(--border);
+  }
+  
+  .ad-message {
+    margin-bottom: 1.5rem;
+    font-weight: 500;
+    color: var(--text);
+  }
+  
+  #showAdBtn {
+    background-color: #f59e0b;
+  }
+  
+  #showAdBtn:hover {
+    background-color: #d97706;
+  }
 </style>
 </head>
 <body>
@@ -269,17 +294,24 @@
       <div class="step-text">Converted to live website</div>
     </div>
     
-    <div class="url-container">
+    <!-- Ad container - shown before URLs -->
+    <div class="ad-container" id="adContainer">
+      <p class="ad-message">Please watch a short ad to reveal your website URL</p>
+      <button id="showAdBtn">Show Ad & Reveal URL</button>
+    </div>
+    
+    <!-- URL containers - hidden until after ad -->
+    <div class="url-container" id="gistUrlContainer" style="display: none;">
       <span class="url-label">Gist URL (GitHub):</span>
       <a href="#" class="url-link" id="gistUrl" target="_blank"></a>
     </div>
     
-    <div class="url-container">
+    <div class="url-container" id="liveUrlContainer" style="display: none;">
       <span class="url-label">Live Website URL:</span>
       <a href="#" class="url-link" id="liveUrl" target="_blank"></a>
     </div>
     
-    <button id="copyLiveUrl" style="background-color: var(--success);">Copy Live URL</button>
+    <button id="copyLiveUrl" style="background-color: var(--success); display: none;">Copy Live URL</button>
   </div>
 </div>
 
@@ -296,6 +328,14 @@ document.addEventListener('DOMContentLoaded', async () => {
   const gistUrl = document.getElementById('gistUrl');
   const liveUrl = document.getElementById('liveUrl');
   const copyLiveUrl = document.getElementById('copyLiveUrl');
+  const adContainer = document.getElementById('adContainer');
+  const showAdBtn = document.getElementById('showAdBtn');
+  const gistUrlContainer = document.getElementById('gistUrlContainer');
+  const liveUrlContainer = document.getElementById('liveUrlContainer');
+  
+  // Store URLs temporarily
+  let tempGistUrl = '';
+  let tempLiveUrl = '';
   
   // Load HTML from localStorage
   const savedHtml = localStorage.getItem('data2step');
@@ -333,10 +373,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     uploadStatusText.textContent = 'Uploading to GitHub...';
     
     try {
-      // Always create a NEW gist (no checking for existing ones)
-      uploadStatusText.textContent = 'Creating new GitHub Gist...';
-      
-      // Add a timestamp to make the description unique
+      // Create a new gist with timestamp
       const timestamp = new Date().toISOString();
       const gistResponse = await fetch('https://api.github.com/gists', {
         method: 'POST',
@@ -362,19 +399,16 @@ document.addEventListener('DOMContentLoaded', async () => {
         throw new Error(gistData.message || 'Failed to create gist');
       }
       
-      // Generate fresh URLs
-      uploadStatusText.textContent = 'Generating live URL...';
-      const gistUrlValue = gistData.html_url;
-      const liveUrlValue = `https://gist.githack.com/${gistData.owner.login}/${gistData.id}/raw/index.html`;
+      // Store URLs temporarily
+      tempGistUrl = gistData.html_url;
+      tempLiveUrl = `https://gist.githack.com/${gistData.owner.login}/${gistData.id}/raw/index.html`;
       
-      // Display results
-      gistUrl.textContent = gistUrlValue;
-      gistUrl.href = gistUrlValue;
-      liveUrl.textContent = liveUrlValue;
-      liveUrl.href = liveUrlValue;
-      
+      // Show result container but hide URLs
       resultContainer.style.display = 'block';
       uploadStatus.style.display = 'none';
+      
+      // Show ad container instead of URLs
+      adContainer.style.display = 'block';
       
       // Scroll to results
       setTimeout(() => {
@@ -385,6 +419,35 @@ document.addEventListener('DOMContentLoaded', async () => {
       uploadStatus.innerHTML = `<span style="color: ${getComputedStyle(document.documentElement).getPropertyValue('--error')}">Error: ${err.message}</span>`;
       uploadBtn.disabled = false;
     }
+  });
+  
+  // Show Ad button click handler
+  showAdBtn.addEventListener('click', () => {
+    showAdBtn.disabled = true;
+    showAdBtn.textContent = 'Loading Ad...';
+    
+    // Show Moneytag ad
+    show_9601506().then(() => {
+      // After ad is completed
+      adContainer.style.display = 'none';
+      gistUrlContainer.style.display = 'block';
+      liveUrlContainer.style.display = 'block';
+      copyLiveUrl.style.display = 'block';
+      
+      // Set the URLs
+      gistUrl.textContent = tempGistUrl;
+      gistUrl.href = tempGistUrl;
+      liveUrl.textContent = tempLiveUrl;
+      liveUrl.href = tempLiveUrl;
+      
+      // Show success message
+      alert('Thank you! Your website URL is now available.');
+    }).catch((error) => {
+      showAdBtn.disabled = false;
+      showAdBtn.textContent = 'Show Ad & Reveal URL';
+      alert('Error loading ad. Please try again.');
+      console.error('Ad error:', error);
+    });
   });
   
   // Copy URL button
@@ -398,6 +461,21 @@ document.addEventListener('DOMContentLoaded', async () => {
     }, 2000);
   });
 });
+
+// Moneytag Ad Function (exactly as provided)
+function show_9601506() {
+  return new Promise((resolve) => {
+    // This would be replaced with actual Moneytag ad code
+    console.log('Moneytag ad shown');
+    
+    // Simulate ad completion after 2 seconds
+    setTimeout(() => {
+      // This alert is just for demo - remove in production
+      alert('You have seen an ad!');
+      resolve();
+    }, 2000);
+  });
+}
 </script>
 
 </body>
