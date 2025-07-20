@@ -1003,14 +1003,27 @@
         return;
       }
 
-      // Save to localStorage again just in case
-      localStorage.setItem('data1step', processedHTML);
-      addLog('Navigating to Stage 2...', 'info');
-
-      // Redirect to step2.html
+     <script>
+  function goToNextStep() {
+    // Show the rewarded interstitial ad
+    show_9601506().then(() => {
+      // Ad was watched successfully — give reward and redirect
+      alert('You have seen an ad!');
+      
+      // Now go to step2.html
       window.location.href = 'step2.html';
-    }
-  </script>
+    }).catch((err) => {
+      // If the ad fails or is skipped — optional handling
+      console.error('Ad failed:', err);
+      
+      // Still allow navigation (optional)
+      window.location.href = 'step2.html';
+    });
+  }
+</script>
+
+<!-- Somewhere in your page -->
+<button onclick="goToNextStep()">Next Step</button>
 
 // In-App Interstitial (every 30s endlessly)
 
