@@ -3,108 +3,465 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Upload HTML to GitHub Gist + Live Render Link</title>
+<title>HTML Uploader to GitHub Gist</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-  body { font-family: Arial, sans-serif; margin: 2rem; }
-  textarea { width: 100%; height: 300px; font-family: monospace; font-size: 14px; }
-  input, button { margin-top: 1rem; font-size: 16px; padding: 0.5rem; width: 100%; max-width: 400px; }
-  #result { margin-top: 1rem; }
-  a { word-break: break-all; }
-  #htmlPreview { border: 1px solid #ddd; padding: 1rem; margin-top: 1rem; background: #f9f9f9; }
+  :root {
+    --primary: #2d3748;
+    --secondary: #4a5568;
+    --accent: #4299e1;
+    --light: #f7fafc;
+    --lighter: #fff;
+    --border: #e2e8f0;
+    --success: #48bb78;
+    --error: #f56565;
+    --warning: #ed8936;
+  }
+  
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+  
+  body {
+    font-family: 'Inter', sans-serif;
+    line-height: 1.6;
+    color: var(--primary);
+    background-color: var(--light);
+    padding: 2rem 1rem;
+  }
+  
+  .container {
+    max-width: 1000px;
+    margin: 0 auto;
+    background: var(--lighter);
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    padding: 2rem;
+  }
+  
+  h1 {
+    color: var(--primary);
+    margin-bottom: 1.5rem;
+    font-weight: 600;
+    text-align: center;
+  }
+  
+  h2 {
+    color: var(--secondary);
+    margin: 1.5rem 0 1rem;
+    font-weight: 500;
+    font-size: 1.25rem;
+  }
+  
+  .form-group {
+    margin-bottom: 1.5rem;
+  }
+  
+  label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: var(--secondary);
+  }
+  
+  input, textarea, select {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 1rem;
+    transition: border-color 0.2s;
+  }
+  
+  input:focus, textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.2);
+  }
+  
+  button {
+    background-color: var(--accent);
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+  
+  button:hover {
+    background-color: #3182ce;
+  }
+  
+  button:active {
+    transform: scale(0.98);
+  }
+  
+  button:disabled {
+    background-color: #a0aec0;
+    cursor: not-allowed;
+  }
+  
+  .preview-container {
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 1rem;
+    margin: 1.5rem 0;
+    background: var(--lighter);
+  }
+  
+  .preview-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+  
+  .preview-tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+  
+  .preview-tab {
+    padding: 0.5rem 1rem;
+    background: var(--light);
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+  }
+  
+  .preview-tab.active {
+    background: var(--accent);
+    color: white;
+  }
+  
+  .preview-content {
+    height: 300px;
+    overflow: auto;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1rem;
+    background: white;
+  }
+  
+  .code-preview {
+    white-space: pre-wrap;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.9rem;
+    overflow-wrap: break-word;
+  }
+  
+  .render-preview {
+    width: 100%;
+    height: 100%;
+    border: none;
+  }
+  
+  .result-container {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    border-radius: 6px;
+    background: var(--lighter);
+    border: 1px solid var(--border);
+  }
+  
+  .result-success {
+    border-left: 4px solid var(--success);
+  }
+  
+  .result-error {
+    border-left: 4px solid var(--error);
+  }
+  
+  .result-loading {
+    border-left: 4px solid var(--accent);
+  }
+  
+  .link-box {
+    margin: 1rem 0;
+    padding: 1rem;
+    background: var(--light);
+    border-radius: 4px;
+    word-break: break-all;
+  }
+  
+  .link-box a {
+    color: var(--accent);
+    text-decoration: none;
+  }
+  
+  .link-box a:hover {
+    text-decoration: underline;
+  }
+  
+  .loading-spinner {
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: white;
+    animation: spin 1s ease-in-out infinite;
+  }
+  
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+  
+  .hidden {
+    display: none;
+  }
+  
+  .status-message {
+    padding: 0.75rem;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+  }
+  
+  .status-info {
+    background: #ebf8ff;
+    color: #2b6cb0;
+  }
+  
+  .status-warning {
+    background: #fffaf0;
+    color: #c05621;
+  }
+  
+  .status-error {
+    background: #fff5f5;
+    color: #c53030;
+  }
+  
+  @media (max-width: 768px) {
+    .container {
+      padding: 1.5rem;
+    }
+    
+    .preview-tabs {
+      flex-direction: column;
+    }
+  }
 </style>
 </head>
 <body>
 
-<h1>Upload HTML to GitHub Gist</h1>
-
-<label for="token">GitHub Personal Access Token (with gist scope):</label><br />
-<input type="password" id="token" placeholder="Enter your GitHub token" autocomplete="off" />
-
-<div id="htmlPreview">
-  <h3>HTML loaded from localStorage (data2step):</h3>
-  <div id="htmlContentPreview" style="max-height: 200px; overflow: auto; border: 1px solid #eee; padding: 0.5rem; background: white;"></div>
+<div class="container">
+  <h1>HTML Uploader to GitHub Gist</h1>
+  
+  <div class="form-group">
+    <label for="token">GitHub Personal Access Token (with gist scope)</label>
+    <input type="password" id="token" placeholder="Enter your GitHub token" autocomplete="off" />
+    <p style="margin-top: 0.5rem; font-size: 0.9rem; color: var(--secondary);">
+      Need a token? <a href="https://github.com/settings/tokens/new?description=Gist%20Uploader&scopes=gist" target="_blank">Create one here</a>
+    </p>
+  </div>
+  
+  <div class="preview-container">
+    <div class="preview-header">
+      <h2>HTML Preview</h2>
+      <div id="htmlSourceInfo" class="status-message status-info">
+        Loaded from localStorage (data2step)
+      </div>
+    </div>
+    
+    <div class="preview-tabs">
+      <div class="preview-tab active" data-tab="code">Code View</div>
+      <div class="preview-tab" data-tab="render">Render View</div>
+    </div>
+    
+    <div class="preview-content">
+      <div id="codePreview" class="code-preview"></div>
+      <iframe id="renderPreview" class="render-preview hidden"></iframe>
+    </div>
+  </div>
+  
+  <button id="uploadBtn">
+    <span id="uploadBtnText">Upload to GitHub Gist</span>
+    <div id="uploadSpinner" class="loading-spinner hidden"></div>
+  </button>
+  
+  <div id="resultContainer" class="result-container hidden">
+    <h2 id="resultTitle">Upload Result</h2>
+    <div id="resultContent"></div>
+  </div>
 </div>
 
-<button id="uploadBtn">Upload & Get Links</button>
-
-<div id="result"></div>
-
 <script>
-const uploadBtn = document.getElementById("uploadBtn");
-const resultDiv = document.getElementById("result");
-const htmlContentPreview = document.getElementById("htmlContentPreview");
-
-// Load HTML from localStorage on page load
 document.addEventListener('DOMContentLoaded', () => {
-  const savedHtml = localStorage.getItem('data2step');
+  const tokenInput = document.getElementById('token');
+  const uploadBtn = document.getElementById('uploadBtn');
+  const uploadBtnText = document.getElementById('uploadBtnText');
+  const uploadSpinner = document.getElementById('uploadSpinner');
+  const resultContainer = document.getElementById('resultContainer');
+  const resultTitle = document.getElementById('resultTitle');
+  const resultContent = document.getElementById('resultContent');
+  const codePreview = document.getElementById('codePreview');
+  const renderPreview = document.getElementById('renderPreview');
+  const htmlSourceInfo = document.getElementById('htmlSourceInfo');
+  const previewTabs = document.querySelectorAll('.preview-tab');
   
-  if (!savedHtml) {
-    htmlContentPreview.textContent = "No HTML found in localStorage at key 'data3step'";
-    return;
-  }
+  let htmlContent = '';
   
-  // Display a preview of the HTML
-  htmlContentPreview.textContent = savedHtml.length > 1000 
-    ? savedHtml.substring(0, 1000) + '... [truncated]' 
-    : savedHtml;
-});
-
-uploadBtn.addEventListener("click", async () => {
-  const token = document.getElementById("token").value.trim();
-  const html = localStorage.getItem('data2step');
-
-  if (!token) {
-    alert("Please enter your GitHub token.");
-    return;
-  }
-  if (!html) {
-    alert("No HTML found in localStorage at key 'data3step'");
-    return;
-  }
-
-  resultDiv.innerHTML = "Uploading...";
-
-  try {
-    // Create the Gist
-    const response = await fetch("https://api.github.com/gists", {
-      method: "POST",
-      headers: {
-        "Authorization": "token " + token,
-        "Accept": "application/vnd.github.v3+json",
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        description: "HTML shared via uploader",
-        public: true,
-        files: {
-          "index.html": {
-            content: html
-          }
-        }
-      })
-    });
-
-    const data = await response.json();
-
-    if (!data.id) {
-      throw new Error("Failed to create gist: " + (data.message || "Unknown error"));
+  // Load HTML from localStorage on page load
+  function loadHtmlFromStorage() {
+    const savedHtml = localStorage.getItem('data2step');
+    
+    if (!savedHtml) {
+      htmlSourceInfo.textContent = "No HTML found in localStorage at key 'data2step'";
+      htmlSourceInfo.className = "status-message status-error";
+      uploadBtn.disabled = true;
+      codePreview.textContent = "No content available";
+      return;
     }
-
-    // Construct URLs
-    const gistUrl = data.html_url; // GitHub Gist page (edit/view)
-    const rawUrl = `https://gist.githubusercontent.com/${data.owner.login}/${data.id}/raw/index.html`;
-    const liveRenderUrl = `https://raw.githack.com/gist/${data.owner.login}/${data.id}/raw/index.html`;
-
-    // Show result
-    resultDiv.innerHTML = `
-      <h3>Success! Here are your links:</h3>
-      <p><strong>Gist URL (GitHub):</strong><br /><a href="${gistUrl}" target="_blank">${gistUrl}</a></p>
-      <p><strong>Live Render URL (renders HTML as webpage):</strong><br /><a href="${liveRenderUrl}" target="_blank">${liveRenderUrl}</a></p>
-      <p><em>Note: It may take a few seconds for the live render URL to update after creating the gist.</em></p>
-    `;
-  } catch (err) {
-    resultDiv.innerHTML = `<p style="color:red;">Error: ${err.message}</p>`;
+    
+    htmlContent = savedHtml;
+    
+    // Display in code preview
+    codePreview.textContent = savedHtml;
+    
+    // Display in render preview
+    const blob = new Blob([savedHtml], { type: 'text/html' });
+    renderPreview.src = URL.createObjectURL(blob);
   }
+  
+  // Initialize tab switching
+  previewTabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      previewTabs.forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      
+      if (tab.dataset.tab === 'code') {
+        codePreview.classList.remove('hidden');
+        renderPreview.classList.add('hidden');
+      } else {
+        codePreview.classList.add('hidden');
+        renderPreview.classList.remove('hidden');
+      }
+    });
+  });
+  
+  // Upload to GitHub Gist
+  uploadBtn.addEventListener('click', async () => {
+    const token = tokenInput.value.trim();
+    
+    if (!token) {
+      showError("Please enter your GitHub token.");
+      return;
+    }
+    
+    if (!htmlContent) {
+      showError("No HTML content available to upload.");
+      return;
+    }
+    
+    // Show loading state
+    uploadBtn.disabled = true;
+    uploadBtnText.textContent = "Uploading...";
+    uploadSpinner.classList.remove('hidden');
+    
+    // Clear previous results
+    resultContainer.classList.remove('hidden', 'result-success', 'result-error');
+    resultContainer.classList.add('result-loading');
+    resultTitle.textContent = "Uploading to GitHub Gist...";
+    resultContent.innerHTML = '<p>Please wait while we upload your HTML...</p>';
+    
+    try {
+      // Create the Gist
+      const response = await fetch("https://api.github.com/gists", {
+        method: "POST",
+        headers: {
+          "Authorization": "token " + token,
+          "Accept": "application/vnd.github.v3+json",
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          description: "HTML shared via HTML Uploader",
+          public: true,
+          files: {
+            "index.html": {
+              content: htmlContent
+            }
+          }
+        })
+      });
+      
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to create gist");
+      }
+      
+      if (!data.id) {
+        throw new Error("Failed to create gist: No ID returned");
+      }
+      
+      // Construct URLs
+      const gistUrl = data.html_url;
+      const rawUrl = `https://gist.githubusercontent.com/${data.owner.login}/${data.id}/raw/index.html`;
+      const liveRenderUrl = `https://raw.githack.com/${data.owner.login}/${data.id}/raw/index.html`;
+      
+      // Show success result
+      resultContainer.classList.remove('result-loading');
+      resultContainer.classList.add('result-success');
+      resultTitle.textContent = "Upload Successful!";
+      resultContent.innerHTML = `
+        <p>Your HTML has been uploaded to GitHub Gist. Here are your links:</p>
+        
+        <div class="link-box">
+          <strong>Gist URL (GitHub):</strong><br />
+          <a href="${gistUrl}" target="_blank">${gistUrl}</a>
+        </div>
+        
+        <div class="link-box">
+          <strong>Raw HTML URL:</strong><br />
+          <a href="${rawUrl}" target="_blank">${rawUrl}</a>
+        </div>
+        
+        <div class="link-box">
+          <strong>Live Render URL:</strong><br />
+          <a href="${liveRenderUrl}" target="_blank">${liveRenderUrl}</a>
+        </div>
+        
+        <p style="margin-top: 1rem; font-size: 0.9rem; color: var(--secondary);">
+          <em>Note: It may take a few seconds for the live render URL to update after creating the gist.</em>
+        </p>
+      `;
+      
+    } catch (err) {
+      showError(err.message);
+    } finally {
+      // Reset button state
+      uploadBtn.disabled = false;
+      uploadBtnText.textContent = "Upload to GitHub Gist";
+      uploadSpinner.classList.add('hidden');
+    }
+  });
+  
+  function showError(message) {
+    resultContainer.classList.remove('result-loading', 'result-success');
+    resultContainer.classList.add('result-error');
+    resultTitle.textContent = "Upload Failed";
+    resultContent.innerHTML = `
+      <p style="color: var(--error);">${message}</p>
+      <p>Please check your token and try again.</p>
+    `;
+    resultContainer.classList.remove('hidden');
+  }
+  
+  // Initial load
+  loadHtmlFromStorage();
 });
 </script>
 
