@@ -258,8 +258,8 @@
     </div>
     
     <div class="status" id="htmlStatus">
-      <div class="spinner"></div>
-      <span>Checking HTML content...</span>
+      <div class="spinner" id="htmlSpinner"></div>
+      <span id="htmlStatusText">Checking HTML content...</span>
     </div>
   </div>
   
@@ -325,6 +325,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   const htmlPreview = document.getElementById('htmlPreview');
   const htmlLength = document.getElementById('html-length');
   const htmlStatus = document.getElementById('htmlStatus');
+  const htmlStatusText = document.getElementById('htmlStatusText');
+  const htmlSpinner = document.getElementById('htmlSpinner');
   const uploadBtn = document.getElementById('uploadBtn');
   const uploadStatus = document.getElementById('uploadStatus');
   const uploadStatusText = document.getElementById('uploadStatusText');
@@ -343,7 +345,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   const savedHtml = localStorage.getItem('data2step');
   
   if (!savedHtml) {
-    htmlStatus.innerHTML = `<span style="color: ${getComputedStyle(document.documentElement).getPropertyValue('--error')}">❌ No HTML found in localStorage at key 'data2step'</span>`;
+    htmlSpinner.style.display = 'none';
+    htmlStatusText.innerHTML = `<span style="color: ${getComputedStyle(document.documentElement).getPropertyValue('--error')}">❌ No HTML found in localStorage at key 'data2step'</span>`;
     uploadBtn.disabled = true;
     return;
   }
@@ -352,14 +355,13 @@ document.addEventListener('DOMContentLoaded', async () => {
   htmlPreview.textContent = savedHtml;
   htmlLength.textContent = `${savedHtml.length} characters`;
   
-  // Validate HTML content
-  setTimeout(() => {
-    if (savedHtml.includes('<html') && savedHtml.includes('</html>')) {
-      htmlStatus.innerHTML = `<span style="color: ${getComputedStyle(document.documentElement).getPropertyValue('--success')}">✓ Valid HTML document loaded</span>`;
-    } else {
-      htmlStatus.innerHTML = `<span style="color: ${getComputedStyle(document.documentElement).getPropertyValue('--error')}">⚠ This doesn't look like a complete HTML document</span>`;
-    }
-  }, 1000);
+  // Immediately validate HTML content (no setTimeout needed)
+  htmlSpinner.style.display = 'none';
+  if (savedHtml.includes('<html') && savedHtml.includes('</html>')) {
+    htmlStatusText.innerHTML = `<span style="color: ${getComputedStyle(document.documentElement).getPropertyValue('--success')}">✓ Valid HTML document loaded</span>`;
+  } else {
+    htmlStatusText.innerHTML = `<span style="color: ${getComputedStyle(document.documentElement).getPropertyValue('--error')}">⚠ This doesn't look like a complete HTML document (missing html tags)</span>`;
+  }
   
   // Render upload history if any exists
   if (uploadHistory.length > 0) {
