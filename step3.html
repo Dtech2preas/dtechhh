@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <script src='//libtl.com/sdk.js' data-zone='9601506' data-sdk='show_9601506'></script>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>HTML to Live Website Converter</title>
+<script src='//libtl.com/sdk.js' data-zone='9601506' data-sdk='show_9601506'></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -205,7 +205,7 @@
     background-color: var(--success);
   }
   
-  /* New ad container styles */
+  /* Ad container styles */
   .ad-container {
     display: none;
     background-color: var(--card);
@@ -295,13 +295,13 @@
       <div class="step-text">Converted to live website</div>
     </div>
     
-    <!-- Ad container - shown before URLs -->
+    <!-- Ad container -->
     <div class="ad-container" id="adContainer">
-      <p class="ad-message">Please watch a short ad to reveal your website URL</p>
+      <p class="ad-message">Watch a short ad to reveal your website URL</p>
       <button id="showAdBtn">Show Ad & Reveal URL</button>
     </div>
     
-    <!-- URL containers - hidden until after ad -->
+    <!-- Hidden until after ad -->
     <div class="url-container" id="gistUrlContainer" style="display: none;">
       <span class="url-label">Gist URL (GitHub):</span>
       <a href="#" class="url-link" id="gistUrl" target="_blank"></a>
@@ -407,8 +407,6 @@ document.addEventListener('DOMContentLoaded', async () => {
       // Show result container but hide URLs
       resultContainer.style.display = 'block';
       uploadStatus.style.display = 'none';
-      
-      // Show ad container instead of URLs
       adContainer.style.display = 'block';
       
       // Scroll to results
@@ -427,21 +425,20 @@ document.addEventListener('DOMContentLoaded', async () => {
     showAdBtn.disabled = true;
     showAdBtn.textContent = 'Loading Ad...';
     
-    // Show Moneytag ad
+    // Call Moneytag ad function exactly as provided
     show_9601506().then(() => {
-      // After ad is completed
+      // Reward function - show URLs after ad
       adContainer.style.display = 'none';
       gistUrlContainer.style.display = 'block';
       liveUrlContainer.style.display = 'block';
       copyLiveUrl.style.display = 'block';
       
-      // Set the URLs
       gistUrl.textContent = tempGistUrl;
       gistUrl.href = tempGistUrl;
       liveUrl.textContent = tempLiveUrl;
       liveUrl.href = tempLiveUrl;
       
-      // Show success message
+      // Optional success message
       alert('Thank you! Your website URL is now available.');
     }).catch((error) => {
       showAdBtn.disabled = false;
@@ -462,21 +459,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     }, 2000);
   });
 });
-
-// Moneytag Ad Function (exactly as provided)
-function show_9601506() {
-  return new Promise((resolve) => {
-    // This would be replaced with actual Moneytag ad code
-    console.log('Moneytag ad shown');
-    
-    // Simulate ad completion after 2 seconds
-    setTimeout(() => {
-      // This alert is just for demo - remove in production
-      alert('You have seen an ad!');
-      resolve();
-    }, 2000);
-  });
-}
 </script>
 
 </body>
