@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ultimate Webpage Snatcher</title>
+  <title>Ultimate Webpage Snatcher - Stage 1</title>
   <style>
     :root {
       --primary: #4361ee;
@@ -119,6 +119,15 @@
     
     .btn-success:hover {
       background-color: #3ab4d9;
+    }
+    
+    .btn-stage2 {
+      background-color: var(--warning);
+      color: white;
+    }
+    
+    .btn-stage2:hover {
+      background-color: #e07e0c;
     }
     
     button:disabled {
@@ -239,6 +248,12 @@
       opacity: 1;
     }
     
+    .button-group {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+    
     footer {
       text-align: center;
       margin-top: 2rem;
@@ -259,6 +274,10 @@
       .options-grid {
         grid-template-columns: 1fr;
       }
+      
+      .button-group {
+        flex-direction: column;
+      }
     }
   </style>
 </head>
@@ -272,7 +291,7 @@
           <line x1="12" y1="22.08" x2="12" y2="12"></line>
         </svg>
       </div>
-      <h1>Ultimate Webpage Snatcher</h1>
+      <h1>Ultimate Webpage Snatcher - Stage 1</h1>
     </header>
     
     <div class="main-content">
@@ -327,19 +346,28 @@
         </button>
       </div>
       
-      <button class="btn-success" id="downloadBtn" disabled onclick="downloadHTML()">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-          <polyline points="7 10 12 15 17 10"></polyline>
-          <line x1="12" y1="15" x2="12" y2="3"></line>
-        </svg>
-        Download HTML
-      </button>
+      <div class="button-group">
+        <button class="btn-success" id="downloadBtn" disabled onclick="downloadHTML()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          Download HTML
+        </button>
+        
+        <button class="btn-stage2" id="stage2Btn" disabled onclick="goToStage2()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M5 12h14M12 5l7 7-7 7"></path>
+          </svg>
+          Go to Stage 2
+        </button>
+      </div>
     </div>
   </div>
   
   <footer>
-    Ultimate Webpage Snatcher &bull; Downloads complete webpages with all resources properly handled
+    Ultimate Webpage Snatcher - Stage 1 &bull; Downloads complete webpages with all resources properly handled
   </footer>
 
   <script>
@@ -807,6 +835,7 @@
         setLoading(true);
         document.getElementById('output').value = '';
         document.getElementById('downloadBtn').disabled = true;
+        document.getElementById('stage2Btn').disabled = true;
         document.getElementById('logContainer').innerHTML = '';
         updateProgress(0);
         addLog(`Starting fetch for: ${url}`, 'info');
@@ -842,10 +871,17 @@
         // Build final HTML
         let finalHTML = buildFinalHTML(doc);
         processedHTML = finalHTML;
+        
+        // Save to localStorage
+        localStorage.setItem('data1step', finalHTML);
+        addLog('Saved processed HTML to localStorage as data1step', 'success');
+        
+        // Update UI
         document.getElementById('output').value = finalHTML;
         document.getElementById('downloadBtn').disabled = false;
+        document.getElementById('stage2Btn').disabled = false;
         updateProgress(100);
-        addLog('Page processed successfully! Ready to download.', 'success');
+        addLog('Page processed successfully! Ready for download or Stage 2.', 'success');
       } catch (err) {
         addLog(`Error: ${err.message}`, 'error');
         console.error(err);
@@ -957,6 +993,21 @@
       }, 2000);
       
       addLog('HTML copied to clipboard', 'success');
+    }
+    
+    // Go to Stage 2
+    function goToStage2() {
+      if (!processedHTML) {
+        addLog('No processed HTML available for Stage 2', 'error');
+        return;
+      }
+      
+      // Save to localStorage again just in case
+      localStorage.setItem('data1step', processedHTML);
+      addLog('Navigating to Stage 2...', 'info');
+      
+      // Redirect to step2.html
+      window.location.href = 'step2.html';
     }
   </script>
 </body>
