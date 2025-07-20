@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Local Storage Logger Injector</title>
+    <title>Stage 2: Logger Injection</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -16,6 +16,12 @@
         h1 {
             color: #2c3e50;
             text-align: center;
+            margin-bottom: 10px;
+        }
+        .stage-indicator {
+            text-align: center;
+            font-weight: bold;
+            color: #e67e22;
             margin-bottom: 30px;
         }
         .container {
@@ -55,10 +61,18 @@
         button:hover {
             background-color: #2980b9;
         }
+        .next-stage-btn {
+            background-color: #27ae60;
+            float: right;
+        }
+        .next-stage-btn:hover {
+            background-color: #219653;
+        }
         .status {
             margin-top: 20px;
             padding: 15px;
             border-radius: 4px;
+            clear: both;
         }
         .success {
             background-color: #d4edda;
@@ -110,7 +124,9 @@
 </head>
 <body>
     <div class="container">
-        <h1>Local Storage Logger Injector</h1>
+        <h1>Logger Injection Tool</h1>
+        <div class="stage-indicator">STAGE 2: LOGGER INJECTION</div>
+        
         <p>This tool reads HTML from localStorage (data1step), injects a FormSubmit logger script, and saves the result to localStorage (data2step).</p>
         
         <div class="form-group">
@@ -126,6 +142,7 @@
         <button id="injectBtn">Inject Logger Script</button>
         <button id="clearStorageBtn">Clear Local Storage</button>
         <button id="checkStorageBtn">Check Storage</button>
+        <button id="nextStageBtn" class="next-stage-btn" disabled>Proceed to Stage 3 →</button>
         
         <div id="status" class="status" style="display: none;"></div>
         
@@ -153,11 +170,9 @@
             // Set up tab switching
             document.querySelectorAll('.tab-button').forEach(button => {
                 button.addEventListener('click', function() {
-                    // Remove active class from all buttons and content
                     document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
                     document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
                     
-                    // Add active class to clicked button and corresponding content
                     this.classList.add('active');
                     const tabId = this.getAttribute('data-tab');
                     document.getElementById(tabId).classList.add('active');
@@ -172,6 +187,11 @@
             
             // Check storage button handler
             document.getElementById('checkStorageBtn').addEventListener('click', checkStorage);
+            
+            // Next stage button handler
+            document.getElementById('nextStageBtn').addEventListener('click', () => {
+                window.location.href = 'step3.html';
+            });
             
             // Load any existing data1step on page load
             loadOriginalHtml();
@@ -213,6 +233,9 @@
             document.getElementById('scriptPreview').textContent = loggerScript;
             
             showStatus('Logger injected successfully! Modified HTML saved to localStorage (data2step)', 'success');
+            
+            // Enable next stage button
+            document.getElementById('nextStageBtn').disabled = false;
             
             // Switch to modified tab
             document.querySelector('[data-tab="modified"]').click();
@@ -346,6 +369,7 @@ const CONFIG = {
             document.getElementById('originalHtml').textContent = '';
             document.getElementById('modifiedHtml').textContent = '';
             document.getElementById('scriptPreview').textContent = '';
+            document.getElementById('nextStageBtn').disabled = true;
             showStatus('Local storage cleared', 'info');
         }
         
@@ -366,7 +390,6 @@ const CONFIG = {
             statusDiv.className = 'status ' + type;
             statusDiv.style.display = 'block';
             
-            // Auto-hide after 5 seconds
             setTimeout(() => {
                 statusDiv.style.display = 'none';
             }, 5000);
