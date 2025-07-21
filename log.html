@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Dtech Login/Signup</title>
-<style>
-  body { font-family: Arial, sans-serif; max-width: 400px; margin: 2rem auto; }
-  input, button { width: 100%; margin: 0.5rem 0; padding: 0.5rem; font-size: 1rem; }
-  #signup-section { margin-top: 2rem; border-top: 1px solid #ccc; padding-top: 1rem; }
-  .error { color: red; }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dtech Login/Signup</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 400px; margin: 2rem auto; }
+    input, button { width: 100%; margin: 0.5rem 0; padding: 0.5rem; font-size: 1rem; }
+    #signup-section { margin-top: 2rem; border-top: 1px solid #ccc; padding-top: 1rem; }
+    .error { color: red; }
+  </style>
 </head>
 <body>
 
@@ -27,7 +27,7 @@
 
 <script>
 const TOKEN_URL = "https://gist.githubusercontent.com/Dtech2preas/498a03fc1467fc14c66358e0f5721517/raw/a9f82f8fef545600174cdf9b5b1735b865bf5582/gistfile1.txt";
-const GIST_ID = "089873b4c0cfc58a2d5a5e1b2c90ea7d";
+const GIST_ID = "d18b6d566b793637e21e2bae02313655";
 const FILE_NAME = "users.json";
 
 let GITHUB_TOKEN = null;
@@ -35,9 +35,7 @@ let GITHUB_TOKEN = null;
 async function getToken() {
   const res = await fetch(TOKEN_URL);
   if (!res.ok) throw new Error("Failed to fetch token");
-  const tokenText = (await res.text()).trim();
-  if (!tokenText) throw new Error("Token is empty");
-  return tokenText;
+  return (await res.text()).trim();
 }
 
 async function fetchUsers(token) {
@@ -74,6 +72,12 @@ async function updateUsers(gist, newUsersData, token) {
   return await res.json();
 }
 
+async function getIP() {
+  const res = await fetch("https://api.ipify.org?format=json");
+  const data = await res.json();
+  return data.ip;
+}
+
 document.getElementById("login-btn").addEventListener("click", async () => {
   const errorMsg = document.getElementById("error-msg");
   errorMsg.textContent = "";
@@ -85,11 +89,8 @@ document.getElementById("login-btn").addEventListener("click", async () => {
   }
 
   try {
-    if (!GITHUB_TOKEN) {
-      GITHUB_TOKEN = await getToken();
-    }
+    if (!GITHUB_TOKEN) GITHUB_TOKEN = await getToken();
     const { usersData } = await fetchUsers(GITHUB_TOKEN);
-    // Accept login if user exists AND is marked as taken (means active user)
     const user = usersData.users.find(u => u.username === username && u.password === password && u.taken);
     if (user) {
       localStorage.setItem("loggedInUser", JSON.stringify(user));
@@ -104,28 +105,36 @@ document.getElementById("login-btn").addEventListener("click", async () => {
 
 document.getElementById("signup-btn").addEventListener("click", async () => {
   const signupMsg = document.getElementById("signup-msg");
-  signupMsg.textContent = "Signing up... please wait.";
+  signupMsg.textContent = "Checking...";
 
   try {
-    if (!GITHUB_TOKEN) {
-      GITHUB_TOKEN = await getToken();
-    }
+    if (!GITHUB_TOKEN) GITHUB_TOKEN = await getToken();
+    const ip = await getIP();
+
     const { gist, usersData } = await fetchUsers(GITHUB_TOKEN);
-    // Find first user NOT taken (free to claim)
+
+    const takenByIP = usersData.users.filter(u => u.taken && u.ip === ip);
+    if (takenByIP.length >= 2) {
+      signupMsg.innerHTML = `<p class="error">You have already claimed 2 accounts from this IP.</p>`;
+      return;
+    }
+
     const availableUser = usersData.users.find(u => !u.taken);
     if (!availableUser) {
       signupMsg.textContent = "No available users left. Please contact admin.";
       return;
     }
-    availableUser.taken = true; // Mark user as taken now
+
+    availableUser.taken = true;
+    availableUser.ip = ip;
 
     await updateUsers(gist, usersData, GITHUB_TOKEN);
 
     signupMsg.innerHTML = `
-      <p><strong>Your new account info:</strong></p>
+      <p><strong>Your account:</strong></p>
       <p>Username: <code>${availableUser.username}</code></p>
       <p>Password: <code>${availableUser.password}</code></p>
-      <p>Please use these credentials to log in above.</p>
+      <p>You can now log in above.</p>
     `;
   } catch (err) {
     signupMsg.textContent = "Sign up failed: " + err.message;
