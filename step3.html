@@ -523,43 +523,30 @@ document.addEventListener('DOMContentLoaded', async () => {
         throw new Error(gistData.message || 'Failed to create gist');
       }
 
-      // Use the raw_url from the gist response instead of constructing it
+      // Wait for GitHub to process the gist (critical fix)
+      uploadStatusText.textContent = 'Waiting for GitHub to process...';
+      await new Promise(resolve => setTimeout(resolve, 3000));
+
+      // Use the direct URLs from the gist response
       const rawUrl = gistData.files['index.html'].raw_url;
       const gistHtmlUrl = gistData.html_url;
       
-      // Wait a moment for GitHub to process the gist
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Create multiple URL formats for redundancy
+      // Create alternative URLs for redundancy
       const githackUrl = `https://gist.githack.com/${gistData.owner?.login || 'anonymous'}/${gistData.id}/raw/index.html`;
-      const jsdelivrUrl = `https://cdn.jsdelivr.net/gh/${gistData.owner?.login || 'anonymous'}/${gistData.id}@raw/index.html`;
       
-      // Verify at least one URL is accessible
-      const testUrls = [rawUrl, githackUrl, jsdelivrUrl];
-      let workingUrl = null;
+      // Verify the raw URL is accessible
+      const testResponse = await fetch(rawUrl, { 
+        method: 'HEAD',
+        cache: 'no-store'
+      });
       
-      for (const url of testUrls) {
-        try {
-          const testResponse = await fetch(url, { 
-            method: 'GET',
-            cache: 'no-store'
-          });
-          if (testResponse.ok) {
-            workingUrl = url;
-            break;
-          }
-        } catch (e) {
-          console.log(`URL test failed for ${url}`, e);
-        }
-      }
-      
-      if (!workingUrl) {
-        throw new Error('Could not verify any live URL');
+      if (!testResponse.ok) {
+        throw new Error('GitHub raw URL not yet available');
       }
       
       // Store URLs temporarily
       tempGistUrl = gistHtmlUrl;
-      tempLiveUrl = workingUrl;
+      tempLiveUrl = rawUrl; // Using raw_url as primary, fallback to githack if needed
       
       // Show result container but hide URLs
       resultContainer.style.display = 'block';
@@ -587,7 +574,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     showAdBtn.disabled = true;
     showAdBtn.textContent = 'Loading Ad...';
     
-    // Call Moneytag ad function exactly as provided
+    // Call Moneytag ad function
     show_9601506().then(() => {
       // Reward function - show URLs after ad
       adContainer.style.display = 'none';
