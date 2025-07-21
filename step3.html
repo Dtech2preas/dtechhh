@@ -4,7 +4,6 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>HTML to Live Website Converter</title>
-<!-- Moneytag SDK -->
 <script src='//libtl.com/sdk.js' data-zone='9601506' data-sdk='show_9601506'></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -525,43 +524,28 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
 
       // Wait for GitHub to process the gist (critical fix)
-      uploadStatusText.textContent = 'Waiting for GitHub to process...';
-      await new Promise(resolve => setTimeout(resolve, 3000));
+      uploadStatusText.textContent = 'Generating live URL...';
+      await new Promise(resolve => setTimeout(resolve, 2000));
 
-      // Use the direct URLs from the gist response
-      const rawUrl = gistData.files['index.html'].raw_url;
+      // Use gist.githack.com for instant rendering (FIXED)
       const gistHtmlUrl = gistData.html_url;
+      const liveRenderUrl = `https://gist.githack.com/${gistData.owner?.login || 'anonymous'}/${gistData.id}/raw/index.html`;
       
-      // Create alternative URLs for redundancy
-      const githackUrl = `https://gist.githack.com/${gistData.owner?.login || 'anonymous'}/${gistData.id}/raw/index.html`;
-      const htmlPreviewUrl = `https://htmlpreview.github.io/?${rawUrl}`;
-      
-      // Verify the URLs are accessible
-      let workingUrl = null;
-      const testUrls = [rawUrl, githackUrl, htmlPreviewUrl];
-      
-      for (const url of testUrls) {
-        try {
-          const testResponse = await fetch(url, { 
-            method: 'HEAD',
-            cache: 'no-store'
-          });
-          if (testResponse.ok) {
-            workingUrl = url;
-            break;
-          }
-        } catch (e) {
-          console.log(`URL test failed for ${url}`, e);
-        }
-      }
-      
-      if (!workingUrl) {
-        throw new Error('Could not verify any live URL');
+      // Verify the URL is accessible
+      try {
+        const testResponse = await fetch(liveRenderUrl, { 
+          method: 'HEAD',
+          cache: 'no-store'
+        });
+        if (!testResponse.ok) throw new Error('URL not ready');
+      } catch (e) {
+        console.log('Initial URL test failed, retrying...');
+        await new Promise(resolve => setTimeout(resolve, 1000));
       }
       
       // Store URLs temporarily
       tempGistUrl = gistHtmlUrl;
-      tempLiveUrl = workingUrl;
+      tempLiveUrl = liveRenderUrl;
       
       // Show result container but hide URLs
       resultContainer.style.display = 'block';
