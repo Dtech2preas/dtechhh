@@ -1,414 +1,69 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DTechML Style Editor</title>
-  <style>
-    :root {
-      --primary-color: #4361ee;
-      --primary-hover: #3a56d4;
-      --secondary-color: #6c757d;
-      --secondary-hover: #5a6268;
-      --background: #f8f9fa;
-      --card-bg: #ffffff;
-      --border-color: #dee2e6;
-      --text-color: #212529;
-      --success-color: #28a745;
-      --shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Crypto Ad Site</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
 
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: var(--background);
-      color: var(--text-color);
-      line-height: 1.6;
-      padding: 20px;
-      max-width: 1000px;
-      margin: 0 auto;
-    }
+        header {
+            background-color: #222;
+            color: #fff;
+            padding: 20px 0;
+        }
 
-    .container {
-      background: var(--card-bg);
-      border-radius: 10px;
-      box-shadow: var(--shadow);
-      padding: 30px;
-      margin-top: 20px;
-    }
+        main {
+            margin: 40px auto;
+            max-width: 600px;
+            padding: 20px;
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
 
-    h1 {
-      color: var(--primary-color);
-      margin-bottom: 5px;
-    }
+        .ad-container {
+            width: 300px;
+            height: 250px;
+            margin: 20px auto;
+        }
 
-    .subtitle {
-      color: var(--secondary-color);
-      margin-bottom: 25px;
-      font-size: 1rem;
-    }
-
-    select, input {
-      width: 100%;
-      padding: 12px 15px;
-      margin-bottom: 15px;
-      font-size: 16px;
-      border: 1px solid var(--border-color);
-      border-radius: 6px;
-      transition: all 0.3s ease;
-      background-color: var(--background);
-    }
-
-    select:focus, input:focus {
-      outline: none;
-      border-color: var(--primary-color);
-      box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
-    }
-
-    button {
-      padding: 12px 24px;
-      font-size: 16px;
-      font-weight: 500;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-
-    #previewArea {
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
-      padding: 20px;
-      min-height: 300px;
-      background: var(--background);
-      margin-top: 30px;
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-    }
-
-    .preview-element {
-      padding: 15px;
-      border: 1px solid var(--border-color);
-      border-radius: 6px;
-      background: var(--card-bg);
-      transition: all 0.3s ease;
-      cursor: pointer;
-    }
-
-    .preview-element.selected {
-      border: 2px solid var(--primary-color);
-      box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
-    }
-
-    /* Style Toolkit Popup */
-    .style-toolkit {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: var(--card-bg);
-      border-radius: 10px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-      padding: 25px;
-      width: 90%;
-      max-width: 600px;
-      z-index: 1000;
-      display: none;
-    }
-
-    .style-toolkit h3 {
-      margin-top: 0;
-      color: var(--primary-color);
-    }
-
-    .style-controls {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 15px;
-      margin-bottom: 20px;
-    }
-
-    .control-group {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .control-group label {
-      margin-bottom: 8px;
-      font-weight: 500;
-      color: var(--text-color);
-    }
-
-    .toolkit-buttons {
-      display: flex;
-      gap: 12px;
-      margin-top: 20px;
-    }
-
-    #applyBtn {
-      background: var(--primary-color);
-      color: white;
-    }
-
-    #applyBtn:hover {
-      background: var(--primary-hover);
-      transform: translateY(-1px);
-    }
-
-    #closeToolkitBtn {
-      background: var(--secondary-color);
-      color: white;
-    }
-
-    #closeToolkitBtn:hover {
-      background: var(--secondary-hover);
-      transform: translateY(-1px);
-    }
-
-    #exportBtn {
-      background: var(--success-color);
-      color: white;
-      margin-top: 20px;
-      width: 100%;
-    }
-
-    #exportBtn:hover {
-      background: #218838;
-      transform: translateY(-1px);
-    }
-
-    button:active {
-      transform: translateY(0);
-    }
-
-    .overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0, 0, 0, 0.5);
-      z-index: 999;
-      display: none;
-    }
-
-    .status {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      padding: 12px 20px;
-      background: var(--primary-color);
-      color: white;
-      border-radius: 6px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-      opacity: 0;
-      transition: opacity 0.3s ease;
-      z-index: 1000;
-    }
-
-    .status.visible {
-      opacity: 1;
-    }
-
-    @media (max-width: 768px) {
-      .container {
-        padding: 20px;
-      }
-
-      .style-controls {
-        grid-template-columns: 1fr;
-      }
-    }
-  </style>
+        footer {
+            margin-top: 50px;
+            font-size: 14px;
+            color: #888;
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Style Editor</h1>
-    <p class="subtitle">Click on any element in the preview to style it</p>
 
-    <h3>Preview</h3>
-    <div id="previewArea"></div>
+    <header>
+        <h1>Welcome to My Website</h1>
+    </header>
 
-    <button id="exportBtn" onclick="goToExport()">Export Design</button>
-  </div>
+    <main>
+        <p>Enjoy some interesting content below, and support us by viewing the ads.</p>
 
-  <!-- Style Toolkit Popup -->
-  <div class="overlay" id="overlay"></div>
-  <div class="style-toolkit" id="styleToolkit">
-    <h3>Style Element</h3>
+        <!-- A-ADS Banner Ad -->
+        <div class="ad-container">
+            <iframe data-aa='2403922' src='//acceptable.a-ads.com/2403922'
+                style='border:0px; padding:0; width:100%; height:100%; overflow:hidden; background-color: transparent;'>
+            </iframe>
+        </div>
+        <!-- End A-ADS -->
 
-    <div class="style-controls">
-      <div class="control-group">
-        <label for="fontSize">Font Size</label>
-        <input id="fontSize" type="text" placeholder="e.g. 16px or 1rem" />
-      </div>
-      <div class="control-group">
-        <label for="color">Text Color</label>
-        <input id="color" type="text" placeholder="e.g. #333 or navy" />
-      </div>
-      <div class="control-group">
-        <label for="bgColor">Background Color</label>
-        <input id="bgColor" type="text" placeholder="e.g. #fff or lightblue" />
-      </div>
-      <div class="control-group">
-        <label for="padding">Padding</label>
-        <input id="padding" type="text" placeholder="e.g. 10px or 1em 2em" />
-      </div>
-      <div class="control-group">
-        <label for="borderRadius">Border Radius</label>
-        <input id="borderRadius" type="text" placeholder="e.g. 5px or 50%" />
-      </div>
-    </div>
+        <p>Thank you for visiting! We rely on crypto ads to keep the lights on.</p>
+    </main>
 
-    <div class="toolkit-buttons">
-      <button id="applyBtn" onclick="applyStyle()">Apply Style</button>
-      <button id="closeToolkitBtn" onclick="closeToolkit()">Close</button>
-    </div>
-  </div>
+    <footer>
+        &copy; 2025 My Crypto Site — Powered by A-ADS
+    </footer>
 
-  <div id="status" class="status">Style applied successfully!</div>
-
-  <script>
-    let commands = {};
-    let elements = [];
-    let selectedElementIndex = -1;
-
-    document.addEventListener('DOMContentLoaded', async function() {
-      try {
-        const [cmds] = await Promise.all([
-          fetch('html_commands.json').then(r => r.json()),
-          new Promise(resolve => setTimeout(resolve, 300))
-        ]);
-
-        commands = cmds;
-        const code = localStorage.getItem('dtech_code') || '';
-        const area = document.getElementById('previewArea');
-
-        elements = []; // Reset elements array
-
-        code.split('\n').forEach((line, i) => {
-          const {cmd, values} = parseLine(line.trim());
-          if (!cmd || !commands[cmd]) return;
-
-          let html = commands[cmd].template;
-          (commands[cmd].required_fields || []).forEach((f, idx) => {
-            html = html.replace(`{${f}}`, values[idx] || '');
-          });
-
-          const div = document.createElement('div');
-          div.className = 'preview-element';
-          div.dataset.index = i;
-          div.innerHTML = html;
-
-          // Add click event to show toolkit
-          div.addEventListener('click', function() {
-            selectElement(i);
-            showToolkit();
-          });
-
-          area.appendChild(div);
-          elements.push(div);
-        });
-
-        if (elements.length > 0) {
-          showStatus(`Loaded ${elements.length} elements`, 2000);
-        } else {
-          showStatus("No elements to style", 2000);
-        }
-      } catch (error) {
-        showStatus(`Error: ${error.message}`, 3000);
-        console.error("Error loading style editor:", error);
-      }
-    });
-
-    function parseLine(line) {
-      const [cmd, rest] = line.split('=');
-      if (!cmd) return { cmd: '', values: [] };
-
-      const vals = [];
-      let current = '';
-      let inBrackets = false;
-
-      for (let char of (rest || '')) {
-        if (char === '{') inBrackets = true;
-        else if (char === '}') inBrackets = false;
-
-        if (char === ',' && !inBrackets) {
-          vals.push(current.trim());
-          current = '';
-        } else {
-          current += char;
-        }
-      }
-
-      if (current) vals.push(current.trim());
-      return { cmd: cmd.trim(), values: vals };
-    }
-
-    function selectElement(index) {
-      // Remove selected class from all elements
-      elements.forEach(el => el.classList.remove('selected'));
-
-      if (index >= 0 && index < elements.length) {
-        selectedElementIndex = index;
-        const selectedElement = elements[index];
-        selectedElement.classList.add('selected');
-
-        // Scroll to the selected element
-        selectedElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-      } else {
-        selectedElementIndex = -1;
-      }
-    }
-
-    function showToolkit() {
-      document.getElementById('overlay').style.display = 'block';
-      document.getElementById('styleToolkit').style.display = 'block';
-    }
-
-    function closeToolkit() {
-      document.getElementById('overlay').style.display = 'none';
-      document.getElementById('styleToolkit').style.display = 'none';
-    }
-
-    function applyStyle() {
-      if (selectedElementIndex < 0) {
-        showStatus("No element selected", 2000);
-        return;
-      }
-
-      const el = elements[selectedElementIndex];
-      if (!el) return;
-
-      const fontSize = document.getElementById('fontSize').value;
-      const color = document.getElementById('color').value;
-      const bgColor = document.getElementById('bgColor').value;
-      const padding = document.getElementById('padding').value;
-      const borderRadius = document.getElementById('borderRadius').value;
-
-      if (fontSize) el.style.fontSize = fontSize;
-      if (color) el.style.color = color;
-      if (bgColor) el.style.backgroundColor = bgColor;
-      if (padding) el.style.padding = padding;
-      if (borderRadius) el.style.borderRadius = borderRadius;
-
-      showStatus("Style applied successfully!", 2000);
-      closeToolkit();
-    }
-
-    function showStatus(message, duration = 2000) {
-      const status = document.getElementById('status');
-      status.textContent = message;
-      status.classList.add('visible');
-
-      setTimeout(() => {
-        status.classList.remove('visible');
-      }, duration);
-    }
-
-    function goToExport() { 
-      window.location.href = 'export.html'; 
-    }
-  </script>
 </body>
 </html>
