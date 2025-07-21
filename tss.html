@@ -1,82 +1,117 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>VAST Ad Example</title>
-    <style>
-        #video-container {
-            width: 640px;
-            height: 360px;
-            margin: 0 auto;
-            background: #000;
-        }
-        #video-player {
-            width: 100%;
-            height: 100%;
-        }
-        #ad-container {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: none;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>DTech Rewards Ad Flow</title>
+  <link rel="stylesheet" href="https://cdn.fluidplayer.com/v3/current/fluidplayer.min.css" />
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background: #f9f9f9;
+      color: #333;
+      padding: 40px;
+      text-align: center;
+    }
+    section {
+      display: none;
+    }
+    section.active {
+      display: block;
+    }
+    video {
+      width: 90%;
+      max-width: 720px;
+      margin: 20px auto;
+      border: 3px solid #00aa88;
+      border-radius: 10px;
+    }
+    .btn {
+      background: #00aa88;
+      color: white;
+      padding: 12px 24px;
+      font-size: 18px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+    .btn:disabled {
+      background: #999;
+      cursor: not-allowed;
+    }
+  </style>
 </head>
 <body>
-    <!-- Video Container -->
-    <div id="video-container">
-        <video id="video-player" controls></video>
-        <div id="ad-container"></div>
-    </div>
 
-    <!-- Load Google IMA SDK -->
-    <script src="https://imasdk.googleapis.com/js/sdkloader/ima3.js"></script>
+  <!-- HOME SCREEN -->
+  <section id="home" class="active">
+    <h1>🎁 Welcome to DTech Rewards</h1>
+    <p>Watch a short ad to unlock your reward.</p>
+    <button class="btn" onclick="goToAd()">Start</button>
+  </section>
 
-    <script>
-        // 1. Wait for the page to load
-        document.addEventListener('DOMContentLoaded', function() {
-            // 2. Get video player and ad container
-            const videoPlayer = document.getElementById('video-player');
-            const adContainer = document.getElementById('ad-container');
+  <!-- AD SCREEN -->
+  <section id="watch">
+    <h2>🎬 Watch the Ad to Unlock</h2>
+    <video id="reward-video" controls></video>
+  </section>
 
-            // 3. Initialize IMA SDK
-            const adDisplayContainer = new google.ima.AdDisplayContainer(adContainer, videoPlayer);
-            const adsLoader = new google.ima.AdsLoader(adDisplayContainer);
+  <!-- REWARD SCREEN -->
+  <section id="reward">
+    <h2>✅ You've Unlocked the Reward!</h2>
+    <p>Thank you for watching the ad. Click below to access your reward.</p>
+    <a href="https://dtech24.co.za/thank-you" class="btn">Access Reward</a>
+  </section>
 
-            // 4. Set up VAST ad request
-            const adsRequest = new google.ima.AdsRequest();
-            adsRequest.adTagUrl = 'https://idioticleadership.com/dmmqFoz.diG-NWv/ZzGlUf/Ge/mt9SurZIUblkkyPoT/YR1-MejOIS0kOgTNIFteNojHUFycM_jSQP5nMrwO'; // Replace with your VAST URL
-            adsRequest.linearAdSlotWidth = 640;
-            adsRequest.linearAdSlotHeight = 360;
+  <script src="https://cdn.fluidplayer.com/v3/current/fluidplayer.min.js"></script>
+  <script>
+    const sections = {
+      home: document.getElementById("home"),
+      watch: document.getElementById("watch"),
+      reward: document.getElementById("reward")
+    };
 
-            // 5. Handle ad events
-            adsLoader.addEventListener(
-                google.ima.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED,
-                onAdsManagerLoaded
-            );
-            adsLoader.addEventListener(
-                google.ima.AdErrorEvent.Type.AD_ERROR,
-                onAdError
-            );
+    function showSection(name) {
+      for (let key in sections) {
+        sections[key].classList.remove("active");
+      }
+      sections[name].classList.add("active");
+    }
 
-            // 6. Request ads
-            adDisplayContainer.initialize();
-            adsLoader.requestAds(adsRequest);
+    function goToAd() {
+      showSection("watch");
+      setupAdPlayer();
+    }
 
-            // 7. Play ads when ready
-            function onAdsManagerLoaded(event) {
-                const adsManager = event.getAdsManager(videoPlayer);
-                adsManager.init(640, 360, google.ima.ViewMode.NORMAL);
-                adsManager.start();
+    function setupAdPlayer() {
+      const videoElement = document.getElementById("reward-video");
+      videoElement.innerHTML = `
+        <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
+      `;
+
+      const player = fluidPlayer('reward-video', {
+        layoutControls: {
+          autoPlay: true,
+          posterImage: ''
+        },
+        vastOptions: {
+          adList: [
+            {
+              roll: 'preRoll',
+              vastTag: 'https://idioticleadership.com/dzm.FszWdMG/NbvCZkG/UD/_eumh9eukZxUblJk/PJTsYT1NMJj_IN1KNJTtAatHNFjdUyyEMajvUC1SMgQM',
+              adText: "Ad is loading...",
+              adTextPosition: "top left"
             }
+          ]
+        }
+      });
 
-            // 8. Handle errors (e.g., no ad returned)
-            function onAdError(error) {
-                console.error('VAST Error:', error.getError());
-                videoPlayer.play(); // Fallback to regular content
-            }
-        });
-    </script>
+      // When ad ends, show reward screen
+      player.on('adended', function () {
+        showSection("reward");
+      });
+    }
+  </script>
+
 </body>
 </html>
