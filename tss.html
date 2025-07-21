@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>VAST Ad Test – DTech</title>
+  <link rel="stylesheet" href="https://cdn.fluidplayer.com/v3/current/fluidplayer.min.css" />
+  <style>
+    body {
+      background: #111;
+      color: #fff;
+      font-family: sans-serif;
+      text-align: center;
+      padding: 50px;
+    }
+    video {
+      width: 90%;
+      max-width: 720px;
+      border: 5px solid #00ffcc;
+      border-radius: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>DTech Video With HilltopAd Pre-roll</h1>
+
+  <video id="my-video" controls>
+    <!-- Your own video or any placeholder video -->
+    <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
+  </video>
+
+  <script src="https://cdn.fluidplayer.com/v3/current/fluidplayer.min.js"></script>
+  <script>
+    fluidPlayer('my-video', {
+      layoutControls: {
+        primaryColor: "#00ffcc",
+        posterImage: "",
+        autoPlay: false
+      },
+      vastOptions: {
+        adList: [
+          {
+            roll: 'preRoll',
+            vastTag: 'https://idioticleadership.com/d/m.FCz/dhGeNBvUZgGGUc/NeSmA9sufZ/UulhkdPWTZY/1VMWjlIf0/O/TlIetCN/j/UFyoM-j/QX5MM/wK',
+            adText: "Your ad will play shortly...",
+            adTextPosition: "top left"
+          }
+        ]
+      }
+    });
+  </script>
+
+</body>
+</html>
