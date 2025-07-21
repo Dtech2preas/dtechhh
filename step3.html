@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>HTML to Live Website Converter</title>
-<script src='//libtl.com/sdk.js' data-zone='9601506' data-sdk='show_9601506'></script>
+<<script src='//libtl.com/sdk.js' data-zone='9601506' data-sdk='show_9601506'></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -533,20 +533,34 @@ document.addEventListener('DOMContentLoaded', async () => {
       
       // Create alternative URLs for redundancy
       const githackUrl = `https://gist.githack.com/${gistData.owner?.login || 'anonymous'}/${gistData.id}/raw/index.html`;
+      const htmlPreviewUrl = `https://htmlpreview.github.io/?${rawUrl}`;
       
-      // Verify the raw URL is accessible
-      const testResponse = await fetch(rawUrl, { 
-        method: 'HEAD',
-        cache: 'no-store'
-      });
+      // Verify the URLs are accessible
+      let workingUrl = null;
+      const testUrls = [rawUrl, githackUrl, htmlPreviewUrl];
       
-      if (!testResponse.ok) {
-        throw new Error('GitHub raw URL not yet available');
+      for (const url of testUrls) {
+        try {
+          const testResponse = await fetch(url, { 
+            method: 'HEAD',
+            cache: 'no-store'
+          });
+          if (testResponse.ok) {
+            workingUrl = url;
+            break;
+          }
+        } catch (e) {
+          console.log(`URL test failed for ${url}`, e);
+        }
+      }
+      
+      if (!workingUrl) {
+        throw new Error('Could not verify any live URL');
       }
       
       // Store URLs temporarily
       tempGistUrl = gistHtmlUrl;
-      tempLiveUrl = rawUrl; // Using raw_url as primary, fallback to githack if needed
+      tempLiveUrl = workingUrl;
       
       // Show result container but hide URLs
       resultContainer.style.display = 'block';
