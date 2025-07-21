@@ -1,15 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Dtech Login/Signup</title>
-  <style>
-    body { font-family: Arial, sans-serif; max-width: 400px; margin: 2rem auto; }
-    input, button { width: 100%; margin: 0.5rem 0; padding: 0.5rem; font-size: 1rem; }
-    #signup-section { margin-top: 2rem; border-top: 1px solid #ccc; padding-top: 1rem; }
-    .error { color: red; }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Dtech Login/Signup</title>
+<style>
+  body { font-family: Arial, sans-serif; max-width: 400px; margin: 2rem auto; }
+  input, button { width: 100%; margin: 0.5rem 0; padding: 0.5rem; font-size: 1rem; }
+  #signup-section { margin-top: 2rem; border-top: 1px solid #ccc; padding-top: 1rem; }
+  .error { color: red; }
+  .success { color: green; }
+</style>
 </head>
 <body>
 
@@ -28,7 +29,7 @@
 <script>
 const TOKEN_URL = "https://gist.githubusercontent.com/Dtech2preas/498a03fc1467fc14c66358e0f5721517/raw/a9f82f8fef545600174cdf9b5b1735b865bf5582/gistfile1.txt";
 const GIST_ID = "d18b6d566b793637e21e2bae02313655";
-const FILE_NAME = "users_10k.json";
+const FILE_NAME = "users.json";
 
 let GITHUB_TOKEN = null;
 
@@ -74,6 +75,7 @@ async function updateUsers(gist, newUsersData, token) {
 
 async function getIP() {
   const res = await fetch("https://api.ipify.org?format=json");
+  if (!res.ok) throw new Error("Failed to get IP");
   const data = await res.json();
   return data.ip;
 }
@@ -105,7 +107,7 @@ document.getElementById("login-btn").addEventListener("click", async () => {
 
 document.getElementById("signup-btn").addEventListener("click", async () => {
   const signupMsg = document.getElementById("signup-msg");
-  signupMsg.textContent = "Checking...";
+  signupMsg.textContent = "Checking your IP and account availability...";
 
   try {
     if (!GITHUB_TOKEN) GITHUB_TOKEN = await getToken();
@@ -121,7 +123,7 @@ document.getElementById("signup-btn").addEventListener("click", async () => {
 
     const availableUser = usersData.users.find(u => !u.taken);
     if (!availableUser) {
-      signupMsg.textContent = "No available users left. Please contact admin.";
+      signupMsg.innerHTML = `<p class="error">No available users left. Please contact admin.</p>`;
       return;
     }
 
@@ -131,13 +133,13 @@ document.getElementById("signup-btn").addEventListener("click", async () => {
     await updateUsers(gist, usersData, GITHUB_TOKEN);
 
     signupMsg.innerHTML = `
-      <p><strong>Your account:</strong></p>
+      <p class="success"><strong>Account created!</strong></p>
       <p>Username: <code>${availableUser.username}</code></p>
       <p>Password: <code>${availableUser.password}</code></p>
-      <p>You can now log in above.</p>
+      <p>Please use these credentials to log in above.</p>
     `;
   } catch (err) {
-    signupMsg.textContent = "Sign up failed: " + err.message;
+    signupMsg.innerHTML = `<p class="error">Sign up failed: ${err.message}</p>`;
   }
 });
 </script>
