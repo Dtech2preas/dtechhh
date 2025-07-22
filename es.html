@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Append JSON to Gist</title>
+</head>
+<body>
+  <h2>Append JSON Data to Existing Gist</h2>
+
+  <form id="appendForm">
+    <label>Gist ID:</label><br>
+    <input type="text" id="gistId" required><br><br>
+
+    <label>Filename in Gist (e.g., data.json):</label><br>
+    <input type="text" id="filename" required><br><br>
+
+    <label>Data to Add (JSON format):</label><br>
+    <textarea id="jsonData" rows="6" cols="40">
+{
+  "name": "John Doe",
+  "email": "john@example.com"
+}
+    </textarea><br><br>
+
+    <button type="submit">Append to Gist</button>
+  </form>
+
+  <div id="result" style="margin-top:20px;"></div>
+
+  <script>
+    const TOKEN_URL = "https://gist.githubusercontent.com/Dtech2preas/498a03fc1467fc14c66358e0f5721517/raw/a9f82f8fef545600174cdf9b5b1735b865bf5582/gistfile1.txt";
+
+    async function fetchToken() {
+      const res = await fetch(TOKEN_URL);
+      return (await res.text()).trim();
+    }
+
+    document.getElementById('appendForm').addEventListener('submit', async function (e) {
+      e.preventDefault();
+
+      const gistId = document.getElementById('gistId').value.trim();
+      const filename = document.getElementById('filename').value.trim();
+      let newEntry;
+
+      try {
+        newEntry = JSON.parse(document.getElementById('jsonData').value.trim());
+      } catch (e) {
+        alert("❌ Invalid JSON data.");
+        return;
+      }
+
+      const token = await fetchToken();
+
+      // Step 1: Get current content of the Gist
+      const gistRes = await fetch(`https://api.github.com/gists/${gistId}`, {
+        headers: { Authorization: `token ${token}` }
+      });
+
+      const gistData = await gistRes.json();
+
+      let currentData = {};
+      if (gistData.files && gistData.files[filename]) {
+        try {
+          currentData = JSON.parse(gistData.files[filename].content);
+        } catch (e) {
+          currentData = {};
+        }
+      }
+
+      // Step 2: Append new data with timestamp key
+      const timestamp = new Date().toISOString();
+      currentData[timestamp] = newEntry;
+
+      // Step 3: Send PATCH to update the Gist
+      const updateRes = await fetch(`https://api.github.com/gists/${gistId}`, {
+        method: 'PATCH',
+        headers: {
+          'Authorization': `token ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          files: {
+            [filename]: {
+              content: JSON.stringify(currentData, null, 2)
+            }
+          }
+        })
+      });
+
+      const resultDiv = document.getElementById("result");
+
+      if (updateRes.ok) {
+        const resultData = await updateRes.json();
+        resultDiv.innerHTML = `
+          ✅ Data added successfully!<br>
+          View Gist: <a href="${resultData.html_url}" target="_blank">${resultData.html_url}</a>
+        `;
+      } else {
+        resultDiv.innerHTML = `❌ Failed to update Gist.`;
+      }
+    });
+  </script>
+</body>
+</html>
