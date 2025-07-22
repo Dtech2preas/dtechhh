@@ -2,74 +2,62 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Gist JSON Viewer</title>
+  <title>📁 Data.json Viewer</title>
   <style>
     body {
       font-family: Arial, sans-serif;
       padding: 20px;
-      background: #f2f2f2;
+      background: #f8f9fa;
     }
     textarea {
       width: 100%;
-      height: 400px;
+      height: 500px;
       font-family: monospace;
       font-size: 14px;
       background: #fff;
       padding: 10px;
+      border: 1px solid #ccc;
+      resize: vertical;
     }
-    input {
-      padding: 8px;
-      margin-right: 10px;
+    h2 {
+      color: #333;
     }
   </style>
 </head>
 <body>
-  <h2>🔍 View Gist JSON Content</h2>
+  <h2>📄 Viewing <code>Data.json</code> from Gist</h2>
 
-  <form id="gistForm">
-    <label>Gist ID:</label>
-    <input type="text" id="gistId" value="11006f136d1dba7e6a2bb2cfe3271275" required>
+  <p>Gist: <a href="https://gist.github.com/Dtech2preas/baf8538c85354add526e6cb4c40dcd3a" target="_blank">baf8538c85354add526e6cb4c40dcd3a</a></p>
 
-    <label>Filename:</label>
-    <input type="text" id="filename" value="dtech-test_log.txt" required>
-
-    <button type="submit">Load JSON</button>
-  </form>
-
-  <div id="result" style="margin-top: 20px;">
-    <h3>📄 JSON Output:</h3>
-    <textarea readonly id="jsonViewer">Waiting for data...</textarea>
-  </div>
+  <textarea readonly id="jsonViewer">Loading...</textarea>
 
   <script>
-    document.getElementById('gistForm').addEventListener('submit', async function (e) {
-      e.preventDefault();
+    const gistId = "baf8538c85354add526e6cb4c40dcd3a";
+    const filename = "Data.json";
+    const rawURL = `https://gist.githubusercontent.com/Dtech2preas/${gistId}/raw/${filename}`;
 
-      const gistId = document.getElementById('gistId').value.trim();
-      const filename = document.getElementById('filename').value.trim();
-
-      const rawURL = `https://gist.githubusercontent.com/Dtech2preas/${gistId}/raw/${filename}`;
-
+    async function loadGistJSON() {
       try {
-        const res = await fetch(rawURL);
-        if (!res.ok) throw new Error("Failed to fetch file.");
+        const response = await fetch(rawURL);
+        if (!response.ok) throw new Error("Failed to fetch file.");
 
-        const text = await res.text();
-        let parsed;
+        const text = await response.text();
+        let formatted;
 
         try {
-          parsed = JSON.parse(text);
+          const json = JSON.parse(text);
+          formatted = JSON.stringify(json, null, 2);
         } catch (err) {
-          document.getElementById('jsonViewer').value = text;
-          return;
+          formatted = text; // raw if not JSON
         }
 
-        const pretty = JSON.stringify(parsed, null, 2);
-        document.getElementById('jsonViewer').value = pretty;
+        document.getElementById("jsonViewer").value = formatted;
       } catch (err) {
-        document.getElementById('jsonViewer').value = "❌ Error: " + err.message;
+        document.getElementById("jsonViewer").value = `❌ Error: ${err.message}`;
       }
-    });
+    }
+
+    loadGistJSON();
   </script>
 </body>
 </html>
