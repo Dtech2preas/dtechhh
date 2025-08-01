@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Registration Complete | Betway ZA</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --green:#1d773d;
+    --dark:#121212;
+    --light:#f8f8f8;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Montserrat',sans-serif;
+    background:var(--light);
+    color:var(--dark);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    min-height:100vh;
+    line-height:1.4;
+  }
+  .card{
+    background:#fff;
+    max-width:450px;
+    padding:1.75rem;
+    border-radius:10px;
+    text-align:center;
+    box-shadow:0 5px 20px rgba(0,0,0,0.08);
+    border-top:5px solid var(--green);
+    margin:0.5rem;
+  }
+  .logo{height:44px;margin-bottom:1rem;}
+  .title{color:var(--green);font-size:1.6rem;margin:0;font-weight:700;}
+  .sub{font-size:1rem;margin:6px 0;font-weight:500;}
+  .badge{
+    background:#f0f7f2;
+    border:1px dashed var(--green);
+    border-radius:6px;
+    padding:0.75rem;
+    position:relative;
+    margin:1rem 0;
+  }
+  .badge:before{
+    content:"EXCLUSIVE";
+    position:absolute;
+    top:-8px;
+    left:50%;
+    transform:translateX(-50%);
+    background:var(--green);
+    color:#fff;
+    padding:2px 8px;
+    font-size:0.6rem;
+    font-weight:600;
+    border-radius:8px;
+  }
+  .amount{
+    font-size:1.8rem;
+    font-weight:700;
+    color:var(--green);
+    margin:0;
+  }
+  .small{font-size:0.9rem;color:#555;margin:4px 0;font-weight:500;}
+  .msg{
+    text-align:left;
+    font-size:0.85rem;
+    margin:1rem 0;
+    padding:0 4px;
+    color:#444;
+  }
+  .highlight{color:var(--green);font-weight:600;}
+  .steps{
+    padding-left:1rem;
+    margin:8px 0;
+    text-align:left;
+  }
+  .step{
+    position:relative;
+    padding-left:1.3rem;
+    margin-bottom:6px;
+    font-size:0.85rem;
+  }
+  .step:before{
+    content:"✓";
+    position:absolute;
+    left:0;
+    color:var(--green);
+    font-weight:700;
+  }
+  .ref{
+    background:#f0f0f0;
+    padding:0.65rem;
+    border-radius:5px;
+    font-family:monospace;
+    font-size:0.8rem;
+    font-weight:600;
+    margin:1rem 0;
+    letter-spacing:0.5px;
+  }
+  .btn{
+    display:block;
+    width:100%;
+    max-width:260px;
+    margin:0.75rem auto;
+    padding:0.85rem;
+    background:var(--green);
+    color:#fff;
+    border:none;
+    border-radius:5px;
+    font-weight:600;
+    text-decoration:none;
+    cursor:pointer;
+    transition:0.25s;
+    font-size:0.95rem;
+  }
+  .btn:hover{
+    transform:translateY(-1px);
+    box-shadow:0 4px 12px rgba(29,119,61,0.2);
+  }
+  .footer{
+    font-size:0.65rem;
+    color:#777;
+    margin-top:1.5rem;
+    border-top:1px solid #eee;
+    padding-top:1rem;
+  }
+  .links{
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:center;
+    gap:8px;
+    margin-bottom:6px;
+  }
+  .links a{
+    text-decoration:none;
+    font-size:0.65rem;
+    color:#666;
+  }
+  .links a:hover{color:var(--green);}
+  .secure{
+    font-size:0.65rem;
+    margin:4px 0;
+    display:flex;
+    justify-content:center;
+    gap:4px;
+    align-items:center;
+    color:#666;
+  }
+</style>
+</head>
+<body>
+  <div class="card">
+    <img src="https://i.ibb.co/39bDqPSc/images-3.png" alt="Betway" class="logo" />
+    <h1 class="title">Registration Complete</h1>
+    <p class="sub">You qualify for the R125 Welcome Bonus!</p>
+
+    <div class="badge">
+      <p class="amount">R125</p>
+      <p class="small">New player bonus</p>
+    </div>
+
+    <div class="msg">
+      <p>Thanks for signing up! Your registration is confirmed and your account is queued for the bonus.</p>
+      <div class="steps">
+        <div class="step">Registration confirmed</div>
+        <div class="step">Account flagged</div>
+        <div class="step">Team will notify you</div>
+      </div>
+      <p><span class="highlight">Note:</span> Credits are processed manually within 24–48h. SMS will follow when ready.</p>
+    </div>
+
+    <div class="ref">Ref: BW-PROMO-9182436</div>
+    <button class="btn" onclick="alert('Bonus is being processed. You will get an SMS when ready.');">Check Status</button>
+
+    <div class="footer">
+      <div class="links">
+        <a href="#" target="_blank">Terms</a>
+        <a href="#" target="_blank">Privacy</a>
+        <a href="#" target="_blank">Responsible Gaming</a>
+        <a href="#" target="_blank">Support</a>
+      </div>
+      <div class="secure">🔒 Secure Registration</div>
+      <p>© 2025 Betway (Pty) Ltd. All rights reserved.<br>License No. 10142816-007. Western Cape Gambling and Racing Board.</p>
+    </div>
+  </div>
+</body>
+</html>
