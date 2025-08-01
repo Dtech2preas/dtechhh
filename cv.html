@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Beauty Upload & Gallery (Single JSON)</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <style>
+    body { font-family: system-ui,-apple-system,BlinkMacSystemFont,sans-serif; background:#f2f4f8; margin:0; padding:0; }
+    .container { max-width: 1000px; margin: auto; padding:1rem; }
+    .card { background:#fff; border-radius:12px; padding:16px; box-shadow:0 10px 25px rgba(0,0,0,0.06); margin-bottom:1rem; }
+    .grid { display:grid; gap:16px; grid-template-columns: repeat(auto-fit,minmax(240px,1fr)); }
+    input, button { padding:10px; font-size:14px; border-radius:6px; border:1px solid #ccc; width:100%; box-sizing:border-box; }
+    button { cursor:pointer; background:#2563eb; color:#fff; border:none; }
+    .small { font-size:12px; color:#555; }
+    .profile { position:relative; overflow:hidden; border-radius:12px; }
+    .profile img { width:100%; display:block; border-radius:8px; }
+    .overlay { position:absolute; bottom:0; left:0; right:0; background:rgba(0,0,0,0.55); color:#fff; padding:8px; display:flex; justify-content:space-between; align-items:center; font-size:13px; }
+    .like-btn { background:#ff4081; border:none; padding:6px 12px; border-radius:20px; cursor:pointer; display:flex; align-items:center; gap:6px; }
+    .status { margin-top:8px; padding:8px; border-radius:6px; background:#eef7ee; }
+    .error { background:#ffe3e3; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card" id="uploadSection">
+      <h2>Upload Beauty Profile</h2>
+      <div style="display:grid; gap:12px; grid-template-columns:repeat(auto-fit,minmax(150px,1fr));">
+        <div>
+          <label>Preferred Username</label>
+          <input type="text" id="username" placeholder="e.g., beautyqueen" />
+        </div>
+        <div>
+          <label>Full Name</label>
+          <input type="text" id="fullName" placeholder="Name and surname" />
+        </div>
+        <div>
+          <label>Age</label>
+          <input type="number" id="age" placeholder="Age" min="13" />
+        </div>
+      </div>
+      <div style="margin-top:12px;">
+        <label>Profile Image</label>
+        <input type="file" id="imageInput" accept="image/*" />
+      </div>
+      <div style="margin-top:12px;">
+        <button id="submitBtn">Submit & Upload</button>
+      </div>
+      <div id="status" class="status small">Ready.</div>
+    </div>
+
+    <div class="card">
+      <h2>Gallery</h2>
+      <div id="gallery" class="grid"></div>
+      <div id="galleryStatus" class="small" style="margin-top:4px;">Loading profiles...</div>
+    </div>
+  </div>
+
+  <script>
+    // Config
+    const GIST_TOKEN_URL = "https://gist.githubusercontent.com/Dtech2preas/6750d0418aaa9dfe7f297c26d1dfae48/raw/2e511e4d11267d5aade0229849446b7297ae01c9/gistfile1.txt";
+    const REPO_OWNER = "Dtech2preas";
+    const REPO_NAME = "Oratilr";
+    const DATA_FILE_PATH = "data1.json"; // single JSON file
+    const IMGBB_API_KEY = "cedf418c6d844af9c47a7775a17161a6";
+
+    const statusEl = document.getElementById("status");
+    const galleryEl = document.getElementById("gallery");
+    const galleryStatusEl = document.getElementById("galleryStatus");
+    const submitBtn = document.getElementById("submitBtn");
+
+    function setStatus(msg, error=false) {
+      statusEl.textContent = msg;
+      statusEl.className = "status small" + (error ? " error" : "");
+    }
+
+    async function fetchToken() {
+      const r = await fetch(GIST_TOKEN_URL);
+      if (!r.ok) throw new Error("Could not fetch token gist");
+      const t = (await r.text()).trim();
+      if (!t) throw new Error("Token empty");
+      return t;
+    }
+
+    async function getRepoFile(token) {
+      const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${DATA_FILE_PATH}`;
+      const res = await fetch(url, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: "application/vnd.github.v3+json"
+        }
+      });
+      if (!res.ok) {
+        throw new Error(`GitHub fetch failed ${res.status} ${res.statusText}`);
+      }
+      return await res.json();
+    }
+
+    async function updateRepoFile(token, sha, array) {
+      const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${DATA_FILE_PATH}`;
+      const body = {
+        message: "Update beauty profile",
+        content: btoa(unescape(encodeURIComponent(JSON.stringify(array, null, 2)))),
+        sha: sha
+      };
+      const res = await fetch(url, {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: "application/vnd.github.v3+json",
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(body)
+      });
+      if (!res.ok) {
+        const txt = await res.text();
+        throw new Error("GitHub update error: " + res.status + " " + txt);
+      }
+      return await res.json();
+    }
+
+    async function uploadImage(file) {
+      // Convert to PNG then to base64
+      const pngBlob = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const img = new Image();
+          img.onload = () => {
+            const canvas = document.createElement("canvas");
+            canvas.width = img.width;
+            canvas.height = img.height;
+            const ctx = canvas.getContext("2d");
+            ctx.fillStyle = "#fff";
+            ctx.fillRect(0,0,canvas.width,canvas.height);
+            ctx.drawImage(img,0,0);
+            canvas.toBlob(b => {
+              if (!b) reject("Canvas blob failed");
+              else resolve(b);
+            }, "image/png");
+          };
+          img.onerror = () => reject("Image load failed");
+          img.src = reader.result;
+        };
+        reader.onerror = () => reject("File read error");
+        reader.readAsDataURL(file);
+      });
+
+      // to base64 string (imgbb expects base64 without prefix)
+      const base64 = await new Promise((resolve, reject) => {
+        const r = new FileReader();
+        r.onload = () => {
+          const str = r.result.split(",")[1];
+          resolve(str);
+        };
+        r.onerror = () => reject("Base64 convert failed");
+        r.readAsDataURL(pngBlob);
+      });
+
+      const form = new FormData();
+      form.append("image", base64);
+      const resp = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+        method: "POST",
+        body: form
+      });
+      const data = await resp.json();
+      if (!data.success) throw new Error("imgbb upload failed");
+      return data.data.url;
+    }
+
+    function escapeHTML(s) {
+      if (!s) return "";
+      return s.replace(/[&<>"']/g, c => ({
+        "&":"&amp;",
+        "<":"&lt;",
+        ">":"&gt;",
+        '"':"&quot;",
+        "'":"&#39;"
+      }[c]));
+    }
+
+    // Load gallery from raw JSON
+    async function loadGallery() {
+      galleryEl.innerHTML = "";
+      galleryStatusEl.textContent = "Loading profiles...";
+      try {
+        const raw = await fetch(`https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/main/${DATA_FILE_PATH}`);
+        if (!raw.ok) throw new Error("Failed to fetch JSON file");
+        const profiles = await raw.json();
+        if (!Array.isArray(profiles)) throw new Error("Malformed JSON");
+        if (profiles.length === 0) {
+          galleryStatusEl.textContent = "No profiles yet.";
+          return;
+        }
+        galleryStatusEl.textContent = `${profiles.length} profile(s) loaded.`;
+        profiles.sort((a,b)=> (b.likes||0)-(a.likes||0));
+        profiles.forEach(p => renderProfile(p));
+      } catch (e) {
+        galleryStatusEl.textContent = "Gallery load error: " + e.message;
+      }
+    }
+
+    function renderProfile(profile) {
+      const card = document.createElement("div");
+      card.className = "card profile";
+      const img = document.createElement("img");
+      img.src = profile.image;
+      img.alt = profile.username;
+      card.appendChild(img);
+
+      const overlay = document.createElement("div");
+      overlay.className = "overlay";
+
+      const left = document.createElement("div");
+      left.innerHTML = `<div><strong>${escapeHTML(profile.username)}</strong> ${profile.fullName?`• ${escapeHTML(profile.fullName)}`:""} • ${profile.age}</div>`;
+
+      const right = document.createElement("div");
+      const likeBtn = document.createElement("button");
+      likeBtn.className = "like-btn";
+      likeBtn.innerHTML = `❤️ <span class="likes-count">${profile.likes||0}</span>`;
+      likeBtn.onclick = () => likeProfile(profile.username, likeBtn);
+      right.appendChild(likeBtn);
+
+      overlay.appendChild(left);
+      overlay.appendChild(right);
+      card.appendChild(overlay);
+
+      galleryEl.appendChild(card);
+    }
+
+    async function likeProfile(username, btn) {
+      btn.disabled = true;
+      try {
+        setStatus("Updating like...");
+        const token = await fetchToken();
+        const fileInfo = await getRepoFile(token);
+        let profiles = [];
+        try { profiles = JSON.parse(atob(fileInfo.content)); } catch {}
+        const idx = profiles.findIndex(p => String(p.username).toLowerCase() === username.toLowerCase());
+        if (idx === -1) throw new Error("Profile not found");
+        profiles[idx].likes = (profiles[idx].likes||0) + 1;
+        await updateRepoFile(token, fileInfo.sha, profiles);
+        // reflect
+        const span = btn.querySelector(".likes-count");
+        if (span) span.textContent = profiles[idx].likes;
+        setStatus("Like updated.");
+      } catch (e) {
+        setStatus("Like failed: "+e.message, true);
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    async function getRepoFile(token) {
+      const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${DATA_FILE_PATH}`;
+      const res = await fetch(url, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: "application/vnd.github.v3+json"
+        }
+      });
+      if (!res.ok) throw new Error("GitHub file fetch error: " + res.statusText);
+      return await res.json();
+    }
+
+    submitBtn.addEventListener("click", async () => {
+      try {
+        setStatus("Validating input...");
+        const username = document.getElementById("username").value.trim();
+        const fullName = document.getElementById("fullName").value.trim();
+        const age = document.getElementById("age").value.trim();
+        const file = document.getElementById("imageInput").files[0];
+
+        if (!username || !fullName || !age || !file) {
+          setStatus("All fields required.", true);
+          return;
+        }
+        if (isNaN(age) || Number(age) < 13) {
+          setStatus("Age must be 13+.", true);
+          return;
+        }
+
+        setStatus("Fetching token...");
+        const token = await fetchToken();
+
+        setStatus("Fetching existing data...");
+        const fileInfo = await getRepoFile(token);
+        let profiles = [];
+        try { profiles = JSON.parse(atob(fileInfo.content)); } catch {}
+        if (!Array.isArray(profiles)) profiles = [];
+
+        // username uniqueness in same file
+        if (profiles.some(p => String(p.username).toLowerCase() === username.toLowerCase())) {
+          setStatus("Username already taken.", true);
+          return;
+        }
+
+        setStatus("Processing and uploading image...");
+        const imageUrl = await uploadImage(file);
+
+        const newProfile = {
+          username,
+          fullName,
+          age: Number(age),
+          image: imageUrl,
+          likes: 0,
+          timestamp: Date.now()
+        };
+
+        profiles.push(newProfile);
+
+        setStatus("Committing profile...");
+        await updateRepoFile(token, fileInfo.sha, profiles);
+        setStatus("Success! Profile added.");
+        // reload gallery
+        await loadGallery();
+      } catch (e) {
+        setStatus("Error: " + e.message, true);
+      }
+    });
+
+    // kick off
+    loadGallery();
+  </script>
+</body>
+</html>
