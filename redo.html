@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Reset Limits - Beauty Showcase</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <meta name="theme-color" content="#000000">
+  <style>
+    :root {
+      --bg: #000;
+      --primary: rgba(255,64,129,0.95);
+      --primary-hover: rgba(255,64,129,1);
+      --text: #fff;
+      --text-muted: rgba(255,255,255,0.7);
+      --transition: .25s ease;
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+    
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      padding: 20px;
+      text-align: center;
+    }
+    
+    .container {
+      max-width: 500px;
+      margin: 0 auto;
+      width: 100%;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 20px;
+    }
+    
+    .description {
+      margin-bottom: 30px;
+      opacity: 0.8;
+      line-height: 1.5;
+    }
+    
+    .reset-options {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      margin-bottom: 30px;
+    }
+    
+    .reset-btn {
+      background: var(--primary);
+      border: none;
+      padding: 15px;
+      border-radius: 8px;
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all var(--transition);
+      font-size: 1rem;
+    }
+    
+    .reset-btn:hover {
+      background: var(--primary-hover);
+      transform: translateY(-2px);
+    }
+    
+    .reset-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none !important;
+    }
+    
+    .stats {
+      margin-top: 30px;
+      font-size: 0.9rem;
+      opacity: 0.7;
+    }
+    
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.9);
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+    
+    .modal.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+    
+    .modal-content {
+      max-width: 400px;
+      width: 100%;
+      background: #111;
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+    }
+    
+    .modal h2 {
+      margin-bottom: 15px;
+    }
+    
+    .modal p {
+      margin-bottom: 20px;
+      opacity: 0.8;
+    }
+    
+    .modal-btn {
+      background: var(--primary);
+      border: none;
+      padding: 12px 20px;
+      border-radius: 8px;
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all var(--transition);
+    }
+    
+    .modal-btn:hover {
+      background: var(--primary-hover);
+    }
+    
+    .timer {
+      font-size: 1.2rem;
+      margin: 15px 0;
+      font-weight: bold;
+    }
+    
+    .ad-container {
+      width: 100%;
+      min-height: 250px;
+      background: #222;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 20px 0;
+      overflow: hidden;
+    }
+    
+    .ad-placeholder {
+      padding: 20px;
+      text-align: center;
+    }
+    
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 1.6rem;
+      }
+      
+      .reset-btn {
+        padding: 12px;
+        font-size: 0.95rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Reset Your Limits</h1>
+    <p class="description">
+      You've reached your daily limits. Watch an ad to reset your limits and continue enjoying the showcase.
+      Each reset requires watching more ads than the last.
+    </p>
+    
+    <div class="reset-options">
+      <button class="reset-btn" id="resetLikesBtn">Reset Likes Limit</button>
+      <button class="reset-btn" id="resetScrollsBtn">Reset Scrolls Limit</button>
+    </div>
+    
+    <div class="stats">
+      <div id="likesStats">Likes resets today: 0</div>
+      <div id="scrollsStats">Scrolls resets today: 0</div>
+      <div id="nextCost">Next reset requires: 1 ad</div>
+    </div>
+  </div>
+  
+  <!-- Ad Modal -->
+  <div class="modal" id="adModal">
+    <div class="modal-content">
+      <h2>Watch an Ad to Continue</h2>
+      <p>Please watch the full ad (at least 10 seconds) to reset your limit.</p>
+      
+      <div class="ad-container" id="adContainer">
+        <div class="ad-placeholder">
+          <p>Ad loading...</p>
+        </div>
+      </div>
+      
+      <div class="timer" id="timer">10s remaining</div>
+      <button class="modal-btn" id="continueBtn" disabled>Continue</button>
+    </div>
+  </div>
+  
+  <!-- Success Modal -->
+  <div class="modal" id="successModal">
+    <div class="modal-content">
+      <h2>Limit Reset Successful!</h2>
+      <p id="successMessage">Your likes limit has been reset.</p>
+      <button class="modal-btn" id="returnBtn">Return to Viewer</button>
+    </div>
+  </div>
+  
+  <!-- Too Soon Modal -->
+  <div class="modal" id="tooSoonModal">
+    <div class="modal-content">
+      <h2>Please Watch the Full Ad</h2>
+      <p>You need to watch the ad for at least 10 seconds to reset your limit.</p>
+      <button class="modal-btn" id="tryAgainBtn">Try Again</button>
+    </div>
+  </div>
+
+  <!-- Adsterra Script -->
+  <script type='text/javascript' src='//gapcontroversialprodigal.com/06/70/0a/06700ae74ed6d9035f7f071031360cf5.js'></script>
+
+  <script>
+    // State
+    let resetType = null; // 'likes' or 'scrolls'
+    let adStartTime = null;
+    let timerInterval = null;
+    let timeRemaining = 10;
+    let adShown = false;
+    
+    // Load reset counts from localStorage
+    const resetData = JSON.parse(localStorage.getItem('beauty_reset_data') || '{}');
+    if (!resetData.likes) resetData.likes = { count: 0, lastResetDate: '' };
+    if (!resetData.scrolls) resetData.scrolls = { count: 0, lastResetDate: '' };
+    
+    // Check if it's a new day
+    const today = new Date().toISOString().slice(0, 10);
+    if (resetData.likes.lastResetDate !== today) {
+      resetData.likes.count = 0;
+      resetData.likes.lastResetDate = today;
+    }
+    if (resetData.scrolls.lastResetDate !== today) {
+      resetData.scrolls.count = 0;
+      resetData.scrolls.lastResetDate = today;
+    }
+    
+    // DOM elements
+    const resetLikesBtn = document.getElementById('resetLikesBtn');
+    const resetScrollsBtn = document.getElementById('resetScrollsBtn');
+    const likesStats = document.getElementById('likesStats');
+    const scrollsStats = document.getElementById('scrollsStats');
+    const nextCost = document.getElementById('nextCost');
+    const adModal = document.getElementById('adModal');
+    const successModal = document.getElementById('successModal');
+    const tooSoonModal = document.getElementById('tooSoonModal');
+    const adContainer = document.getElementById('adContainer');
+    const timer = document.getElementById('timer');
+    const continueBtn = document.getElementById('continueBtn');
+    const tryAgainBtn = document.getElementById('tryAgainBtn');
+    const returnBtn = document.getElementById('returnBtn');
+    const successMessage = document.getElementById('successMessage');
+    
+    // Update UI with current stats
+    function updateStats() {
+      likesStats.textContent = `Likes resets today: ${resetData.likes.count}`;
+      scrollsStats.textContent = `Scrolls resets today: ${resetData.scrolls.count}`;
+      
+      // Calculate required ads (1 + total resets today)
+      const totalResets = resetData.likes.count + resetData.scrolls.count;
+      const requiredAds = Math.min(1 + totalResets, 10); // Cap at 10 ads
+      nextCost.textContent = `Next reset requires: ${requiredAds} ad${requiredAds > 1 ? 's' : ''}`;
+    }
+    
+    // Start the ad timer
+    function startTimer() {
+      timeRemaining = 10;
+      timer.textContent = `${timeRemaining}s remaining`;
+      continueBtn.disabled = true;
+      
+      timerInterval = setInterval(() => {
+        timeRemaining--;
+        timer.textContent = `${timeRemaining}s remaining`;
+        
+        if (timeRemaining <= 0) {
+          clearInterval(timerInterval);
+          continueBtn.disabled = false;
+        }
+      }, 1000);
+    }
+    
+    // Reset button handlers
+    resetLikesBtn.addEventListener('click', () => {
+      resetType = 'likes';
+      showAdModal();
+    });
+    
+    resetScrollsBtn.addEventListener('click', () => {
+      resetType = 'scrolls';
+      showAdModal();
+    });
+    
+    // Show the ad modal
+    async function showAdModal() {
+      // Calculate required ads (1 + total resets today)
+      const totalResets = resetData.likes.count + resetData.scrolls.count;
+      const requiredAds = Math.min(1 + totalResets, 10);
+      
+      // Disable buttons during ad
+      resetLikesBtn.disabled = true;
+      resetScrollsBtn.disabled = true;
+      
+      adModal.classList.add('active');
+      adStartTime = Date.now();
+      
+      // Clear previous ad content
+      adContainer.innerHTML = '<div class="ad-placeholder"><p>Ad loading...</p></div>';
+      
+      // Start the timer
+      startTimer();
+    }
+    
+    // Continue button handler
+    continueBtn.addEventListener('click', () => {
+      const timeWatched = (Date.now() - adStartTime) / 1000;
+      
+      if (timeWatched >= 10) {
+        // Successful ad watch
+        adModal.classList.remove('active');
+        clearInterval(timerInterval);
+        
+        // Calculate how many resets they get (halved each time)
+        const totalResets = resetData.likes.count + resetData.scrolls.count;
+        const resetsGranted = Math.max(2, Math.floor(10 / (1 + totalResets)));
+        
+        // Update reset data
+        resetData[resetType].count++;
+        resetData[resetType].lastResetDate = today;
+        localStorage.setItem('beauty_reset_data', JSON.stringify(resetData));
+        
+        // Update the identity data to reset the appropriate limit
+        const identity = JSON.parse(localStorage.getItem('beauty_identity') || {});
+        
+        if (resetType === 'likes') {
+          identity.likesToday = Math.max(0, identity.likesToday - resetsGranted);
+          successMessage.textContent = `Your likes limit has been extended by ${resetsGranted}.`;
+        } else {
+          identity.scrollsToday = Math.max(0, identity.scrollsToday - resetsGranted);
+          successMessage.textContent = `Your scrolls limit has been extended by ${resetsGranted}.`;
+        }
+        
+        localStorage.setItem('beauty_identity', JSON.stringify(identity));
+        
+        // Show success modal
+        successModal.classList.add('active');
+      } else {
+        // Didn't watch long enough
+        adModal.classList.remove('active');
+        tooSoonModal.classList.add('active');
+        clearInterval(timerInterval);
+      }
+      
+      // Re-enable buttons
+      resetLikesBtn.disabled = false;
+      resetScrollsBtn.disabled = false;
+    });
+    
+    // Try again button handler
+    tryAgainBtn.addEventListener('click', () => {
+      tooSoonModal.classList.remove('active');
+      showAdModal();
+    });
+    
+    // Return button handler
+    returnBtn.addEventListener('click', () => {
+      successModal.classList.remove('active');
+      updateStats();
+      window.location.href = 'viewer.html';
+    });
+    
+    // Initialize
+    updateStats();
+  </script>
+</body>
+</html>
