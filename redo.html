@@ -160,10 +160,14 @@
       border-radius: 8px;
     }
     
+    .verification-status {
+      margin: 15px 0;
+      min-height: 24px;
+    }
+    
     .warning {
       color: #ff9e9e;
       font-weight: 600;
-      margin-top: 10px;
     }
     
     @media (max-width: 600px) {
@@ -182,8 +186,8 @@
   <div class="container">
     <h1>Reset Your Limits</h1>
     <p class="description">
-      You've reached your daily limits. Visit the sponsor link and stay for at least 10 seconds to reset your limits.
-      Each reset requires visiting more sponsor links than the last.
+      You've reached your daily limits. Visit the sponsor link for at least 10 seconds to reset your limits.
+      Each reset requires more sponsor visits than the last.
     </p>
     
     <div class="reset-options">
@@ -198,21 +202,17 @@
     </div>
   </div>
   
-  <!-- Ad Modal -->
-  <div class="modal" id="adModal">
+  <!-- Verification Modal -->
+  <div class="modal" id="verificationModal">
     <div class="modal-content">
-      <h2>Visit Sponsor to Continue</h2>
-      <p>Click the button below to visit our sponsor.</p>
-      <p>You must stay on their page for at least 10 seconds.</p>
-      
+      <h2>Verification in Progress</h2>
       <div class="ad-info">
-        <p>After visiting, return here and click "I've Visited"</p>
-        <p id="timeWarning" class="warning" style="display: none;">NB: You need to wait at least 10 seconds on the sponsor page!</p>
+        <p>We're verifying your visit to the sponsor page.</p>
+        <p>Please keep the sponsor tab open for at least 10 seconds.</p>
+        <div class="verification-status" id="verificationStatus">Starting verification...</div>
+        <div class="timer" id="timer">0s / 10s</div>
       </div>
-      
-      <div class="timer" id="timer" style="display: none;">Time spent: 0s</div>
-      <button class="modal-btn" id="visitSponsorBtn">Visit Sponsor Now</button>
-      <button class="modal-btn" id="continueBtn" style="margin-top: 10px; display: none;">I've Visited the Sponsor</button>
+      <button class="modal-btn" id="cancelBtn">Cancel</button>
     </div>
   </div>
   
@@ -220,7 +220,7 @@
   <div class="modal" id="successModal">
     <div class="modal-content">
       <h2>Limit Reset Successful!</h2>
-      <p id="successMessage">Your likes limit has been reset.</p>
+      <p id="successMessage"></p>
       <button class="modal-btn" id="returnBtn">Return to Viewer</button>
     </div>
   </div>
@@ -228,21 +228,21 @@
   <!-- Too Soon Modal -->
   <div class="modal" id="tooSoonModal">
     <div class="modal-content">
-      <h2>Not Enough Time</h2>
-      <p>You need to stay on the sponsor page for at least 10 seconds.</p>
-      <p>Please try again and wait the full time.</p>
+      <h2>Verification Failed</h2>
+      <p class="warning">You didn't stay on the sponsor page long enough.</p>
+      <p>Please try again and keep the sponsor tab open for the full 10 seconds.</p>
       <button class="modal-btn" id="tryAgainBtn">Try Again</button>
     </div>
   </div>
 
   <script>
     // State
-    let resetType = null; // 'likes' or 'scrolls'
-    let leaveTime = null;
-    let returnTime = null;
-    let timerInterval = null;
-    let timeSpent = 0;
+    let resetType = null;
     let sponsorWindow = null;
+    let verificationInterval = null;
+    let verificationStartTime = null;
+    const SPONSOR_URL = "https://otieu.com/4/9515888";
+    const VERIFICATION_DURATION = 10000; // 10 seconds
     
     // Load reset counts from localStorage
     const resetData = JSON.parse(localStorage.getItem('beauty_reset_data') || '{}');
@@ -266,147 +266,169 @@
     const likesStats = document.getElementById('likesStats');
     const scrollsStats = document.getElementById('scrollsStats');
     const nextCost = document.getElementById('nextCost');
-    const adModal = document.getElementById('adModal');
+    const verificationModal = document.getElementById('verificationModal');
     const successModal = document.getElementById('successModal');
     const tooSoonModal = document.getElementById('tooSoonModal');
+    const verificationStatus = document.getElementById('verificationStatus');
     const timer = document.getElementById('timer');
-    const timeWarning = document.getElementById('timeWarning');
-    const visitSponsorBtn = document.getElementById('visitSponsorBtn');
-    const continueBtn = document.getElementById('continueBtn');
+    const cancelBtn = document.getElementById('cancelBtn');
     const tryAgainBtn = document.getElementById('tryAgainBtn');
     const returnBtn = document.getElementById('returnBtn');
     const successMessage = document.getElementById('successMessage');
-    
-    // Sponsor URL
-    const SPONSOR_URL = "https://otieu.com/4/9515888";
     
     // Update UI with current stats
     function updateStats() {
       likesStats.textContent = `Likes resets today: ${resetData.likes.count}`;
       scrollsStats.textContent = `Scrolls resets today: ${resetData.scrolls.count}`;
       
-      // Calculate required visits (1 + total resets today)
       const totalResets = resetData.likes.count + resetData.scrolls.count;
-      const requiredVisits = Math.min(1 + totalResets, 10); // Cap at 10 visits
+      const requiredVisits = Math.min(1 + totalResets, 10);
       nextCost.textContent = `Next reset requires: ${requiredVisits} visit${requiredVisits > 1 ? 's' : ''}`;
-    }
-    
-    // Start tracking time spent away
-    function startTracking() {
-      leaveTime = Date.now();
-      timer.style.display = 'block';
-      timeWarning.style.display = 'none';
-      timeSpent = 0;
-      timer.textContent = `Time spent: 0s`;
-      
-      // Update timer every second
-      timerInterval = setInterval(() => {
-        if (leaveTime) {
-          timeSpent = Math.floor((Date.now() - leaveTime) / 1000);
-          timer.textContent = `Time spent: ${timeSpent}s`;
-        }
-      }, 1000);
-      
-      // Enable continue button
-      continueBtn.style.display = 'block';
-      visitSponsorBtn.style.display = 'none';
     }
     
     // Reset button handlers
     resetLikesBtn.addEventListener('click', () => {
       resetType = 'likes';
-      showAdModal();
+      startVerificationProcess();
     });
     
     resetScrollsBtn.addEventListener('click', () => {
       resetType = 'scrolls';
-      showAdModal();
+      startVerificationProcess();
     });
     
-    // Show the ad modal
-    function showAdModal() {
-      // Calculate required visits (1 + total resets today)
-      const totalResets = resetData.likes.count + resetData.scrolls.count;
-      const requiredVisits = Math.min(1 + totalResets, 10);
-      
-      // Reset UI state
-      timer.style.display = 'none';
-      timeWarning.style.display = 'none';
-      continueBtn.style.display = 'none';
-      visitSponsorBtn.style.display = 'block';
-      
-      // Disable main buttons during process
+    // Start the verification process
+    function startVerificationProcess() {
+      // Disable buttons during verification
       resetLikesBtn.disabled = true;
       resetScrollsBtn.disabled = true;
       
-      adModal.classList.add('active');
+      // Open sponsor URL in new tab with noopener
+      sponsorWindow = window.open(SPONSOR_URL, '_blank', 'noopener,noreferrer');
+      
+      // Start verification
+      verificationModal.classList.add('active');
+      verificationStartTime = Date.now();
+      updateVerificationStatus(0);
+      
+      // Begin checking
+      verificationInterval = setInterval(checkVerification, 1000);
     }
     
-    // Visit sponsor button handler
-    visitSponsorBtn.addEventListener('click', () => {
-      // Open sponsor URL in new tab
-      sponsorWindow = window.open(SPONSOR_URL, '_blank');
+    // Check verification status
+    function checkVerification() {
+      const elapsed = Date.now() - verificationStartTime;
+      const seconds = Math.floor(elapsed / 1000);
       
-      // Start tracking time away
-      startTracking();
-    });
-    
-    // Continue button handler
-    continueBtn.addEventListener('click', () => {
-      returnTime = Date.now();
-      const timeAway = (returnTime - leaveTime) / 1000;
-      
-      clearInterval(timerInterval);
-      
-      if (timeAway >= 10) {
-        // Successful visit
-        adModal.classList.remove('active');
-        
-        // Calculate how many resets they get (halved each time)
-        const totalResets = resetData.likes.count + resetData.scrolls.count;
-        const resetsGranted = Math.max(2, Math.floor(10 / (1 + totalResets)));
-        
-        // Update reset data
-        resetData[resetType].count++;
-        resetData[resetType].lastResetDate = today;
-        localStorage.setItem('beauty_reset_data', JSON.stringify(resetData));
-        
-        // Update the identity data to reset the appropriate limit
-        const identity = JSON.parse(localStorage.getItem('beauty_identity') || {});
-        
-        if (resetType === 'likes') {
-          identity.likesToday = Math.max(0, identity.likesToday - resetsGranted);
-          successMessage.textContent = `Your likes limit has been extended by ${resetsGranted}.`;
-        } else {
-          identity.scrollsToday = Math.max(0, identity.scrollsToday - resetsGranted);
-          successMessage.textContent = `Your scrolls limit has been extended by ${resetsGranted}.`;
+      try {
+        // Try to access the sponsor window's URL
+        if (sponsorWindow && !sponsorWindow.closed) {
+          // This will throw an error due to cross-origin policy if still on sponsor site
+          sponsorWindow.location.href;
+          
+          // If we get here, they've returned to our domain or a blank page
+          handleVerificationFailed();
+          return;
         }
+      } catch (e) {
+        // Cross-origin error means still on sponsor site - this is good
+        updateVerificationStatus(seconds);
         
-        localStorage.setItem('beauty_identity', JSON.stringify(identity));
-        
-        // Show success modal
-        successModal.classList.add('active');
-      } else {
-        // Didn't stay long enough
-        adModal.classList.remove('active');
-        tooSoonModal.classList.add('active');
-        timeWarning.style.display = 'block';
+        // Check if verification period is complete
+        if (elapsed >= VERIFICATION_DURATION) {
+          handleVerificationSuccess();
+        }
+        return;
       }
       
-      // Re-enable buttons
-      resetLikesBtn.disabled = false;
-      resetScrollsBtn.disabled = false;
+      // If window is closed or other error
+      handleVerificationFailed();
+    }
+    
+    // Update verification status display
+    function updateVerificationStatus(seconds) {
+      timer.textContent = `${seconds}s / 10s`;
+      
+      if (seconds < 3) {
+        verificationStatus.textContent = "Verifying sponsor visit...";
+      } else if (seconds < 7) {
+        verificationStatus.textContent = "Please keep the sponsor tab open...";
+      } else {
+        verificationStatus.textContent = "Almost done...";
+      }
+    }
+    
+    // Handle successful verification
+    function handleVerificationSuccess() {
+      clearInterval(verificationInterval);
+      verificationModal.classList.remove('active');
+      
+      // Calculate how many resets they get (halved each time)
+      const totalResets = resetData.likes.count + resetData.scrolls.count;
+      const resetsGranted = Math.max(2, Math.floor(10 / (1 + totalResets)));
+      
+      // Update reset data
+      resetData[resetType].count++;
+      resetData[resetType].lastResetDate = today;
+      localStorage.setItem('beauty_reset_data', JSON.stringify(resetData));
+      
+      // Update the identity data to reset the appropriate limit
+      const identity = JSON.parse(localStorage.getItem('beauty_identity') || {});
+      
+      if (resetType === 'likes') {
+        identity.likesToday = Math.max(0, identity.likesToday - resetsGranted);
+        successMessage.textContent = `Your likes limit has been extended by ${resetsGranted}.`;
+      } else {
+        identity.scrollsToday = Math.max(0, identity.scrollsToday - resetsGranted);
+        successMessage.textContent = `Your scrolls limit has been extended by ${resetsGranted}.`;
+      }
+      
+      localStorage.setItem('beauty_identity', JSON.stringify(identity));
+      
+      // Show success modal
+      successModal.classList.add('active');
       
       // Close sponsor window if still open
       if (sponsorWindow && !sponsorWindow.closed) {
         sponsorWindow.close();
       }
+    }
+    
+    // Handle failed verification
+    function handleVerificationFailed() {
+      clearInterval(verificationInterval);
+      verificationModal.classList.remove('active');
+      tooSoonModal.classList.add('active');
+      
+      // Close sponsor window if still open
+      if (sponsorWindow && !sponsorWindow.closed) {
+        sponsorWindow.close();
+      }
+      
+      // Re-enable buttons
+      resetLikesBtn.disabled = false;
+      resetScrollsBtn.disabled = false;
+    }
+    
+    // Cancel button handler
+    cancelBtn.addEventListener('click', () => {
+      clearInterval(verificationInterval);
+      verificationModal.classList.remove('active');
+      
+      // Close sponsor window if still open
+      if (sponsorWindow && !sponsorWindow.closed) {
+        sponsorWindow.close();
+      }
+      
+      // Re-enable buttons
+      resetLikesBtn.disabled = false;
+      resetScrollsBtn.disabled = false;
     });
     
     // Try again button handler
     tryAgainBtn.addEventListener('click', () => {
       tooSoonModal.classList.remove('active');
-      showAdModal();
+      startVerificationProcess();
     });
     
     // Return button handler
