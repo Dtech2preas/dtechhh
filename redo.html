@@ -153,21 +153,11 @@
       font-weight: bold;
     }
     
-    .ad-container {
-      width: 100%;
-      min-height: 250px;
-      background: #222;
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    .ad-info {
       margin: 20px 0;
-      overflow: hidden;
-    }
-    
-    .ad-placeholder {
-      padding: 20px;
-      text-align: center;
+      padding: 15px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 8px;
     }
     
     @media (max-width: 600px) {
@@ -186,8 +176,8 @@
   <div class="container">
     <h1>Reset Your Limits</h1>
     <p class="description">
-      You've reached your daily limits. Watch an ad to reset your limits and continue enjoying the showcase.
-      Each reset requires watching more ads than the last.
+      You've reached your daily limits. Visit the sponsor link and return after 10 seconds to reset your limits.
+      Each reset requires visiting more sponsor links than the last.
     </p>
     
     <div class="reset-options">
@@ -198,24 +188,24 @@
     <div class="stats">
       <div id="likesStats">Likes resets today: 0</div>
       <div id="scrollsStats">Scrolls resets today: 0</div>
-      <div id="nextCost">Next reset requires: 1 ad</div>
+      <div id="nextCost">Next reset requires: 1 visit</div>
     </div>
   </div>
   
   <!-- Ad Modal -->
   <div class="modal" id="adModal">
     <div class="modal-content">
-      <h2>Watch an Ad to Continue</h2>
-      <p>Please watch the full ad (at least 10 seconds) to reset your limit.</p>
+      <h2>Visit Sponsor to Continue</h2>
+      <p>Please visit the sponsor page and stay for at least 10 seconds to reset your limit.</p>
       
-      <div class="ad-container" id="adContainer">
-        <div class="ad-placeholder">
-          <p>Ad loading...</p>
-        </div>
+      <div class="ad-info">
+        <p>Click the button below to open the sponsor page in a new tab.</p>
+        <p>Return here after 10 seconds to complete the reset.</p>
       </div>
       
       <div class="timer" id="timer">10s remaining</div>
-      <button class="modal-btn" id="continueBtn" disabled>Continue</button>
+      <button class="modal-btn" id="visitSponsorBtn">Visit Sponsor</button>
+      <button class="modal-btn" id="continueBtn" style="margin-top: 10px; display: none;">I've Visited the Sponsor</button>
     </div>
   </div>
   
@@ -231,14 +221,11 @@
   <!-- Too Soon Modal -->
   <div class="modal" id="tooSoonModal">
     <div class="modal-content">
-      <h2>Please Watch the Full Ad</h2>
-      <p>You need to watch the ad for at least 10 seconds to reset your limit.</p>
+      <h2>Please Visit the Sponsor</h2>
+      <p>You need to visit the sponsor page for at least 10 seconds to reset your limit.</p>
       <button class="modal-btn" id="tryAgainBtn">Try Again</button>
     </div>
   </div>
-
-  <!-- Adsterra Script -->
-  <script type='text/javascript' src='//gapcontroversialprodigal.com/06/70/0a/06700ae74ed6d9035f7f071031360cf5.js'></script>
 
   <script>
     // State
@@ -246,7 +233,7 @@
     let adStartTime = null;
     let timerInterval = null;
     let timeRemaining = 10;
-    let adShown = false;
+    let sponsorWindow = null;
     
     // Load reset counts from localStorage
     const resetData = JSON.parse(localStorage.getItem('beauty_reset_data') || '{}');
@@ -273,29 +260,32 @@
     const adModal = document.getElementById('adModal');
     const successModal = document.getElementById('successModal');
     const tooSoonModal = document.getElementById('tooSoonModal');
-    const adContainer = document.getElementById('adContainer');
     const timer = document.getElementById('timer');
+    const visitSponsorBtn = document.getElementById('visitSponsorBtn');
     const continueBtn = document.getElementById('continueBtn');
     const tryAgainBtn = document.getElementById('tryAgainBtn');
     const returnBtn = document.getElementById('returnBtn');
     const successMessage = document.getElementById('successMessage');
+    
+    // Sponsor URL
+    const SPONSOR_URL = "https://otieu.com/4/9515888";
     
     // Update UI with current stats
     function updateStats() {
       likesStats.textContent = `Likes resets today: ${resetData.likes.count}`;
       scrollsStats.textContent = `Scrolls resets today: ${resetData.scrolls.count}`;
       
-      // Calculate required ads (1 + total resets today)
+      // Calculate required visits (1 + total resets today)
       const totalResets = resetData.likes.count + resetData.scrolls.count;
-      const requiredAds = Math.min(1 + totalResets, 10); // Cap at 10 ads
-      nextCost.textContent = `Next reset requires: ${requiredAds} ad${requiredAds > 1 ? 's' : ''}`;
+      const requiredVisits = Math.min(1 + totalResets, 10); // Cap at 10 visits
+      nextCost.textContent = `Next reset requires: ${requiredVisits} visit${requiredVisits > 1 ? 's' : ''}`;
     }
     
-    // Start the ad timer
+    // Start the timer
     function startTimer() {
       timeRemaining = 10;
       timer.textContent = `${timeRemaining}s remaining`;
-      continueBtn.disabled = true;
+      continueBtn.style.display = 'none';
       
       timerInterval = setInterval(() => {
         timeRemaining--;
@@ -303,7 +293,7 @@
         
         if (timeRemaining <= 0) {
           clearInterval(timerInterval);
-          continueBtn.disabled = false;
+          continueBtn.style.display = 'block';
         }
       }, 1000);
     }
@@ -320,31 +310,32 @@
     });
     
     // Show the ad modal
-    async function showAdModal() {
-      // Calculate required ads (1 + total resets today)
+    function showAdModal() {
+      // Calculate required visits (1 + total resets today)
       const totalResets = resetData.likes.count + resetData.scrolls.count;
-      const requiredAds = Math.min(1 + totalResets, 10);
+      const requiredVisits = Math.min(1 + totalResets, 10);
       
-      // Disable buttons during ad
+      // Disable buttons during process
       resetLikesBtn.disabled = true;
       resetScrollsBtn.disabled = true;
       
       adModal.classList.add('active');
-      adStartTime = Date.now();
-      
-      // Clear previous ad content
-      adContainer.innerHTML = '<div class="ad-placeholder"><p>Ad loading...</p></div>';
-      
-      // Start the timer
       startTimer();
     }
     
+    // Visit sponsor button handler
+    visitSponsorBtn.addEventListener('click', () => {
+      // Open sponsor URL in new tab
+      sponsorWindow = window.open(SPONSOR_URL, '_blank');
+      adStartTime = Date.now();
+    });
+    
     // Continue button handler
     continueBtn.addEventListener('click', () => {
-      const timeWatched = (Date.now() - adStartTime) / 1000;
+      const timePassed = (Date.now() - adStartTime) / 1000;
       
-      if (timeWatched >= 10) {
-        // Successful ad watch
+      if (timePassed >= 10) {
+        // Successful visit
         adModal.classList.remove('active');
         clearInterval(timerInterval);
         
@@ -373,7 +364,7 @@
         // Show success modal
         successModal.classList.add('active');
       } else {
-        // Didn't watch long enough
+        // Didn't stay long enough
         adModal.classList.remove('active');
         tooSoonModal.classList.add('active');
         clearInterval(timerInterval);
@@ -382,6 +373,11 @@
       // Re-enable buttons
       resetLikesBtn.disabled = false;
       resetScrollsBtn.disabled = false;
+      
+      // Close sponsor window if still open
+      if (sponsorWindow && !sponsorWindow.closed) {
+        sponsorWindow.close();
+      }
     });
     
     // Try again button handler
