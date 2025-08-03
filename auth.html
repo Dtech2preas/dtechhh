@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Beauty Showcase — Auth</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --bg: #f0f4f9;
+      --card: #fff;
+      --radius: 12px;
+      --shadow: 0 20px 40px rgba(0,0,0,0.05);
+      --accent: #2563eb;
+      --accent-light: #3b82f6;
+      --text: #1e293b;
+      --text-light: #64748b;
+      --border: #e2e8f0;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      background: var(--bg);
+      font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      color: var(--text);
+      line-height: 1.6;
+    }
+    .container {
+      max-width: 800px;
+      margin: 60px auto;
+      padding: 16px;
+    }
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 32px;
+      box-shadow: var(--shadow);
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 24px;
+      color: var(--accent);
+      font-size: 28px;
+    }
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 24px;
+      background: #f8fafc;
+      padding: 8px;
+      border-radius: 10px;
+    }
+    .tab {
+      flex: 1;
+      padding: 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      text-align: center;
+      font-weight: 600;
+      transition: all 0.2s ease;
+      color: var(--text-light);
+      border: 1px solid transparent;
+    }
+    .tab:hover {
+      background: #e2e8f0;
+    }
+    .tab.active {
+      background: var(--accent);
+      color: #fff;
+      box-shadow: 0 2px 6px rgba(37, 99, 235, 0.3);
+    }
+    .tab i {
+      margin-right: 8px;
+    }
+    .pane {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+    .pane.active {
+      display: block;
+    }
+    .field {
+      margin-bottom: 18px;
+    }
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      font-size: 14px;
+      color: var(--text);
+    }
+    input, select {
+      width: 100%;
+      padding: 12px 16px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      font-size: 15px;
+      transition: border 0.2s;
+    }
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--accent-light);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+    }
+    input[type="file"] {
+      padding: 10px;
+      background: #f8fafc;
+    }
+    button {
+      width: 100%;
+      padding: 14px 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      background: var(--accent);
+      color: #fff;
+      font-size: 15px;
+      font-weight: 600;
+      transition: all 0.2s;
+      margin-top: 8px;
+    }
+    button:hover {
+      background: var(--accent-light);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(37, 99, 235, 0.2);
+    }
+    button:active {
+      transform: translateY(0);
+    }
+    .small {
+      font-size: 13px;
+      color: var(--text-light);
+      margin-top: 12px;
+      line-height: 1.5;
+    }
+    .status {
+      margin-top: 20px;
+      padding: 14px;
+      border-radius: 8px;
+      background: #eef7ee;
+      font-size: 14px;
+      border: 1px solid #d1fae5;
+      display: flex;
+      align-items: center;
+    }
+    .status i {
+      margin-right: 10px;
+    }
+    .error {
+      background: #ffe3e3;
+      border-color: #fee2e2;
+    }
+    .form-group {
+      display: flex;
+      gap: 16px;
+    }
+    .form-group .field {
+      flex: 1;
+    }
+    .hidden {
+      display: none;
+    }
+    .dropdown {
+      position: relative;
+      margin-bottom: 18px;
+    }
+    .dropdown-toggle {
+      width: 100%;
+      text-align: left;
+      padding: 12px 16px;
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .dropdown-menu {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      width: 100%;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      z-index: 10;
+      display: none;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+    .dropdown-menu.show {
+      display: block;
+    }
+    .dropdown-item {
+      padding: 10px 16px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .dropdown-item:hover {
+      background: #f1f5f9;
+    }
+    .info-text {
+      background: #f8fafc;
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      font-size: 14px;
+      color: var(--text-light);
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <h1><i class="fas fa-spa"></i> Beauty Showcase</h1>
+      <div class="tabs">
+        <div class="tab active" data-tab="login" id="tabLogin">
+          <i class="fas fa-sign-in-alt"></i> Login
+        </div>
+        <div class="tab" data-tab="signup" id="tabSignup">
+          <i class="fas fa-user-plus"></i> Sign Up
+        </div>
+        <div class="tab" data-tab="anon" id="tabAnon">
+          <i class="fas fa-user-secret"></i> Anonymous
+        </div>
+      </div>
+
+      <div id="loginPane" class="pane active">
+        <div class="info-text">
+          <i class="fas fa-info-circle"></i> Enter your username and email to log in. Email is only for validation.
+        </div>
+        <div class="field">
+          <label><i class="fas fa-user"></i> Username</label>
+          <input type="text" id="loginUsername" placeholder="Enter your existing username" />
+        </div>
+        <div class="field">
+          <label><i class="fas fa-envelope"></i> Email</label>
+          <input type="email" id="loginEmail" placeholder="you@example.com" />
+        </div>
+        <button id="loginBtn"><i class="fas fa-sign-in-alt"></i> Login / Validate</button>
+      </div>
+
+      <div id="signupPane" class="pane">
+        <div class="info-text">
+          <i class="fas fa-info-circle"></i> Sign-up creates a new profile. Email is stored for login and not exposed publicly.
+        </div>
+        <div class="form-group">
+          <div class="field">
+            <label><i class="fas fa-user-tag"></i> Preferred Username</label>
+            <input type="text" id="newUsername" placeholder="beautyqueen" />
+          </div>
+          <div class="field">
+            <label><i class="fas fa-user"></i> Full Name</label>
+            <input type="text" id="newFullName" placeholder="Name and surname" />
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="field">
+            <label><i class="fas fa-birthday-cake"></i> Age</label>
+            <input type="number" id="newAge" min="13" placeholder="Age" />
+          </div>
+          <div class="field">
+            <label><i class="fas fa-envelope"></i> Email</label>
+            <input type="email" id="newEmail" placeholder="you@example.com" />
+          </div>
+        </div>
+        <div class="field">
+          <label><i class="fas fa-image"></i> Profile Image</label>
+          <div class="dropdown">
+            <div class="dropdown-toggle" id="imageDropdownToggle">
+              <span>Select an image</span>
+              <i class="fas fa-chevron-down"></i>
+            </div>
+            <div class="dropdown-menu" id="imageDropdownMenu">
+              <input type="file" id="newImageInput" accept="image/*" style="display: none;" />
+              <div class="dropdown-item" onclick="document.getElementById('newImageInput').click()">
+                <i class="fas fa-upload"></i> Upload Image
+              </div>
+            </div>
+          </div>
+        </div>
+        <button id="createProfileBtn"><i class="fas fa-user-plus"></i> Create Profile</button>
+      </div>
+
+      <div id="anonPane" class="pane">
+        <div class="info-text">
+          <i class="fas fa-info-circle"></i> Continue anonymously. You'll be limited to <strong>5 likes per day</strong> and will get a generated anonymous ID.
+        </div>
+        <button id="anonBtn"><i class="fas fa-user-secret"></i> Start Anonymous Session</button>
+      </div>
+
+      <div id="authStatus" class="status">
+        <i class="fas fa-circle-notch fa-spin"></i> Checking existing identity...
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // CONFIG
+    const GIST_TOKEN_URL = "https://gist.githubusercontent.com/Dtech2preas/6750d0418aaa9dfe7f297c26d1dfae48/raw/2e511e4d11267d5aade0229849446b7297ae01c9/gistfile1.txt";
+    const REPO_OWNER = "Dtech2preas";
+    const REPO_NAME = "Oratilr";
+    const DATA_FILE_PATH = "data1.json";
+    const IMGBB_API_KEY = "cedf418c6d844af9c47a7775a17161a6";
+    const TOKEN_TTL = 30000;
+
+    // STATE
+    let cachedToken = null;
+    let tokenFetchedAt = 0;
+
+    // DOM
+    const tabLogin = document.getElementById("tabLogin");
+    const tabSignup = document.getElementById("tabSignup");
+    const tabAnon = document.getElementById("tabAnon");
+    const loginPane = document.getElementById("loginPane");
+    const signupPane = document.getElementById("signupPane");
+    const anonPane = document.getElementById("anonPane");
+    const authStatus = document.getElementById("authStatus");
+    const loginUsernameInput = document.getElementById("loginUsername");
+    const loginEmailInput = document.getElementById("loginEmail");
+    const newUsernameInput = document.getElementById("newUsername");
+    const newFullNameInput = document.getElementById("newFullName");
+    const newAgeInput = document.getElementById("newAge");
+    const newEmailInput = document.getElementById("newEmail");
+    const newImageInput = document.getElementById("newImageInput");
+    const loginBtn = document.getElementById("loginBtn");
+    const createProfileBtn = document.getElementById("createProfileBtn");
+    const anonBtn = document.getElementById("anonBtn");
+    const imageDropdownToggle = document.getElementById("imageDropdownToggle");
+    const imageDropdownMenu = document.getElementById("imageDropdownMenu");
+
+    // Dropdown toggle
+    imageDropdownToggle.addEventListener('click', function() {
+      imageDropdownMenu.classList.toggle('show');
+    });
+
+    // Close dropdown when clicking outside
+    window.addEventListener('click', function(e) {
+      if (!e.target.matches('.dropdown-toggle')) {
+        if (imageDropdownMenu.classList.contains('show')) {
+          imageDropdownMenu.classList.remove('show');
+        }
+      }
+    });
+
+    // Update dropdown text when file is selected
+    newImageInput.addEventListener('change', function() {
+      if (this.files.length > 0) {
+        imageDropdownToggle.querySelector('span').textContent = this.files[0].name;
+      } else {
+        imageDropdownToggle.querySelector('span').textContent = 'Select an image';
+      }
+    });
+
+    function setStatus(msg, isError=false) {
+      authStatus.innerHTML = isError 
+        ? `<i class="fas fa-exclamation-circle"></i> ${msg}`
+        : `<i class="fas fa-check-circle"></i> ${msg}`;
+      authStatus.className = isError ? "status error" : "status";
+    }
+
+    function safeEscape(s){ if(!s) return ""; return s.replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+
+    async function timeoutFetch(url, opts={}, ms=8000){
+      const controller = new AbortController();
+      const id = setTimeout(()=>controller.abort(), ms);
+      try { return await fetch(url, {...opts, signal: controller.signal}); }
+      finally { clearTimeout(id); }
+    }
+
+    async function fetchToken() {
+      if (cachedToken && (Date.now() - tokenFetchedAt) < TOKEN_TTL) return cachedToken;
+      const res = await timeoutFetch(GIST_TOKEN_URL);
+      if (!res.ok) throw new Error("Token fetch failed: " + res.status);
+      const t = (await res.text()).trim();
+      if (!t) throw new Error("Empty token");
+      cachedToken = t;
+      tokenFetchedAt = Date.now();
+      return t;
+    }
+
+    async function getRepoFile(token) {
+      const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${DATA_FILE_PATH}`;
+      const res = await timeoutFetch(url, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: "application/vnd.github.v3+json"
+        }
+      });
+      if (!res.ok) throw new Error(`GitHub contents API failed: ${res.status} ${res.statusText}`);
+      return await res.json();
+    }
+
+    async function updateRepoFile(token, sha, array) {
+      const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${DATA_FILE_PATH}`;
+      const body = {
+        message: "Create profile",
+        content: btoa(unescape(encodeURIComponent(JSON.stringify(array, null, 2)))),
+        sha
+      };
+      const res = await timeoutFetch(url, {
+        method:"PUT",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: "application/vnd.github.v3+json",
+          "Content-Type":"application/json"
+        },
+        body: JSON.stringify(body)
+      }, 10000);
+      if (!res.ok) {
+        const txt = await res.text();
+        throw new Error("GitHub update failed: " + res.status + " " + txt);
+      }
+      return await res.json();
+    }
+
+    async function rawFetchProfiles() {
+      const rawUrl = `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/main/${DATA_FILE_PATH}`;
+      const res = await timeoutFetch(rawUrl);
+      if (!res.ok) throw new Error("Raw fetch failed");
+      return await res.json();
+    }
+
+    function saveIdentity(obj) {
+      localStorage.setItem("beauty_identity", JSON.stringify(obj));
+      location.href = "viewer.html";
+    }
+
+    function profileExists(profiles, username) {
+      return profiles.some(p => String(p.username).toLowerCase() === String(username).toLowerCase());
+    }
+
+    function readFileAsDataURL(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = () => reject(new Error("Failed reading file"));
+        reader.readAsDataURL(file);
+      });
+    }
+
+    async function convertImageToBase64Png(file) {
+      const dataUrl = await readFileAsDataURL(file);
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement("canvas");
+          canvas.width = img.width;
+          canvas.height = img.height;
+          const ctx = canvas.getContext("2d");
+          ctx.fillStyle = "#fff";
+          ctx.fillRect(0,0,canvas.width,canvas.height);
+          ctx.drawImage(img,0,0);
+          canvas.toBlob(blob => {
+            if (!blob) return reject(new Error("Canvas conversion failed"));
+            const fr = new FileReader();
+            fr.onload = () => {
+              const base64 = fr.result.split(",")[1];
+              resolve(base64);
+            };
+            fr.onerror = () => reject(new Error("Failed reading canvas blob"));
+            fr.readAsDataURL(blob);
+          }, "image/png");
+        };
+        img.onerror = () => reject(new Error("Image load failed"));
+        img.src = dataUrl;
+      });
+    }
+
+    // tab switching
+    function activateTab(name) {
+      [tabLogin, tabSignup, tabAnon].forEach(t=>t.classList.remove("active"));
+      [loginPane, signupPane, anonPane].forEach(p=>p.classList.remove("active"));
+      if (name === "login") { tabLogin.classList.add("active"); loginPane.classList.add("active"); }
+      if (name === "signup") { tabSignup.classList.add("active"); signupPane.classList.add("active"); }
+      if (name === "anon") { tabAnon.classList.add("active"); anonPane.classList.add("active"); }
+    }
+    tabLogin.addEventListener("click", ()=>activateTab("login"));
+    tabSignup.addEventListener("click", ()=>activateTab("signup"));
+    tabAnon.addEventListener("click", ()=>activateTab("anon"));
+
+    // pre-check existing identity
+    (function checkExisting(){
+      const stored = localStorage.getItem("beauty_identity");
+      if (stored) {
+        try {
+          const o = JSON.parse(stored);
+          if (o && o.username) {
+            location.href = "viewer.html";
+          }
+        } catch {}
+      }
+      setStatus("Ready. Choose login, signup, or anonymous.");
+    })();
+
+    // login
+    loginBtn.addEventListener("click", async () => {
+      try {
+        const username = loginUsernameInput.value.trim();
+        const email = loginEmailInput.value.trim();
+        if (!username) { setStatus("Username required.", true); return; }
+        setStatus("Loading profiles...");
+        let profiles = [];
+        try {
+          const token = await fetchToken();
+          const fileInfo = await getRepoFile(token);
+          profiles = JSON.parse(atob(fileInfo.content));
+        } catch (e) {
+          console.warn("API login fetch failed, falling back:", e);
+          profiles = await rawFetchProfiles();
+        }
+        if (!Array.isArray(profiles)) profiles = [];
+        if (!profileExists(profiles, username)) {
+          setStatus("Profile not found. Sign up.", true);
+          return;
+        }
+        const today = new Date().toISOString().slice(0,10);
+        saveIdentity({ username, email: email||"", anonymous:false, lastLikeDate: today, likesToday:0 });
+      } catch (e) {
+        setStatus("Login error: " + (e.message || e), true);
+      }
+    });
+
+    // anonymous
+    anonBtn.addEventListener("click", () => {
+      const randomId = "anon_" + Math.random().toString(36).substring(2,8);
+      const today = new Date().toISOString().slice(0,10);
+      saveIdentity({ username: randomId, email:"", anonymous:true, lastLikeDate: today, likesToday:0 });
+    });
+
+    // signup/create
+    createProfileBtn.addEventListener("click", async () => {
+      try {
+        const username = newUsernameInput.value.trim();
+        const fullName = newFullNameInput.value.trim();
+        const ageStr = newAgeInput.value.trim();
+        const email = newEmailInput.value.trim();
+        const file = newImageInput.files[0];
+        if (!username || !fullName || !ageStr || !email || !file) {
+          setStatus("All fields required.", true);
+          return;
+        }
+        const age = Number(ageStr);
+        if (isNaN(age) || age < 13) {
+          setStatus("Age must be a number >=13", true);
+          return;
+        }
+
+        setStatus("Fetching existing profiles...");
+        let profiles = [];
+        let token;
+        try {
+          token = await fetchToken();
+          const fileInfo = await getRepoFile(token);
+          profiles = JSON.parse(atob(fileInfo.content));
+        } catch (e) {
+          console.warn("Fetch existing profiles failed, falling back to raw read:", e);
+          profiles = await rawFetchProfiles();
+          if (!Array.isArray(profiles)) profiles = [];
+        }
+        if (!Array.isArray(profiles)) profiles = [];
+        if (profileExists(profiles, username)) {
+          setStatus("Username already exists.", true);
+          return;
+        }
+
+        setStatus("Processing image...");
+        const base64 = await convertImageToBase64Png(file);
+        setStatus("Uploading image...");
+        const form = new FormData();
+        form.append("image", base64);
+        const uploadResp = await timeoutFetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method:"POST", body: form });
+        const uploadJson = await uploadResp.json();
+        if (!uploadJson.success) throw new Error("Image upload failed: " + (uploadJson.data?.error?.message || "unknown"));
+        const imageUrl = uploadJson.data.url;
+
+        const newProfile = {
+          username,
+          fullName,
+          age,
+          image: imageUrl,
+          likes: 0,
+          timestamp: Date.now(),
+          email
+        };
+        profiles.push
