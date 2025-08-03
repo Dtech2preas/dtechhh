@@ -592,4 +592,18 @@
           timestamp: Date.now(),
           email
         };
-        profiles.push
+        profiles.push(newProfile);
+
+        if (!token) token = await fetchToken();
+        const fileInfo = await getRepoFile(token);
+        await updateRepoFile(token, fileInfo.sha, profiles);
+        setStatus("Profile created, logging in...");
+        const today = new Date().toISOString().slice(0,10);
+        saveIdentity({ username, email, anonymous:false, lastLikeDate: today, likesToday:0 });
+      } catch (e) {
+        setStatus("Signup error: " + (e.message || e), true);
+      }
+    });
+  </script>
+</body>
+</html>
