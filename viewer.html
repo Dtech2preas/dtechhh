@@ -435,6 +435,8 @@
     let profiles = [];
     let currentIndex = 0;
     let isUpdating = false;
+    let viewedProfiles = [];
+    let requestedProfile = null;
 
     // DOM
     const viewerContainer = document.getElementById("viewerContainer");
@@ -457,6 +459,72 @@
     function escapeHTML(s) { 
       if (!s) return ""; 
       return s.replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); 
+    }
+
+    // Check URL for requested profile
+    function checkUrlForProfile() {
+      const params = new URLSearchParams(window.location.search);
+      const userParam = params.get('user');
+      if (userParam) {
+        requestedProfile = userParam.toLowerCase();
+      }
+    }
+
+    // Get weighted random profile index (more likes = higher chance)
+    function getWeightedRandomProfileIndex() {
+      if (profiles.length === 0) return -1;
+      
+      // If we have a requested profile, find it first
+      if (requestedProfile) {
+        const index = profiles.findIndex(p => 
+          String(p.username).toLowerCase() === requestedProfile
+        );
+        if (index !== -1) {
+          requestedProfile = null; // Clear after first use
+          return index;
+        }
+      }
+      
+      // If we've viewed all profiles, reset the viewed list
+      if (viewedProfiles.length >= profiles.length) {
+        viewedProfiles = [];
+      }
+      
+      // Create a pool of unviewed profiles
+      const unviewedProfiles = profiles
+        .map((p, i) => ({ index: i, profile: p }))
+        .filter(p => !viewedProfiles.includes(p.index));
+      
+      // If all profiles have been viewed, use all profiles
+      const pool = unviewedProfiles.length > 0 ? unviewedProfiles : 
+        profiles.map((p, i) => ({ index: i, profile: p }));
+      
+      // Calculate total weight (sum of all likes + 1 to avoid zero)
+      const totalWeight = pool.reduce((sum, p) => sum + (p.profile.likes || 0) + 1, 0);
+      
+      // Get a random number in the weight range
+      let random = Math.random() * totalWeight;
+      let weightSum = 0;
+      
+      for (const p of pool) {
+        weightSum += (p.profile.likes || 0) + 1;
+        if (random <= weightSum) {
+          viewedProfiles.push(p.index);
+          return p.index;
+        }
+      }
+      
+      // Fallback to first profile if something went wrong
+      return 0;
+    }
+
+    // Scroll to specific profile
+    function scrollToProfile(index) {
+      const slides = document.querySelectorAll('.profile-slide');
+      if (index >= 0 && index < slides.length) {
+        slides[index].scrollIntoView({ behavior: 'smooth' });
+        currentIndex = index;
+      }
     }
 
     // Identity Management
@@ -602,8 +670,10 @@
         return;
       }
       
+      // Sort by likes (highest first) for initial display
       profiles.sort((a, b) => (b.likes || 0) - (a.likes || 0));
       
+      // Create slides for all profiles
       profiles.forEach((p, idx) => {
         const slide = document.createElement("div");
         slide.className = "profile-slide fade-in";
@@ -640,6 +710,14 @@
       
       attachLikeHandlers();
       trackScroll();
+      
+      // Scroll to a weighted random profile or the requested one
+      setTimeout(() => {
+        const index = getWeightedRandomProfileIndex();
+        if (index !== -1) {
+          scrollToProfile(index);
+        }
+      }, 100);
     }
 
     function attachLikeHandlers() {
@@ -754,6 +832,13 @@
           });
           
           currentIndex = nearest;
+          
+          // Update URL without reloading
+          const currentProfile = profiles[nearest];
+          if (currentProfile) {
+            const newUrl = `${window.location.pathname}?user=${encodeURIComponent(currentProfile.username)}`;
+            window.history.replaceState(null, null, newUrl);
+          }
         }, 100);
       });
     }
@@ -769,7 +854,7 @@
       const p = currentProfile();
       if (!p) return;
       
-      const url = `${location.origin}${location.pathname.replace(/viewer\.html$/, 'viewer.html')}?user=${encodeURIComponent(p.username)}`;
+      const url = `${window.location.origin}${window.location.pathname}?user=${encodeURIComponent(p.username)}`;
       
       navigator.clipboard.writeText(url).then(() => {
         showStatus("Link copied!");
@@ -787,14 +872,9 @@
 
     // Initialization
     async function init() {
+      checkUrlForProfile();
       loadIdentity();
       await loadProfiles();
-      
-      // Ensure first slide is visible after load
-      setTimeout(() => {
-        const first = document.querySelector('.profile-slide');
-        if (first) first.scrollIntoView({ behavior: "instant" });
-      }, 100);
       
       // Add subtle parallax effect to images
       document.querySelectorAll('.profile-slide img').forEach(img => {
