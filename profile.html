@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Beauty Showcase — Profile</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #10b981;
+      --primary-light: #34d399;
+      --primary-dark: #059669;
+      --bg-dark: #0f172a;
+      --bg-darker: #0b1120;
+      --card: #1e293b;
+      --card-light: #334155;
+      --text: #f8fafc;
+      --text-light: #e2e8f0;
+      --text-lighter: #94a3b8;
+      --radius: 16px;
+      --radius-sm: 12px;
+      --shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      --shadow-md: 0 15px 40px rgba(0, 0, 0, 0.3);
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      --gradient: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      margin: 0;
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-dark);
+      color: var(--text);
+      line-height: 1.6;
+      background-image: 
+        radial-gradient(at 80% 0%, hsla(189,100%,56%,0.1) 0px, transparent 50%),
+        radial-gradient(at 0% 50%, hsla(355,100%,93%,0.1) 0px, transparent 50%);
+    }
+    
+    .container {
+      max-width: 1100px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+    
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 24px;
+      color: var(--text-light);
+      text-decoration: none;
+      font-weight: 500;
+      transition: var(--transition);
+      padding: 8px 12px;
+      border-radius: var(--radius-sm);
+      background: rgba(255, 255, 255, 0.05);
+    }
+    
+    .back-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      transform: translateX(-2px);
+    }
+    
+    .back-btn i {
+      font-size: 14px;
+    }
+    
+    .status {
+      padding: 12px 16px;
+      border-radius: var(--radius-sm);
+      background: rgba(239, 68, 68, 0.1);
+      color: #fca5a5;
+      margin-bottom: 20px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+    }
+    
+    .status i {
+      font-size: 16px;
+    }
+    
+    .profile-header {
+      display: flex;
+      gap: 32px;
+      flex-wrap: wrap;
+      margin-bottom: 40px;
+    }
+    
+    .avatar-container {
+      position: relative;
+      flex: 0 0 160px;
+    }
+    
+    .avatar {
+      width: 160px;
+      height: 160px;
+      border-radius: 999px;
+      object-fit: cover;
+      border: 4px solid var(--primary);
+      box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
+      transition: var(--transition);
+    }
+    
+    .avatar:hover {
+      transform: scale(1.02);
+      box-shadow: 0 15px 40px rgba(16, 185, 129, 0.4);
+    }
+    
+    .avatar-verified {
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      width: 32px;
+      height: 32px;
+      background: var(--gradient);
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      border: 2px solid var(--card);
+    }
+    
+    .profile-info {
+      flex: 1;
+      min-width: 300px;
+    }
+    
+    .username {
+      font-size: 2.5rem;
+      font-weight: 800;
+      margin: 0 0 8px 0;
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: inline-block;
+    }
+    
+    .profile-meta {
+      display: flex;
+      gap: 24px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+    
+    .meta-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 14px;
+      color: var(--text-lighter);
+    }
+    
+    .meta-item i {
+      color: var(--primary);
+      font-size: 14px;
+    }
+    
+    .likes {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      background: rgba(16, 185, 129, 0.1);
+      border-radius: 999px;
+      font-weight: 600;
+      color: var(--primary-light);
+      margin-top: 8px;
+    }
+    
+    .likes i {
+      font-size: 14px;
+    }
+    
+    .socials {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 24px;
+    }
+    
+    .social-chip {
+      background: rgba(255, 255, 255, 0.05);
+      padding: 10px 16px;
+      border-radius: 999px;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      font-size: 14px;
+      transition: var(--transition);
+      color: var(--text-light);
+      text-decoration: none;
+    }
+    
+    .social-chip:hover {
+      background: rgba(255, 255, 255, 0.1);
+      transform: translateY(-2px);
+    }
+    
+    .social-chip i {
+      font-size: 16px;
+    }
+    
+    .facebook-chip { color: #1877f2; }
+    .tiktok-chip { color: #000000; }
+    .youtube-chip { color: #ff0000; }
+    .whatsapp-chip { color: #25d366; }
+    
+    .gallery-section {
+      margin-top: 40px;
+    }
+    
+    .section-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .section-title i {
+      color: var(--primary);
+    }
+    
+    .main-pic {
+      width: 100%;
+      border-radius: var(--radius);
+      overflow: hidden;
+      position: relative;
+      box-shadow: var(--shadow);
+      transition: var(--transition);
+    }
+    
+    .main-pic:hover {
+      box-shadow: var(--shadow-md);
+    }
+    
+    .main-pic img {
+      width: 100%;
+      height: 500px;
+      object-fit: cover;
+      display: block;
+    }
+    
+    .gallery-thumbs {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-top: 20px;
+    }
+    
+    .gallery-thumb {
+      width: 120px;
+      height: 120px;
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      position: relative;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: var(--transition);
+    }
+    
+    .gallery-thumb:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    }
+    
+    .gallery-thumb.selected {
+      border-color: var(--primary);
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3);
+    }
+    
+    .gallery-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    .empty-state {
+      padding: 40px;
+      text-align: center;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: var(--radius);
+      color: var(--text-lighter);
+    }
+    
+    .empty-state i {
+      font-size: 40px;
+      margin-bottom: 16px;
+      color: var(--primary);
+      opacity: 0.5;
+    }
+    
+    @media (max-width: 768px) {
+      .container {
+        padding: 0 16px;
+      }
+      
+      .profile-header {
+        gap: 24px;
+      }
+      
+      .avatar-container {
+        flex: 0 0 120px;
+      }
+      
+      .avatar {
+        width: 120px;
+        height: 120px;
+      }
+      
+      .username {
+        font-size: 2rem;
+      }
+      
+      .main-pic img {
+        height: 300px;
+      }
+      
+      .gallery-thumb {
+        width: 80px;
+        height: 80px;
+      }
+    }
+    
+    /* Animation */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .animate-fade {
+      animation: fadeIn 0.4s ease-out;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a class="back-btn animate-fade" onclick="history.back()">
+      <i class="fas fa-arrow-left"></i>
+      <span>Back to Browse</span>
+    </a>
+    
+    <div id="status" class="status" style="display: none;">
+      <i class="fas fa-circle-notch fa-spin"></i>
+      <span>Loading profile...</span>
+    </div>
+    
+    <div class="profile-header animate-fade" style="animation-delay: 0.1s;">
+      <div class="avatar-container">
+        <img src="" id="avatar" class="avatar" alt="Profile picture" />
+        <div class="avatar-verified">
+          <i class="fas fa-check"></i>
+        </div>
+      </div>
+      
+      <div class="profile-info">
+        <h1 class="username" id="uname">Username</h1>
+        
+        <div class="profile-meta">
+          <div class="meta-item" id="age-display">
+            <i class="fas fa-birthday-cake"></i>
+            <span>-- years</span>
+          </div>
+          <div class="meta-item" id="joined-display">
+            <i class="fas fa-calendar-alt"></i>
+            <span>Joined --</span>
+          </div>
+        </div>
+        
+        <div class="likes">
+          <i class="fas fa-heart"></i>
+          <span id="likes">0 likes</span>
+        </div>
+        
+        <div class="socials" id="socialsContainer">
+          <!-- Social chips will be inserted here -->
+        </div>
+      </div>
+    </div>
+    
+    <div class="gallery-section animate-fade" style="animation-delay: 0.2s;">
+      <h2 class="section-title">
+        <i class="fas fa-images"></i>
+        <span>Gallery</span>
+      </h2>
+      
+      <div class="main-pic" id="mainPicWrapper">
+        <img src="" id="mainPic" alt="Main profile picture" />
+      </div>
+      
+      <div class="gallery-thumbs" id="extras">
+        <!-- Thumbnails will be inserted here -->
+      </div>
+      
+      <div id="emptyGallery" class="empty-state" style="display: none;">
+        <i class="fas fa-camera"></i>
+        <p>No additional photos in gallery</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // CONFIG
+    const GIST_TOKEN_URL="https://gist.githubusercontent.com/Dtech2preas/6750d0418aaa9dfe7f297c26d1dfae48/raw/2e511e4d11267d5aade0229849446b7297ae01c9/gistfile1.txt";
+    const REPO_OWNER="Dtech2preas", REPO_NAME="Oratilr", DATA_FILE_PATH="data1.json";
+    const TOKEN_TTL=30000;
+
+    // DOM
+    const statusEl=document.getElementById("status");
+    const avatar=document.getElementById("avatar");
+    const unameEl=document.getElementById("uname");
+    const ageDisplay=document.getElementById("age-display");
+    const joinedDisplay=document.getElementById("joined-display");
+    const likesEl=document.getElementById("likes");
+    const socialsContainer=document.getElementById("socialsContainer");
+    const mainPic=document.getElementById("mainPic");
+    const extrasEl=document.getElementById("extras");
+    const emptyGalleryEl=document.getElementById("emptyGallery");
+
+    let profileData=null;
+    let profiles=[];
+
+    function showStatus(msg, type="loading") {
+      statusEl.style.display = "flex";
+      statusEl.innerHTML = `<i class="fas ${type === "error" ? "fa-exclamation-circle" : "fa-circle-notch fa-spin"}"></i><span>${msg}</span>`;
+      statusEl.className = `status ${type === "error" ? "error" : ""}`;
+    }
+
+    function hideStatus() {
+      statusEl.style.display = "none";
+    }
+
+    function escapeHTML(s){ if(!s) return ""; return s.replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+
+    async function timeoutFetch(url, opts={}, ms=8000){
+      const controller=new AbortController();
+      const id=setTimeout(()=>controller.abort(), ms);
+      try { return await fetch(url,{...opts, signal:controller.signal}); }
+      finally { clearTimeout(id); }
+    }
+
+    async function fetchToken(){
+      const res=await timeoutFetch(GIST_TOKEN_URL);
+      if(!res.ok) throw new Error("token fetch failed");
+      return (await res.text()).trim();
+    }
+
+    async function getRepoFile(token){
+      const url=`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${DATA_FILE_PATH}`;
+      const res=await timeoutFetch(url,{headers:{Authorization:`Bearer ${token}`, Accept:"application/vnd.github.v3+json"}});
+      if(!res.ok) throw new Error("fetch failed");
+      return await res.json();
+    }
+
+    function getQueryParam(name) {
+      const params = new URLSearchParams(location.search);
+      return params.get(name);
+    }
+
+    function formatDate(timestamp) {
+      if (!timestamp) return "Unknown";
+      const date = new Date(timestamp);
+      return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+    }
+
+    function buildSocialChip(type, value) {
+      if (!value) return null;
+      
+      let iconClass, displayText;
+      switch(type) {
+        case "facebook":
+          iconClass = "fab fa-facebook-f facebook-chip";
+          displayText = value.startsWith("http") ? "Facebook" : value;
+          break;
+        case "tiktok":
+          iconClass = "fab fa-tiktok tiktok-chip";
+          displayText = value.startsWith("@") ? value : `@${value}`;
+          break;
+        case "youtube":
+          iconClass = "fab fa-youtube youtube-chip";
+          displayText = value.startsWith("http") ? "YouTube" : value;
+          break;
+        case "whatsapp":
+          iconClass = "fab fa-whatsapp whatsapp-chip";
+          displayText = value.startsWith("+") ? value : `+${value}`;
+          break;
+        default:
+          return null;
+      }
+      
+      let href = value;
+      if (!value.startsWith("http")) {
+        switch(type) {
+          case "facebook": href = `https://facebook.com/${value}`; break;
+          case "tiktok": href = `https://tiktok.com/@${value.replace("@", "")}`; break;
+          case "youtube": href = `https://youtube.com/${value}`; break;
+          case "whatsapp": href = `https://wa.me/${value.replace("+", "")}`; break;
+        }
+      }
+      
+      return `
+        <a href="${escapeHTML(href)}" target="_blank" class="social-chip">
+          <i class="${iconClass}"></i>
+          <span>${escapeHTML(displayText)}</span>
+        </a>
+      `;
+    }
+
+    function populateProfile(p) {
+      profileData = p;
+      
+      // Set avatar
+      avatar.src = p.image || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2394a3b8'%3E%3Cpath d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z'/%3E%3C/svg%3E";
+      
+      // Set username
+      unameEl.textContent = p.username || "Anonymous";
+      
+      // Set age
+      if (p.age) {
+        ageDisplay.querySelector("span").textContent = `${p.age} years`;
+      } else {
+        ageDisplay.style.display = "none";
+      }
+      
+      // Set joined date
+      if (p.timestamp) {
+        joinedDisplay.querySelector("span").textContent = `Joined ${formatDate(p.timestamp)}`;
+      } else {
+        joinedDisplay.style.display = "none";
+      }
+      
+      // Set likes
+      likesEl.textContent = `${p.likes || 0} likes`;
+      
+      // Social chips
+      socialsContainer.innerHTML = "";
+      const types = ["facebook","tiktok","youtube","whatsapp"];
+      let hasSocials = false;
+      
+      types.forEach(t => {
+        const v = p.social && p.social[t];
+        const chipHTML = buildSocialChip(t, v);
+        if (chipHTML) {
+          socialsContainer.innerHTML += chipHTML;
+          hasSocials = true;
+        }
+      });
+      
+      if (!hasSocials) {
+        socialsContainer.innerHTML = `
+          <div style="color: var(--text-lighter); font-size: 14px;">
+            <i class="fas fa-share-alt"></i> No social links added
+          </div>
+        `;
+      }
+      
+      // Gallery
+      const galleryList = Array.isArray(p.gallery) ? p.gallery.slice() : [];
+      if (p.image && !galleryList.includes(p.image)) {
+        galleryList.unshift(p.image);
+      }
+      if (!galleryList.length && p.image) galleryList.push(p.image);
+      
+      mainPic.src = galleryList[0] || "";
+      extrasEl.innerHTML = "";
+      
+      if (galleryList.length <= 1) {
+        emptyGalleryEl.style.display = "block";
+      } else {
+        emptyGalleryEl.style.display = "none";
+        galleryList.slice(1).forEach((url, idx) => {
+          const div = document.createElement("div");
+          div.className = "gallery-thumb";
+          div.dataset.idx = idx+1;
+          div.innerHTML = `<img src="${escapeHTML(url)}" alt="Gallery image ${idx+1}">`;
+          extrasEl.appendChild(div);
+          
+          div.addEventListener("click", () => {
+            // Swap main image
+            mainPic.src = url;
+            
+            // Mark selection
+            extrasEl.querySelectorAll(".gallery-thumb").forEach(t => t.classList.remove("selected"));
+            div.classList.add("selected");
+          });
+        });
+      }
+      
+      hideStatus();
+    }
+
+    async function init() {
+      showStatus("Loading profile...");
+      
+      try {
+        const username = getQueryParam("user");
+        if (!username) { 
+          showStatus("No user specified.", "error"); 
+          return; 
+        }
+        
+        const token = await fetchToken();
+        const fileInfo = await getRepoFile(token);
+        
+        let arr = [];
+        try { arr = JSON.parse(atob(fileInfo.content)); } catch {}
+        if (!Array.isArray(arr)) arr = [];
+        
+        profiles = arr;
+        const profile = profiles.find(p => String(p.username).toLowerCase() === String(username).toLowerCase());
+        
+        if (!profile) {
+          showStatus("Profile not found.", "error");
+          return;
+        }
+        
+        populateProfile(profile);
+      } catch (e) {
+        showStatus("Error loading profile: " + e.message, "error");
+        console.error(e);
+      }
+    }
+
+    // Initialize the page
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>
