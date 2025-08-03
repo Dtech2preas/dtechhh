@@ -15,6 +15,7 @@
       --like-hover: rgba(255,64,129,1);
       --action-btn-size: 48px;
       --action-btn-gap: 16px;
+      --limit-overlay: rgba(0,0,0,0.9);
     }
     
     * {
@@ -332,6 +333,46 @@
       line-height: 1.5;
     }
     
+    /* Limit Overlay */
+    .limit-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: var(--limit-overlay);
+      z-index: 200;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      text-align: center;
+    }
+    
+    .limit-message {
+      font-size: 1.2rem;
+      margin-bottom: 20px;
+      max-width: 400px;
+      line-height: 1.5;
+    }
+    
+    .limit-btn {
+      background: var(--like-color);
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all var(--transition);
+    }
+    
+    .limit-btn:hover {
+      background: var(--like-hover);
+      transform: translateY(-2px);
+    }
+    
     /* Animations */
     @keyframes fadeIn {
       from { opacity: 0; }
@@ -370,6 +411,10 @@
       .action-btn svg {
         width: 20px;
         height: 20px;
+      }
+      
+      .limit-message {
+        font-size: 1rem;
       }
     }
     
@@ -417,17 +462,25 @@
   <div class="viewer-footer">
     <div class="user-status" id="identityDisplay">Loading identity...</div>
     <div class="user-status" id="likeStatus">Likes today: --</div>
+    <div class="user-status" id="scrollStatus">Scrolls today: --</div>
   </div>
 
   <!-- Loader -->
   <div class="loader" id="globalStatus" style="display:none;">Loading...</div>
+
+  <!-- Limit Overlay -->
+  <div class="limit-overlay" id="limitOverlay" style="display:none;">
+    <div class="limit-message" id="limitMessage"></div>
+    <button class="limit-btn" id="limitBtn">Review Access</button>
+  </div>
 
   <script>
     // CONFIG
     const GIST_TOKEN_URL = "https://gist.githubusercontent.com/Dtech2preas/6750d0418aaa9dfe7f297c26d1dfae48/raw/2e511e4d11267d5aade0229849446b7297ae01c9/gistfile1.txt";
     const REPO_OWNER = "Dtech2preas", REPO_NAME = "Oratilr", DATA_FILE_PATH = "data1.json";
     const TOKEN_TTL = 30000;
-    const MAX_LIKES_LOGGED = 10, MAX_LIKES_ANON = 5;
+    const MAX_LIKES_PER_DAY = 10;
+    const MAX_SCROLLS_PER_DAY = 30;
 
     // STATE
     let identity = null;
@@ -437,14 +490,21 @@
     let isUpdating = false;
     let viewedProfiles = [];
     let requestedProfile = null;
+    let scrollCount = 0;
+    let lastScrollTime = 0;
+    let scrollDebounce = null;
 
     // DOM
     const viewerContainer = document.getElementById("viewerContainer");
     const identityDisplay = document.getElementById("identityDisplay");
     const likeStatus = document.getElementById("likeStatus");
+    const scrollStatus = document.getElementById("scrollStatus");
     const globalStatus = document.getElementById("globalStatus");
     const shareBtn = document.getElementById("shareBtn");
     const viewProfileBtn = document.getElementById("viewProfileBtn");
+    const limitOverlay = document.getElementById("limitOverlay");
+    const limitMessage = document.getElementById("limitMessage");
+    const limitBtn = document.getElementById("limitBtn");
 
     // Utility Functions
     function showStatus(msg) {
@@ -459,6 +519,15 @@
     function escapeHTML(s) { 
       if (!s) return ""; 
       return s.replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); 
+    }
+
+    function showLimitOverlay(message) {
+      limitMessage.textContent = message;
+      limitOverlay.style.display = "flex";
+    }
+
+    function hideLimitOverlay() {
+      limitOverlay.style.display = "none";
     }
 
     // Check URL for requested profile
@@ -527,19 +596,50 @@
       }
     }
 
+    // Check daily limits
+    function checkDailyLimits() {
+      const today = new Date().toISOString().slice(0, 10);
+      
+      // Reset counts if it's a new day
+      if (identity.lastActivityDate !== today) {
+        identity.likesToday = 0;
+        identity.scrollsToday = 0;
+        identity.lastActivityDate = today;
+        localStorage.setItem("beauty_identity", JSON.stringify(identity));
+      }
+      
+      // Check if limits are exceeded
+      if (identity.likesToday >= MAX_LIKES_PER_DAY) {
+        showLimitOverlay(`You've reached your daily limit of ${MAX_LIKES_PER_DAY} likes. Please review your access to continue.`);
+        return false;
+      }
+      
+      if (identity.scrollsToday >= MAX_SCROLLS_PER_DAY) {
+        showLimitOverlay(`You've reached your daily limit of ${MAX_SCROLLS_PER_DAY} scrolls. Please review your access to continue.`);
+        return false;
+      }
+      
+      hideLimitOverlay();
+      return true;
+    }
+
     // Identity Management
     function loadIdentity() {
       try {
         const stored = JSON.parse(localStorage.getItem("beauty_identity") || "null");
         if (!stored || !stored.username) throw new Error("no identity");
+        
         const today = new Date().toISOString().slice(0, 10);
-        if (stored.lastLikeDate !== today) {
+        if (stored.lastActivityDate !== today) {
           stored.likesToday = 0;
-          stored.lastLikeDate = today;
+          stored.scrollsToday = 0;
+          stored.lastActivityDate = today;
         }
+        
         identity = stored;
         localStorage.setItem("beauty_identity", JSON.stringify(identity));
         refreshIdentityUI();
+        checkDailyLimits();
       } catch {
         location.href = "auth.html";
       }
@@ -547,35 +647,76 @@
 
     function refreshIdentityUI() {
       if (!identity) return;
-      const used = identity.likesToday || 0;
-      const cap = identity.anonymous ? MAX_LIKES_ANON : MAX_LIKES_LOGGED;
+      
       identityDisplay.innerHTML = identity.anonymous
         ? `Anonymous: <strong>${escapeHTML(identity.username)}</strong>`
         : `Logged in: <strong>${escapeHTML(identity.username)}</strong>`;
-      likeStatus.innerHTML = `Likes today: <strong>${used}/${cap}</strong>`;
-      if (used >= cap) {
+      
+      likeStatus.innerHTML = `Likes today: <strong>${identity.likesToday || 0}/${MAX_LIKES_PER_DAY}</strong>`;
+      scrollStatus.innerHTML = `Scrolls today: <strong>${identity.scrollsToday || 0}/${MAX_SCROLLS_PER_DAY}</strong>`;
+      
+      if (identity.likesToday >= MAX_LIKES_PER_DAY) {
         likeStatus.classList.add("limit-warning");
       } else {
         likeStatus.classList.remove("limit-warning");
+      }
+      
+      if (identity.scrollsToday >= MAX_SCROLLS_PER_DAY) {
+        scrollStatus.classList.add("limit-warning");
+      } else {
+        scrollStatus.classList.remove("limit-warning");
       }
     }
 
     function canLike() {
       if (!identity) return false;
-      const cap = identity.anonymous ? MAX_LIKES_ANON : MAX_LIKES_LOGGED;
-      return (identity.likesToday || 0) < cap;
+      return identity.likesToday < MAX_LIKES_PER_DAY;
+    }
+
+    function canScroll() {
+      if (!identity) return false;
+      return identity.scrollsToday < MAX_SCROLLS_PER_DAY;
     }
 
     function recordLike() {
       const today = new Date().toISOString().slice(0, 10);
       if (!identity) return;
-      if (identity.lastLikeDate !== today) {
+      
+      if (identity.lastActivityDate !== today) {
         identity.likesToday = 0;
-        identity.lastLikeDate = today;
+        identity.scrollsToday = 0;
+        identity.lastActivityDate = today;
       }
+      
       identity.likesToday = (identity.likesToday || 0) + 1;
       localStorage.setItem("beauty_identity", JSON.stringify(identity));
       refreshIdentityUI();
+      checkDailyLimits();
+    }
+
+    function recordScroll() {
+      const now = Date.now();
+      // Debounce rapid scroll events (minimum 500ms between recorded scrolls)
+      if (now - lastScrollTime < 500) return;
+      
+      lastScrollTime = now;
+      const today = new Date().toISOString().slice(0, 10);
+      if (!identity) return;
+      
+      if (identity.lastActivityDate !== today) {
+        identity.likesToday = 0;
+        identity.scrollsToday = 0;
+        identity.lastActivityDate = today;
+      }
+      
+      identity.scrollsToday = (identity.scrollsToday || 0) + 1;
+      localStorage.setItem("beauty_identity", JSON.stringify(identity));
+      refreshIdentityUI();
+      
+      // Check if scroll limit is reached
+      if (identity.scrollsToday >= MAX_SCROLLS_PER_DAY) {
+        showLimitOverlay(`You've reached your daily limit of ${MAX_SCROLLS_PER_DAY} scrolls. Please review your access to continue.`);
+      }
     }
 
     // API Functions
@@ -724,6 +865,10 @@
       document.querySelectorAll(".like-btn").forEach(btn => {
         btn.onclick = async (e) => {
           e.stopPropagation();
+          
+          // Check daily limits
+          if (!checkDailyLimits()) return;
+          
           const target = btn.dataset.username;
           
           if (!identity) {
@@ -732,9 +877,7 @@
           }
           
           if (!canLike()) {
-            alert(identity.anonymous
-              ? `Anonymous limit reached (${MAX_LIKES_ANON} likes/day).`
-              : `Daily limit reached (${MAX_LIKES_LOGGED} likes/day).`);
+            showLimitOverlay(`You've reached your daily limit of ${MAX_LIKES_PER_DAY} likes. Please review your access to continue.`);
             return;
           }
           
@@ -814,6 +957,8 @@
         
         // Set a timeout to run after scrolling ends
         isScrolling = setTimeout(() => {
+          if (!canScroll()) return;
+          
           const slides = [...document.querySelectorAll(".profile-slide")];
           const viewportHeight = window.innerHeight;
           const mid = viewportHeight / 2;
@@ -831,13 +976,17 @@
             }
           });
           
-          currentIndex = nearest;
-          
-          // Update URL without reloading
-          const currentProfile = profiles[nearest];
-          if (currentProfile) {
-            const newUrl = `${window.location.pathname}?user=${encodeURIComponent(currentProfile.username)}`;
-            window.history.replaceState(null, null, newUrl);
+          // Only record scroll if we actually changed profiles
+          if (nearest !== currentIndex) {
+            currentIndex = nearest;
+            recordScroll();
+            
+            // Update URL without reloading
+            const currentProfile = profiles[nearest];
+            if (currentProfile) {
+              const newUrl = `${window.location.pathname}?user=${encodeURIComponent(currentProfile.username)}`;
+              window.history.replaceState(null, null, newUrl);
+            }
           }
         }, 100);
       });
@@ -868,6 +1017,10 @@
       const p = currentProfile();
       if (!p) return;
       location.href = `profile.html?user=${encodeURIComponent(p.username)}`;
+    });
+
+    limitBtn.addEventListener("click", () => {
+      location.href = "redo.html";
     });
 
     // Initialization
