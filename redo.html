@@ -160,6 +160,12 @@
       border-radius: 8px;
     }
     
+    .warning {
+      color: #ff9e9e;
+      font-weight: 600;
+      margin-top: 10px;
+    }
+    
     @media (max-width: 600px) {
       h1 {
         font-size: 1.6rem;
@@ -176,7 +182,7 @@
   <div class="container">
     <h1>Reset Your Limits</h1>
     <p class="description">
-      You've reached your daily limits. Visit the sponsor link and return after 10 seconds to reset your limits.
+      You've reached your daily limits. Visit the sponsor link and stay for at least 10 seconds to reset your limits.
       Each reset requires visiting more sponsor links than the last.
     </p>
     
@@ -196,15 +202,16 @@
   <div class="modal" id="adModal">
     <div class="modal-content">
       <h2>Visit Sponsor to Continue</h2>
-      <p>Please visit the sponsor page and stay for at least 10 seconds to reset your limit.</p>
+      <p>Click the button below to visit our sponsor.</p>
+      <p>You must stay on their page for at least 10 seconds.</p>
       
       <div class="ad-info">
-        <p>Click the button below to open the sponsor page in a new tab.</p>
-        <p>Return here after 10 seconds to complete the reset.</p>
+        <p>After visiting, return here and click "I've Visited"</p>
+        <p id="timeWarning" class="warning" style="display: none;">NB: You need to wait at least 10 seconds on the sponsor page!</p>
       </div>
       
-      <div class="timer" id="timer">10s remaining</div>
-      <button class="modal-btn" id="visitSponsorBtn">Visit Sponsor</button>
+      <div class="timer" id="timer" style="display: none;">Time spent: 0s</div>
+      <button class="modal-btn" id="visitSponsorBtn">Visit Sponsor Now</button>
       <button class="modal-btn" id="continueBtn" style="margin-top: 10px; display: none;">I've Visited the Sponsor</button>
     </div>
   </div>
@@ -221,8 +228,9 @@
   <!-- Too Soon Modal -->
   <div class="modal" id="tooSoonModal">
     <div class="modal-content">
-      <h2>Please Visit the Sponsor</h2>
-      <p>You need to visit the sponsor page for at least 10 seconds to reset your limit.</p>
+      <h2>Not Enough Time</h2>
+      <p>You need to stay on the sponsor page for at least 10 seconds.</p>
+      <p>Please try again and wait the full time.</p>
       <button class="modal-btn" id="tryAgainBtn">Try Again</button>
     </div>
   </div>
@@ -230,9 +238,10 @@
   <script>
     // State
     let resetType = null; // 'likes' or 'scrolls'
-    let adStartTime = null;
+    let leaveTime = null;
+    let returnTime = null;
     let timerInterval = null;
-    let timeRemaining = 10;
+    let timeSpent = 0;
     let sponsorWindow = null;
     
     // Load reset counts from localStorage
@@ -261,6 +270,7 @@
     const successModal = document.getElementById('successModal');
     const tooSoonModal = document.getElementById('tooSoonModal');
     const timer = document.getElementById('timer');
+    const timeWarning = document.getElementById('timeWarning');
     const visitSponsorBtn = document.getElementById('visitSponsorBtn');
     const continueBtn = document.getElementById('continueBtn');
     const tryAgainBtn = document.getElementById('tryAgainBtn');
@@ -281,21 +291,25 @@
       nextCost.textContent = `Next reset requires: ${requiredVisits} visit${requiredVisits > 1 ? 's' : ''}`;
     }
     
-    // Start the timer
-    function startTimer() {
-      timeRemaining = 10;
-      timer.textContent = `${timeRemaining}s remaining`;
-      continueBtn.style.display = 'none';
+    // Start tracking time spent away
+    function startTracking() {
+      leaveTime = Date.now();
+      timer.style.display = 'block';
+      timeWarning.style.display = 'none';
+      timeSpent = 0;
+      timer.textContent = `Time spent: 0s`;
       
+      // Update timer every second
       timerInterval = setInterval(() => {
-        timeRemaining--;
-        timer.textContent = `${timeRemaining}s remaining`;
-        
-        if (timeRemaining <= 0) {
-          clearInterval(timerInterval);
-          continueBtn.style.display = 'block';
+        if (leaveTime) {
+          timeSpent = Math.floor((Date.now() - leaveTime) / 1000);
+          timer.textContent = `Time spent: ${timeSpent}s`;
         }
       }, 1000);
+      
+      // Enable continue button
+      continueBtn.style.display = 'block';
+      visitSponsorBtn.style.display = 'none';
     }
     
     // Reset button handlers
@@ -315,29 +329,38 @@
       const totalResets = resetData.likes.count + resetData.scrolls.count;
       const requiredVisits = Math.min(1 + totalResets, 10);
       
-      // Disable buttons during process
+      // Reset UI state
+      timer.style.display = 'none';
+      timeWarning.style.display = 'none';
+      continueBtn.style.display = 'none';
+      visitSponsorBtn.style.display = 'block';
+      
+      // Disable main buttons during process
       resetLikesBtn.disabled = true;
       resetScrollsBtn.disabled = true;
       
       adModal.classList.add('active');
-      startTimer();
     }
     
     // Visit sponsor button handler
     visitSponsorBtn.addEventListener('click', () => {
       // Open sponsor URL in new tab
       sponsorWindow = window.open(SPONSOR_URL, '_blank');
-      adStartTime = Date.now();
+      
+      // Start tracking time away
+      startTracking();
     });
     
     // Continue button handler
     continueBtn.addEventListener('click', () => {
-      const timePassed = (Date.now() - adStartTime) / 1000;
+      returnTime = Date.now();
+      const timeAway = (returnTime - leaveTime) / 1000;
       
-      if (timePassed >= 10) {
+      clearInterval(timerInterval);
+      
+      if (timeAway >= 10) {
         // Successful visit
         adModal.classList.remove('active');
-        clearInterval(timerInterval);
         
         // Calculate how many resets they get (halved each time)
         const totalResets = resetData.likes.count + resetData.scrolls.count;
@@ -367,7 +390,7 @@
         // Didn't stay long enough
         adModal.classList.remove('active');
         tooSoonModal.classList.add('active');
-        clearInterval(timerInterval);
+        timeWarning.style.display = 'block';
       }
       
       // Re-enable buttons
